@@ -1,0 +1,258 @@
+/* ==========================================================================
+   decor.css — Art-Directed Section Decorations for Trạm Yêu Thương
+   Refined accents, gentle breathing animations, and Day/Night mode depth
+   ========================================================================== */
+
+.decor-asset-wrap {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  display: block;
+}
+
+.decor-asset-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  transition: filter var(--theme-duration, 350ms) ease, transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+/* ── Edge Peeking Cat (Left Edge - Intro / About) ────────────────────────── */
+.decor-asset-wrap--edge-left {
+  position: absolute;
+  left: 0;
+  top: -24px;
+  max-width: 135px;
+  width: 10.5vw;
+  min-width: 95px;
+  z-index: 1;
+  transform-origin: left center;
+}
+
+.decor-asset-wrap--edge-left .decor-asset-img {
+  margin-left: -11.5%;
+  width: calc(100% + 11.5%);
+  filter: drop-shadow(4px 8px 18px rgba(70, 45, 30, 0.08));
+  animation: decorPeekBreatheLeft 6s ease-in-out infinite alternate;
+}
+
+@keyframes decorPeekBreatheLeft {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-3px, -5px, 0); }
+}
+
+/* ── Edge Peeking Dog (Right Edge - Support / Rescue Directory) ─────────── */
+.decor-asset-wrap--edge-right {
+  position: absolute;
+  right: 0;
+  top: 190px;
+  max-width: 150px;
+  width: 11.5vw;
+  min-width: 110px;
+  z-index: 1;
+  transform-origin: right center;
+}
+
+.decor-asset-wrap--edge-right .decor-asset-img {
+  margin-right: -4%;
+  width: calc(100% + 4%);
+  filter: drop-shadow(-4px 8px 18px rgba(70, 45, 30, 0.08));
+  animation: decorPeekBreatheRight 6.5s ease-in-out infinite alternate;
+}
+
+@keyframes decorPeekBreatheRight {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(3px, -4px, 0); }
+}
+
+/* ── Mushroom Lantern (Wish Garden - Meadow Accent) ──────────────────────── */
+.decor-asset-wrap--corner-bottom-left {
+  position: absolute;
+  left: clamp(16px, 3.5vw, 48px);
+  bottom: 24px;
+  max-width: 175px;
+  width: 14vw;
+  min-width: 130px;
+  z-index: 1;
+}
+
+.decor-asset-wrap--corner-bottom-right {
+  position: absolute;
+  right: clamp(16px, 3.5vw, 48px);
+  bottom: 24px;
+  max-width: 175px;
+  width: 14vw;
+  min-width: 130px;
+  z-index: 1;
+}
+
+.decor-asset-wrap--corner-bottom-left .decor-asset-img,
+.decor-asset-wrap--corner-bottom-right .decor-asset-img {
+  filter: drop-shadow(0 10px 24px rgba(70, 45, 30, 0.09));
+  animation: decorMushroomPulse 5.5s ease-in-out infinite alternate;
+}
+
+@keyframes decorMushroomPulse {
+  0% {
+    transform: scale(0.98);
+    filter: drop-shadow(0 8px 18px rgba(255, 160, 100, 0.14));
+  }
+  100% {
+    transform: scale(1.02);
+    filter: drop-shadow(0 12px 26px rgba(255, 180, 110, 0.26));
+  }
+}
+
+/* ── Section Divider Path (Paw Flower Trail - Protection Journey) ────────── */
+.decor-asset-wrap--divider {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 44px auto 0 auto;
+  max-width: 360px;
+  width: 90%;
+  z-index: 1;
+}
+
+.decor-asset-wrap--divider .decor-asset-img {
+  width: 100%;
+  max-width: 340px;
+  opacity: 0.92;
+  filter: drop-shadow(0 4px 14px rgba(180, 120, 80, 0.1));
+  animation: decorTrailFloat 7s ease-in-out infinite alternate;
+}
+
+@keyframes decorTrailFloat {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(0, -5px, 0); }
+}
+
+/* ── Emotional Anchor (Puppy + Kitten Garden - Project Journey) ──────────── */
+.decor-asset-wrap--anchor {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 38px auto 0 auto;
+  max-width: 200px;
+  width: 100%;
+  z-index: 1;
+}
+
+.decor-asset-wrap--anchor .decor-asset-img {
+  width: 100%;
+  max-width: 175px;
+  filter: drop-shadow(0 12px 28px rgba(70, 45, 30, 0.09));
+  animation: decorAnchorSettle 6s ease-in-out infinite alternate;
+}
+
+@keyframes decorAnchorSettle {
+  0% { transform: translate3d(0, 0, 0) scale(0.99); }
+  100% { transform: translate3d(0, -3px, 0) scale(1.01); }
+}
+
+/* ── Floating Moon Cat (FAQ Rest Zone) ───────────────────────────────────── */
+.decor-asset-wrap--floating-moon {
+  position: absolute;
+  right: clamp(16px, 3vw, 42px);
+  bottom: 30px;
+  max-width: 195px;
+  width: 15vw;
+  min-width: 140px;
+  z-index: 1;
+}
+
+.decor-asset-wrap--floating-moon .decor-asset-img {
+  filter: drop-shadow(0 10px 26px rgba(250, 195, 110, 0.2));
+  animation: decorMoonFloat 7.5s ease-in-out infinite alternate;
+}
+
+@keyframes decorMoonFloat {
+  0% { transform: translate3d(0, 0, 0) rotate(-1deg); }
+  100% { transform: translate3d(0, -6px, 0) rotate(1.2deg); }
+}
+
+/* ── Night Mode Enhancements ─────────────────────────────────────────────── */
+html[data-theme='night'] .decor-asset-wrap--edge-left .decor-asset-img {
+  filter: drop-shadow(0 0 16px rgba(255, 185, 140, 0.2)) drop-shadow(4px 10px 24px rgba(0, 0, 0, 0.4));
+}
+
+html[data-theme='night'] .decor-asset-wrap--edge-right .decor-asset-img {
+  filter: drop-shadow(0 0 16px rgba(255, 185, 140, 0.2)) drop-shadow(-4px 10px 24px rgba(0, 0, 0, 0.4));
+}
+
+html[data-theme='night'] .decor-asset-wrap--corner-bottom-left .decor-asset-img,
+html[data-theme='night'] .decor-asset-wrap--corner-bottom-right .decor-asset-img {
+  filter: drop-shadow(0 0 22px rgba(255, 200, 120, 0.38)) drop-shadow(0 14px 32px rgba(0, 0, 0, 0.5));
+}
+
+html[data-theme='night'] .decor-asset-wrap--divider .decor-asset-img {
+  opacity: 0.96;
+  filter: drop-shadow(0 0 16px rgba(255, 195, 130, 0.32)) drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35));
+}
+
+html[data-theme='night'] .decor-asset-wrap--anchor .decor-asset-img {
+  filter: drop-shadow(0 0 20px rgba(255, 185, 140, 0.22)) drop-shadow(0 14px 32px rgba(0, 0, 0, 0.45));
+}
+
+html[data-theme='night'] .decor-asset-wrap--floating-moon .decor-asset-img {
+  filter: drop-shadow(0 0 26px rgba(254, 225, 120, 0.45)) drop-shadow(0 0 50px rgba(255, 185, 95, 0.24));
+}
+
+/* ── Responsive Refinements ──────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .decor-asset-wrap--edge-left {
+    transform: scale(0.85);
+    top: -18px;
+  }
+  .decor-asset-wrap--edge-right {
+    transform: scale(0.85);
+    top: 170px;
+  }
+  .decor-asset-wrap--floating-moon {
+    max-width: 160px;
+    right: 12px;
+  }
+  .decor-asset-wrap--corner-bottom-left {
+    max-width: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Hide edge-peeking characters on mobile to preserve readable whitespace and avoid horizontal collision */
+  .decor-asset-wrap--edge-left,
+  .decor-asset-wrap--edge-right {
+    display: none;
+  }
+  .decor-asset-wrap--corner-bottom-left,
+  .decor-asset-wrap--corner-bottom-right {
+    display: none;
+  }
+  .decor-asset-wrap--floating-moon {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin: 28px auto 0 auto;
+    max-width: 140px;
+  }
+  .decor-asset-wrap--divider {
+    max-width: 240px;
+    margin-top: 24px;
+  }
+  .decor-asset-wrap--anchor {
+    max-width: 150px;
+    margin-top: 24px;
+  }
+}
+
+/* ── Reduced Motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .decor-asset-img {
+    animation: none !important;
+  }
+}
+

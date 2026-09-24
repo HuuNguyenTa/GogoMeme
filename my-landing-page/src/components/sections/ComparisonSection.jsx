@@ -26,10 +26,10 @@ export default function ComparisonSection() {
         {/* Section Header: 1 headline + 1 short supporting sentence */}
         <div className="section-header">
           <h2 className="section-title">
-            Đúng lúc quan trọng hơn đông thật nhiều.
+            Đừng chỉ xót xa, hãy cứu giúp đúng cách.
           </h2>
           <p className="section-subtitle">
-            Khi bắt gặp một bé gặp nạn, một hành động đúng khoa học sẽ cứu sống một sinh mạng, thay vì sự hoang mang hay chia sẻ thụ động.
+           Can thiệp bằng kiến thức khoa học và sự bình tĩnh chính là chìa khóa mở ra cơ hội sống sót cao nhất cho một sinh mệnh gặp nạn.
           </p>
         </div>
 

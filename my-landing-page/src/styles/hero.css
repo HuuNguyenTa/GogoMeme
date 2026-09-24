@@ -7,14 +7,14 @@
 :root {
   --u: calc(100vw / 1600);
 
-  --ink: #241d1a;
-  --ink-soft: #453932;
-  --ink-faint: #75675f;
+  --ink: var(--text-primary, #241d1a);
+  --ink-soft: var(--text-secondary, #453932);
+  --ink-faint: var(--text-muted, #75675f);
   --rule: rgba(0, 0, 0, 0.05);
 
-  --card: #ffffff;
-  --card-ink: #241d1a;
-  --card-label: #7c6d64;
+  --card: var(--card-surface, #ffffff);
+  --card-ink: var(--text-primary, #241d1a);
+  --card-label: var(--text-muted, #7c6d64);
   --warm-peach: #e8592a;
   --warm-amber: #f59e0b;
   --soft-pink: #fff0f3;
@@ -322,7 +322,7 @@
   line-height: calc(52 * var(--u));
   font-weight: 700;
   letter-spacing: calc(-0.8 * var(--u));
-  color: #241d1a;
+  color: var(--text-primary, #241d1a);
   text-shadow: 0 calc(2 * var(--u)) calc(12 * var(--u)) rgba(255, 255, 255, 0.8);
   animation: heroFadeUp 0.9s var(--ease-out) 0.25s both;
 }
@@ -345,8 +345,8 @@
   font-size: calc(15 * var(--u));
   line-height: calc(23 * var(--u));
   font-weight: 500;
-  color: #3b302a;
-  background: rgba(255, 255, 255, 0.78);
+  color: var(--text-secondary, #3b302a);
+  background: var(--glass-surface, rgba(255, 255, 255, 0.78));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   padding: calc(14 * var(--u)) calc(20 * var(--u));
@@ -525,83 +525,91 @@
   text-shadow: 0 1px 2px rgba(100, 30, 10, 0.25);
 }
 
-/* ── Secondary CTA: Minimal Frosted Glass ────────────────────────────── */
+/* ── Secondary CTA: Lighter, quieter Frosted Glass ─────────────────────── */
+.secondary-garden-cta,
 .story-glass-cta {
   display: inline-flex;
   align-items: center;
   gap: calc(12 * var(--u));
   background: transparent;
   border: none;
-  padding: calc(4 * var(--u)) calc(8 * var(--u)) calc(4 * var(--u)) 0;
+  padding: calc(4 * var(--u)) calc(12 * var(--u)) calc(4 * var(--u)) 0;
   cursor: pointer;
   outline: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.2s var(--ease);
+  transition: transform 0.22s var(--ease), opacity 0.2s ease;
 }
 
+.secondary-garden-cta:focus-visible,
 .story-glass-cta:focus-visible {
-  outline: 2px solid #ff5c26;
+  outline: 2px solid #ff7e54;
   outline-offset: 4px;
   border-radius: 999px;
 }
 
+.secondary-garden-cta:active,
 .story-glass-cta:active {
   transform: scale(0.97);
 }
 
+.garden-cta-icon-disc,
 .story-play-disc {
   position: relative;
-  width: calc(48 * var(--u));
-  height: calc(48 * var(--u));
+  width: calc(46 * var(--u));
+  height: calc(46 * var(--u));
   border-radius: 50%;
   display: grid;
   place-items: center;
   flex: none;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255, 126, 84, 0.32);
+  border: 1.5px solid rgba(255, 140, 100, 0.32);
   box-shadow:
-    0 calc(4 * var(--u)) calc(14 * var(--u)) rgba(90, 60, 40, 0.08),
+    0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(90, 60, 40, 0.06),
     inset 0 1px 1px rgba(255, 255, 255, 0.95);
   transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
 }
 
+.secondary-garden-cta:hover .garden-cta-icon-disc,
 .story-glass-cta:hover .story-play-disc {
   transform: scale(1.06);
   background: #ffffff;
-  border-color: rgba(255, 92, 38, 0.65);
+  border-color: rgba(255, 126, 84, 0.7);
   box-shadow:
-    0 calc(6 * var(--u)) calc(20 * var(--u)) rgba(255, 92, 38, 0.20),
-    0 0 calc(12 * var(--u)) rgba(255, 126, 84, 0.25);
+    0 calc(6 * var(--u)) calc(18 * var(--u)) rgba(255, 126, 84, 0.18),
+    0 0 calc(12 * var(--u)) rgba(255, 140, 100, 0.25);
 }
 
+.garden-cta-arrow,
 .story-play-icon {
-  width: calc(16 * var(--u));
-  height: calc(16 * var(--u));
-  color: #ff5c26;
-  margin-left: calc(2 * var(--u));
-  transition: transform 0.22s var(--ease), color 0.22s var(--ease);
+  width: calc(17 * var(--u));
+  height: calc(17 * var(--u));
+  color: #ff6838;
+  transition: transform 0.24s var(--ease), color 0.2s var(--ease);
 }
 
+.secondary-garden-cta:hover .garden-cta-arrow,
 .story-glass-cta:hover .story-play-icon {
-  transform: translateX(calc(1.5 * var(--u)));
-  color: #e54612;
+  transform: translateX(calc(3 * var(--u)));
+  color: #ea501e;
 }
 
+.garden-cta-label,
 .story-cta-label {
   font-family: 'Lexend', sans-serif;
   font-size: calc(15 * var(--u));
   font-weight: 600;
-  color: #3b302a;
+  color: #453730;
   white-space: nowrap;
   letter-spacing: calc(0.2 * var(--u));
   transition: color 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
+.secondary-garden-cta:hover .garden-cta-label,
 .story-glass-cta:hover .story-cta-label {
-  color: #ff5c26;
+  color: #ff6838;
   transform: translateX(calc(2 * var(--u)));
 }
 
@@ -900,6 +908,7 @@
     --btn-h: calc(48 * var(--u));
     --btn-pad-x: calc(22 * var(--u));
   }
+  .garden-cta-icon-disc,
   .story-play-disc {
     width: calc(44 * var(--u));
     height: calc(44 * var(--u));

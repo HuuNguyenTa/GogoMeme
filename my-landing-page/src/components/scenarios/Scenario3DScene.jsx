@@ -60,7 +60,6 @@ export default function Scenario3DScene({
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     renderer.shadowMap.enabled = !isMobile;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
     // Night atmospheric fog
@@ -462,8 +461,38 @@ export default function Scenario3DScene({
     // ── ANIMATION & RENDERING LOOP ─────────────────────────────────────────
     let clock = new THREE.Clock();
     let animId = null;
+    let isSceneVisible = false;
+
+    const requestRender = () => {
+      if (animId === null && isSceneVisible && !document.hidden) {
+        clock.start();
+        animId = requestAnimationFrame(render);
+      }
+    };
+
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isSceneVisible = entry.isIntersecting;
+      if (isSceneVisible) requestRender();
+      else if (animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    }, { threshold: 0.04 });
+    visibilityObserver.observe(container);
+
+    const onVisibilityChange = () => {
+      if (document.hidden && animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      } else {
+        requestRender();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     function render() {
+      animId = null;
+      if (!isSceneVisible || document.hidden) return;
       animId = requestAnimationFrame(render);
       const t = clock.getElapsedTime();
       const state = sceneStateRef.current;
@@ -560,13 +589,15 @@ export default function Scenario3DScene({
       renderer.render(scene, camera);
     }
 
-    render();
+    requestRender();
 
     // ── CLEANUP ────────────────────────────────────────────────────────────
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      visibilityObserver.disconnect();
 
       try {
         shadowTexture.dispose();

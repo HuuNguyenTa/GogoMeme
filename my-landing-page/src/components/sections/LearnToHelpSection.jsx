@@ -51,9 +51,6 @@ export default function LearnToHelpSection() {
           <h2 className="section-title">
             Bạn Sẽ Làm Gì Khi Gặp Một Bé Cần Giúp Đỡ?
           </h2>
-          <p className="section-subtitle">
-            Lòng trắc ẩn sẽ thực sự cứu sống một sinh mạng khi bạn tiếp cận an toàn, bình tĩnh và đúng phương pháp.
-          </p>
         </div>
 
         {/* 3D Diorama Stage: 58% 3D World + 42% Interaction Panel */}

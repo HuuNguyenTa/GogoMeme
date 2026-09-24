@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, Sparkles, Check, ArrowRight } from '../ui/Icons';
 import DreamySleepingCard from '../ui/DreamySleepingCard';
+import DecorativeAsset from '../ui/DecorativeAsset';
 
 export default function AboutSection({ onOpenJourney }) {
   const scrollToChoose = () => {
@@ -14,6 +15,7 @@ export default function AboutSection({ onOpenJourney }) {
 
   return (
     <section className="landing-section landing-section--about" id="about">
+      <DecorativeAsset asset="peeking-cat" variant="edge-left" />
       <div className="section-container">
         <div className="about-story-row">
           {/* Left Column: Narrative Content */}

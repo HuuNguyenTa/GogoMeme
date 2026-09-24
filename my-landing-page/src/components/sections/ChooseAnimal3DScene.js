@@ -21,7 +21,6 @@ export function initChooseAnimalScene(canvas, hostElement, options = {}) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(canvas.clientWidth || 540, canvas.clientHeight || 500);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
@@ -509,4 +508,3 @@ export function initChooseAnimalScene(canvas, hostElement, options = {}) {
     }
   };
 }
-

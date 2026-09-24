@@ -1,5 +1,6 @@
 import React from 'react';
 import { Paw } from '../ui/Icons';
+import DecorativeAsset from '../ui/DecorativeAsset';
 
 export default function ProtectionLayersSection() {
   const journeySteps = [
@@ -11,7 +12,7 @@ export default function ProtectionLayersSection() {
     {
       num: '02',
       title: 'Sơ cứu & ủ ấm',
-      desc: 'Cấp nước sạch từ xa, che chắn mưa gió và ủ ấm thân nhiệt bằng khăn mềm hoặc hộp xốp.'
+      desc: 'Cấp nước sạch từ xa và che chắn mưa gió giúp các bé hạ nhiệt, ổn định tâm lý và tránh mất sức.'
     },
     {
       num: '03',
@@ -34,7 +35,7 @@ export default function ProtectionLayersSection() {
             Phát Triển Theo Từng Lớp Bảo Vệ
           </h2>
           <p className="section-subtitle">
-            Hành trình từ lúc một bé được phát hiện ngoài đường cho đến khi tìm được mái ấm hạnh phúc được bảo bọc qua 4 vòng an toàn khoa học.
+            Hành trình cứu hộ tìm mái ấm hạnh phúc cho thú cưng trải qua 4 vòng an toàn khoa học.
           </p>
         </div>
 
@@ -62,6 +63,9 @@ export default function ProtectionLayersSection() {
             ))}
           </div>
         </div>
+
+        {/* Decorative Transition Path to Next Section */}
+        <DecorativeAsset asset="paw-trail" variant="divider" />
       </div>
     </section>
   );

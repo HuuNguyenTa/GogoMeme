@@ -11,15 +11,27 @@ import ProjectJourneySection from './components/sections/ProjectJourneySection';
 import FaqSection from './components/sections/FaqSection';
 import FinalCtaSection from './components/sections/FinalCtaSection';
 import Footer from './components/sections/Footer';
-import StoryModal from './components/sections/StoryModal';
+import AmbientBackgroundLayer from './components/motion/AmbientBackgroundLayer';
+import LandingMotionController from './components/motion/LandingMotionController';
+import useLandingTheme from './hooks/useLandingTheme';
+import ThemeToggle from './components/theme/ThemeToggle';
+import FinalCtaCompanions3D from './components/sections/FinalCtaCompanions3D';
 import './styles/landing.css';
+import './styles/night-theme.css';
 
 export default function App() {
-  const [isStoryOpen, setIsStoryOpen] = useState(false);
+  const { theme, toggleTheme } = useLandingTheme();
   const [newWish, setNewWish] = useState(null);
 
   const handleNavigateToChoose = () => {
     const el = document.getElementById('choose-friend') || document.getElementById('choose');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleNavigateToGarden = () => {
+    const el = document.getElementById('garden') || document.getElementById('station');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
@@ -38,10 +50,14 @@ export default function App() {
 
   return (
     <div className="landing-shell">
+      <AmbientBackgroundLayer />
+      <LandingMotionController />
       {/* 1. 3D WebGL Hero Experience */}
       <HeroSection
+        theme={theme}
+        themeControl={<ThemeToggle theme={theme} onToggle={toggleTheme} />}
         onOpenJourney={handleNavigateToChoose}
-        onOpenStory={() => setIsStoryOpen(true)}
+        onExploreGarden={handleNavigateToGarden}
       />
 
       {/* 2. Section A: Về Trạm Yêu Thương & Sứ Mệnh */}
@@ -55,38 +71,32 @@ export default function App() {
         onWishSubmitted={handleWishSubmitted}
       />
 
-      {/* 6. Section D: Trạm Cứu Hộ Ảo (Khu Vườn Yêu Thương) */}
+      {/* 5. Section D: Trạm Cứu Hộ Ảo (Khu Vườn Yêu Thương) */}
       <RescueStationPreview
         newWish={newWish}
         onGoToScenarios={handleGoToScenarios}
       />
 
-      {/* 7. Section Protection Layers: "Phát triển theo từng lớp bảo vệ" (Inspiration from SavePet) */}
+      {/* 6. Section Protection Layers: "Phát triển theo từng lớp bảo vệ" (Inspiration from SavePet) */}
       <ProtectionLayersSection />
 
-      {/* 8. Section E: Cẩm nang DỪNG - NHÌN - GIÚP - GỌI */}
+      {/* 7. Section E: Cẩm nang DỪNG - NHÌN - GIÚP - GỌI */}
       <LearnToHelpSection />
 
-      {/* 9. Section F: Mạng lưới hỗ trợ theo khu vực (NO MAP, directory style) */}
+      {/* 8. Section F: Mạng lưới hỗ trợ theo khu vực (NO MAP, directory style) */}
       <FindSupportSection />
 
-      {/* 10. Section G: Hành trình dự án SSG105 */}
+      {/* 9. Section G: Hành trình dự án SSG105 */}
       <ProjectJourneySection />
 
-      {/* 11. Section FAQ: "Giải đáp trước khi bạn đồng hành" (Inspiration from SavePet) */}
+      {/* 10. Section FAQ: "Giải đáp trước khi bạn đồng hành" (Inspiration from SavePet) */}
       <FaqSection />
 
-      {/* 12. Section H: Lời kêu gọi cuối trang */}
-      <FinalCtaSection onOpenJourney={handleNavigateToChoose} />
+      {/* 11. Section H: Lời kêu gọi cuối trang */}
+      <FinalCtaSection onOpenJourney={handleNavigateToChoose} companions={<FinalCtaCompanions3D theme={theme} />} />
 
-      {/* 13. Chân trang Footer */}
+      {/* 12. Chân trang Footer */}
       <Footer />
-
-      {/* Story Narrative Modal */}
-      <StoryModal
-        isOpen={isStoryOpen}
-        onClose={() => setIsStoryOpen(false)}
-      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from '../ui/Icons';
 import { FAQ_ITEMS } from '../../data/mockData';
 import DreamySleepingCard from '../ui/DreamySleepingCard';
+import DecorativeAsset from '../ui/DecorativeAsset';
 
 export default function FaqSection() {
   const [openId, setOpenId] = useState('faq-1');
@@ -12,15 +13,14 @@ export default function FaqSection() {
 
   return (
     <section className="landing-section landing-section--faq" id="faq">
+      {/* Decorative Sleeping Cat on Moon */}
+      <DecorativeAsset asset="sleeping-moon" variant="floating-moon" />
       <div className="section-container">
         {/* Section Header: 1 headline + short support sentence */}
         <div className="section-header">
           <h2 className="section-title">
-            Giải Đáp Trước Khi Bạn Đồng Hành
+            Giải Đáp Cho Bạn Đồng Hành
           </h2>
-          <p className="section-subtitle">
-            Những thắc mắc thường gặp nhất khi bạn gặp một bé chó mèo cơ nhỡ ngoài đường hoặc mong muốn góp sức cùng cộng đồng.
-          </p>
         </div>
 
         {/* Minimalist Accordion List (SavePet style) */}

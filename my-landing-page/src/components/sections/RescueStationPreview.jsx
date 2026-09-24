@@ -11,6 +11,7 @@ import {
   nextResidentRandom
 } from '../garden/gardenResidentModel';
 import MascotIllustration from '../garden/MascotIllustration';
+import DecorativeAsset from '../ui/DecorativeAsset';
 
 const COLLISION_DISTANCE = 62;
 
@@ -147,6 +148,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
   const welcomeTimerRef = useRef(null);
   const lastLocalWishIdRef = useRef(null);
   const isGardenVisibleRef = useRef(true);
+  const resumeGardenMotionRef = useRef(() => {});
 
   useEffect(() => {
     residentsRef.current = residents;
@@ -240,6 +242,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
     const observer = new IntersectionObserver(([entry]) => {
       isGardenVisibleRef.current = entry.isIntersecting;
       meadow.classList.toggle('is-motion-paused', !entry.isIntersecting);
+      if (entry.isIntersecting) resumeGardenMotionRef.current();
     }, { threshold: 0.05 });
     observer.observe(meadow);
     return () => observer.disconnect();
@@ -263,8 +266,12 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       }
     };
 
+    const scheduleFrame = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(tick);
+    };
+
     const tick = (now) => {
-      animationFrame = window.requestAnimationFrame(tick);
+      animationFrame = 0;
       const meadow = meadowRef.current;
       if (!meadow) return;
 
@@ -357,10 +364,15 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       }
 
       renderPositions(rect.width, rect.height);
+      scheduleFrame();
     };
 
-    animationFrame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(animationFrame);
+    resumeGardenMotionRef.current = scheduleFrame;
+    scheduleFrame();
+    return () => {
+      resumeGardenMotionRef.current = () => {};
+      window.cancelAnimationFrame(animationFrame);
+    };
   }, []);
 
   const handleHover = useCallback((wishId) => {
@@ -406,6 +418,8 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
 
   return (
     <section className="landing-section wish-garden-section" id="station">
+      <div id="garden" style={{ position: 'relative', top: '-60px' }} aria-hidden="true" />
+      <DecorativeAsset asset="mushroom-lantern" variant="corner-bottom-left" />
       <div className="section-container">
         <div className="section-header">
           <div className="section-badge">
@@ -439,6 +453,29 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
             <div className="garden-hill-bg" />
             <div className="garden-hill-mid" />
             <div className="garden-hill-fore" />
+            <div className="garden-fireflies" aria-hidden="true">
+              <i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
+            </div>
+            <div className="garden-landscape-details" aria-hidden="true">
+              <div className="garden-winding-path">
+                <span className="garden-path-stone stone-a" />
+                <span className="garden-path-stone stone-b" />
+                <span className="garden-path-stone stone-c" />
+                <span className="garden-path-stone stone-d" />
+              </div>
+              <div className="garden-low-fence">
+                <span /><span /><span /><span /><span /><span />
+              </div>
+              <div className="garden-grass-cluster grass-a"><i /><i /><i /></div>
+              <div className="garden-grass-cluster grass-b"><i /><i /><i /></div>
+              <div className="garden-grass-cluster grass-c"><i /><i /><i /></div>
+              <div className="garden-grass-cluster grass-d"><i /><i /><i /></div>
+              <div className="garden-flower-cluster cluster-a"><i /><i /><i /></div>
+              <div className="garden-flower-cluster cluster-b"><i /><i /><i /></div>
+              <div className="garden-pebble pebble-a" />
+              <div className="garden-pebble pebble-b" />
+              <div className="garden-pebble pebble-c" />
+            </div>
             <div className="garden-prop-picnic-mat" style={{ left: '46%', top: '56%' }}>
               <div className="picnic-bowl" />
               <div className="picnic-toy-ball" />

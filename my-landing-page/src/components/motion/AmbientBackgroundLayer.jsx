@@ -11,8 +11,7 @@ const SECTION_TONES = {
   support: 'quiet',
   journey: 'cream',
   faq: 'quiet',
-  'final-cta': 'final',
-  footer: 'final'
+  'final-cta': 'final'
 };
 
 export default function AmbientBackgroundLayer() {
@@ -22,14 +21,6 @@ export default function AmbientBackgroundLayer() {
     const layer = layerRef.current;
     if (!layer || typeof IntersectionObserver === 'undefined') return undefined;
 
-    const updateBottomTone = () => {
-      const scrollY = window.scrollY || window.pageYOffset || 0;
-      const windowHeight = window.innerHeight || 1;
-      const documentHeight = document.documentElement.scrollHeight || 1;
-      return scrollY + windowHeight >= documentHeight - 320;
-    };
-
-    let activeTone = 'hero';
     const visibleSections = new Map();
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -38,7 +29,7 @@ export default function AmbientBackgroundLayer() {
         else visibleSections.delete(entry.target.id);
       }
 
-      let activeId = null;
+      let activeId = 'hero';
       let activeRatio = -1;
       for (const [id, ratio] of visibleSections) {
         if (ratio > activeRatio) {
@@ -46,25 +37,13 @@ export default function AmbientBackgroundLayer() {
           activeRatio = ratio;
         }
       }
-      if (updateBottomTone()) {
-        activeTone = 'final';
-      } else if (activeId && SECTION_TONES[activeId]) {
-        activeTone = SECTION_TONES[activeId];
-      }
-      layer.dataset.tone = activeTone;
-    }, { threshold: [0.1, 0.3, 0.5, 0.7] });
+      layer.dataset.tone = SECTION_TONES[activeId] || 'cream';
+    }, { threshold: [0.15, 0.35, 0.55, 0.75] });
 
     for (const id of Object.keys(SECTION_TONES)) {
       const section = document.getElementById(id);
       if (section) observer.observe(section);
     }
-
-    const onScroll = () => {
-      if (updateBottomTone() && layer.dataset.tone !== 'final') {
-        layer.dataset.tone = 'final';
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
 
     const syncPageVisibility = () => {
       document.documentElement.dataset.pageHidden = String(document.hidden);
@@ -74,7 +53,6 @@ export default function AmbientBackgroundLayer() {
 
     return () => {
       observer.disconnect();
-      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', syncPageVisibility);
       delete document.documentElement.dataset.pageHidden;
     };

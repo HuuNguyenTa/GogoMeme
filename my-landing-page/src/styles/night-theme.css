@@ -319,10 +319,7 @@ html[data-theme='night'] :is(
   .garden-welcome-toast,
   .wish-letter-card,
   .wish-success-card,
-  .choose-profile-card,
-  .about-pillar-item,
-  .comparison-row,
-  .pet-selector-card
+  .choose-profile-card
 ) {
   background: linear-gradient(165deg, rgba(32, 40, 68, 0.72) 0%, rgba(20, 26, 46, 0.88) 100%);
   border: 1px solid rgba(185, 200, 240, 0.12);
@@ -330,17 +327,6 @@ html[data-theme='night'] :is(
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--text-primary);
-}
-
-html[data-theme='night'] .pet-selector-card.is-selected {
-  border-color: #ff7e54 !important;
-  background: linear-gradient(165deg, rgba(65, 42, 52, 0.85) 0%, rgba(42, 28, 38, 0.95) 100%) !important;
-  box-shadow: 0 4px 16px rgba(255, 126, 84, 0.25) !important;
-}
-
-html[data-theme='night'] .pillar-bullet-check {
-  background: rgba(255, 126, 84, 0.2) !important;
-  color: #ff9d7a !important;
 }
 
 html[data-theme='night'] :is(

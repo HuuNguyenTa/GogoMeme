@@ -2600,27 +2600,18 @@
   color: #8c736a;
 }
 
-/* Prefers-reduced-motion: disable hops, sways & bounces */
+/* Prefers-reduced-motion: gentle, calm animations instead of freezing */
 @media (prefers-reduced-motion: reduce) {
   .mascot-anim-idle-soft,
   .mascot-anim-bounce,
   .mascot-anim-sway,
   .mascot-anim-sleepy,
   .mascot-anim-tiny-hop,
-  .mascot-anim-look-around,
-  .mascot-entrance-pop,
-  .entrance-particle,
-  .entrance-pulse,
-  .garden-prop-flower,
-  .garden-dandelion-puff,
-  .garden-sun-glow,
-  .garden-pending-halo,
-  .garden-selection-ring {
-    animation: none !important;
+  .mascot-anim-look-around {
+    animation-duration: 3.5s;
   }
   .mascot-entrance-pop {
     opacity: 1 !important;
-    transform: none !important;
   }
   .garden-mascot-hitbox-btn {
     transition: none !important;
@@ -3172,16 +3163,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .garden-mascot-roamer,
-  .garden-mascot-bobber,
-  .garden-welcome-toast,
-  .mascot-entrance-pop,
-  .entrance-particle {
-    animation: none;
-  }
-
-  .garden-mascot-roamer {
-    transform: translate3d(-50%, 0, 0);
+  .garden-welcome-toast {
+    animation-duration: 2s;
   }
 }
 
@@ -4769,15 +4752,11 @@
   }
 }
 
-/* Reduced Motion */
+/* Reduced Motion: Gentle motion instead of freezing */
 @media (prefers-reduced-motion: reduce) {
   .scene-mascot-svg,
-  .tiny-kitten,
-  .scene-leaf,
-  .pulse-dot,
-  .scene-safe-distance-ring,
-  .scene-warmth-glow {
-    animation: none !important;
+  .tiny-kitten {
+    animation-duration: 4s;
   }
 }
 
@@ -7452,12 +7431,8 @@
 @media (prefers-reduced-motion: reduce) {
   .mascot-sleeping-halo,
   .mascot-sleeping-body,
-  .mascot-zzz-float,
-  .grounded-dog-group,
-  .grounded-cat-group,
   .mascot-tail-wag {
-    animation: none !important;
-    transform: none !important;
+    animation-duration: 4s;
   }
 }
 
@@ -7748,17 +7723,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .garden-resident-anchor,
-  .garden-resident-visual,
-  .garden-resident-mascot,
-  .garden-resident-tooltip,
-  .resident-entrance-particles span {
-    animation: none;
-    transition: none;
-  }
-
-  .garden-resident-anchor {
-    will-change: auto;
+  .garden-resident-tooltip {
+    transition: opacity 0.2s ease;
   }
 }
 

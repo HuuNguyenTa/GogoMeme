@@ -43,7 +43,7 @@ export default function LandingMotionController() {
     }
 
     let revealObserver;
-    if (reduceMotion || typeof IntersectionObserver === 'undefined') {
+    if (typeof IntersectionObserver === 'undefined') {
       revealElements.forEach((element) => {
         element.classList.add('is-motion-visible', 'is-motion-visited');
         element.dataset.motionVisited = 'true';

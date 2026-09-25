@@ -100,13 +100,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
     };
 
     const onMotionChange = () => {
-      canParallax = !motionQuery.matches;
       configureLiquid();
-      if (!canParallax) {
-        px = py = targetPx = targetPy = 0;
-        heroEl?.style.setProperty('--px', '0');
-        heroEl?.style.setProperty('--py', '0');
-      }
     };
     motionQuery.addEventListener('change', onMotionChange);
 
@@ -117,7 +111,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
         cancelAnimationFrame(rafParallax);
         rafParallax = 0;
       }
-    }, { threshold: 0.02 });
+    }, { threshold: 0, rootMargin: '160px 0px 160px 0px' });
 
     if (heroEl) visibilityObserver.observe(heroEl);
     window.addEventListener('pointermove', handlePointer, { passive: true });

@@ -865,18 +865,9 @@ html[data-theme='night'] [data-motion-active='false'] .garden-fireflies i {
 
 /* ── Accessibility & Reduced Motion Support ──────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .landing-shell, .landing-section, .landing-footer, .dock, .headline, .lede,
-  .section-title, .section-subtitle, .pet-selector-card, .wish-compose-card,
-  .comparison-table-card, .comparison-table-header, .journey-step-item,
-  .scenario-stage-3d-layout, .rescue-card-clean, .journey-verified-card,
-  .journey-evidence-box, .faq-clean-question, .faq-clean-answer,
-  .garden-resident-name, .garden-resident-tooltip, .theme-toggle .theme-icon,
-  .hero::before, .night-moon, .garden-fireflies, .ambient-moon {
-    transition: none !important;
-  }
   .garden-fireflies i {
-    animation: none !important;
-    opacity: .45 !important;
+    animation-duration: 4s;
+    opacity: .65;
   }
 }
 

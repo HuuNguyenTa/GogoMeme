@@ -859,16 +859,22 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
   let scrollDepth = 0;
   let targetScrollDepth = 0;
 
-  const onPointerMove = (e) => {
-    if (prefersReducedMotion || !hasFinePointer) return;
+  const handlePointerOrTouch = (e) => {
+    const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
+    if (typeof clientX !== 'number' || typeof clientY !== 'number') return;
     const cx = window.innerWidth * 0.5;
     const cy = window.innerHeight * 0.5;
-    targetMouseX = (e.clientX - cx) / cx;
-    targetMouseY = (e.clientY - cy) / cy;
+    targetMouseX = (clientX - cx) / cx;
+    targetMouseY = (clientY - cy) / cy;
   };
-  if (hasFinePointer) {
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-  }
+  const handleTouchEnd = () => {
+    targetMouseX = 0;
+    targetMouseY = 0;
+  };
+  window.addEventListener('pointermove', handlePointerOrTouch, { passive: true });
+  window.addEventListener('touchmove', handlePointerOrTouch, { passive: true });
+  window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
   const onScroll = () => {
     if (!hostElement || prefersReducedMotion) return;
@@ -915,7 +921,7 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
       cancelAnimationFrame(raf);
       raf = null;
     }
-  }, { threshold: 0.02 });
+  }, { threshold: 0, rootMargin: '160px 0px 160px 0px' });
   if (hostElement) visibilityObserver.observe(hostElement);
 
   const onVisibilityChange = () => {
@@ -967,9 +973,9 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
     scrollDepth += (targetScrollDepth - scrollDepth) * 0.055;
 
     // Gentle diorama floating orbit & subtle pointer parallax
-    const hoverY = prefersReducedMotion ? 0 : Math.sin(t * 1.0) * 0.025;
+    const hoverY = Math.sin(t * 1.0) * 0.025;
     dioramaRoot.position.y = baseDioramaY + hoverY - scrollDepth * 0.11;
-    dioramaRoot.rotation.y = 0.15 + mouseX * 0.11 + (prefersReducedMotion ? 0 : Math.sin(t * 0.35) * 0.02);
+    dioramaRoot.rotation.y = 0.15 + mouseX * 0.11 + Math.sin(t * 0.35) * 0.02;
     dioramaRoot.rotation.x = -mouseY * 0.055;
 
     // Camera responsive framing
@@ -981,8 +987,8 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
     // ── Procedural Organic Character Animation (Rest-Pose Relative) ─────────
     // 1. Organic Idle & Look-Around (Active on both mobile touch and desktop cursor)
     const isTouchDevice = !hasFinePointer;
-    const idleLookX = isTouchDevice ? Math.sin(t * 0.8) * 0.28 : 0;
-    const idleLookY = isTouchDevice ? Math.sin(t * 0.55 + 0.8) * 0.12 : 0;
+    const idleLookX = isTouchDevice ? Math.sin(t * 0.8) * 0.28 : Math.sin(t * 0.6) * 0.15;
+    const idleLookY = isTouchDevice ? Math.sin(t * 0.55 + 0.8) * 0.12 : Math.sin(t * 0.45 + 0.8) * 0.08;
     const effectiveMouseX = mouseX + idleLookX;
     const effectiveMouseY = mouseY + idleLookY;
 
@@ -1049,27 +1055,27 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
       catBones['Tail2'].rotation.y = o.y + Math.sin(t * 2.2 - 0.8) * 0.18;
     }
 
-    // Swaying garden flowers in the gentle breeze
+    // Swaying garden flowers in the gentle breeze (alive on all devices)
+    const breeze = 1;
     flowerInstances.forEach((fl) => {
-      const breeze = prefersReducedMotion ? 0 : 1;
       fl.group.rotation.z = fl.baseRotZ + Math.sin(t * fl.speed + fl.phase) * 0.10 * breeze;
       fl.group.rotation.x = Math.cos(t * fl.speed * 0.8 + fl.phase) * 0.06 * breeze;
     });
 
-    treeGroup.rotation.z = baseTreeRotationZ + (prefersReducedMotion ? 0 : Math.sin(t * 0.62) * 0.012);
+    treeGroup.rotation.z = baseTreeRotationZ + Math.sin(t * 0.62) * 0.012;
 
     // Sun breathing corona pulse
-    const sunScale = THREE.MathUtils.lerp(7.5, 5.8, themeMix) + (prefersReducedMotion ? 0 : Math.sin(t * 0.5) * 0.08);
+    const sunScale = THREE.MathUtils.lerp(7.5, 5.8, themeMix) + Math.sin(t * 0.5) * 0.08;
     sunSprite.scale.set(sunScale, sunScale, 1);
 
     // Bounded wandering and independent, slow pulses share the existing particle pass.
     const pArr = moteGeom.attributes.position.array;
     for (let i = 0; i < moteGeom.drawRange.count; i++) {
       const d = moteData[i];
-      pArr[i * 3] = d.x + (prefersReducedMotion ? 0 : Math.sin(t * d.speed + d.phase) * 0.24);
-      pArr[i * 3 + 1] = d.y + (prefersReducedMotion ? 0 : Math.sin(t * d.speed * 0.7 + d.phase * 1.2) * 0.18);
-      pArr[i * 3 + 2] = d.z + (prefersReducedMotion ? 0 : Math.cos(t * d.speed * 0.85 + d.phase) * 0.2);
-      const pulse = prefersReducedMotion ? 0.7 : 0.45 + (Math.sin(t * 0.75 + d.phase) + 1) * 0.275;
+      pArr[i * 3] = d.x + Math.sin(t * d.speed + d.phase) * 0.24;
+      pArr[i * 3 + 1] = d.y + Math.sin(t * d.speed * 0.7 + d.phase * 1.2) * 0.18;
+      pArr[i * 3 + 2] = d.z + Math.cos(t * d.speed * 0.85 + d.phase) * 0.2;
+      const pulse = 0.45 + (Math.sin(t * 0.75 + d.phase) + 1) * 0.275;
       const brightness = THREE.MathUtils.lerp(1, pulse, themeMix) * (i < FIREFLY_COUNT ? 1 : 1 - themeMix);
       moteColors[i * 3] = brightness;
       moteColors[i * 3 + 1] = brightness * (1 - themeMix * 0.08);
@@ -1102,8 +1108,9 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
     cancelAnimationFrame(raf);
     clearTimeout(readyTimer);
     clearTimeout(introTimer);
-    window.removeEventListener('pointermove', onPointerMove);
-    window.removeEventListener('touchmove', onPointerMove);
+    window.removeEventListener('pointermove', handlePointerOrTouch);
+    window.removeEventListener('touchmove', handlePointerOrTouch);
+    window.removeEventListener('touchend', handleTouchEnd);
     window.removeEventListener('scroll', onScroll);
     window.removeEventListener('resize', onResize);
     document.removeEventListener('visibilitychange', onVisibilityChange);

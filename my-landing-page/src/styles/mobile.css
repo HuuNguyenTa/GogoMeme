@@ -1162,14 +1162,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .resident-local-label,
-  .garden-resident-anchor.is-local-highlight .garden-resident-visual::before,
-  .garden-mobile-detail,
-  .garden-find-resident,
-  .pixel-pet,
-  .pixel-pet__strip {
-    animation: none;
-    transition: none;
+  .garden-mobile-detail {
+    transition: opacity 0.2s ease;
   }
 
   .garden-resident-anchor.is-local-highlight .garden-resident-visual::before {

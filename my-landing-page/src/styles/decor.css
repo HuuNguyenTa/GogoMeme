@@ -252,7 +252,7 @@ html[data-theme='night'] .decor-asset-wrap--floating-moon .decor-asset-img {
 /* ── Reduced Motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .decor-asset-img {
-    animation: none !important;
+    animation-duration: 6s;
   }
 }
 

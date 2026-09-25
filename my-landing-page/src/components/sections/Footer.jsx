@@ -9,7 +9,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="landing-footer">
+    <footer className="landing-footer" id="footer">
       <div className="section-container">
         <div className="footer-top">
           <div className="footer-brand">

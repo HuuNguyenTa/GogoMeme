@@ -170,11 +170,7 @@ export default function PixelPet({ kind, lane }) {
       await pause(kind === 'dog' ? randomBetween(500, 1400) : randomBetween(1000, 2000));
 
       while (!disposed) {
-        if (reducedMotionQuery.matches) {
-          placePet();
-          await pause(2500);
-          continue;
-        }
+        // Lively walk loop active on all mobile and desktop devices
 
         // 68% chance to walk
         if (Math.random() < 0.68) {

@@ -178,7 +178,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
   };
 
   return (
-    <section className="landing-section landing-section--cream" id="choose-friend">
+    <section className="landing-section landing-section--cream" id="choose-friend" data-mode={mode}>
       <div id="choose" className="section-scroll-anchor" />
       <div className="section-container">
         {/* Section Header */}

@@ -255,7 +255,6 @@ export const RESCUE_SCENARIOS = [
     sceneType: 'roadside',
     animalType: 'dog',
     animalName: 'Bé cún nhỏ',
-    description: 'Bạn đang đi trên đường vắng lúc chập tối và phát hiện một chú cún nhỏ nằm co ro sát dải phân cách. Bé có dấu hiệu đau chân khập khiễng và hoảng loạn run rẩy mỗi khi có ánh đèn xe rọi tới. Bạn nên làm gì trước tiên?',
     options: [
       {
         id: 'opt-a',
@@ -265,7 +264,7 @@ export const RESCUE_SCENARIOS = [
       {
         id: 'opt-b',
         actionLabel: 'Dừng an toàn & Giữ cự ly',
-        text: 'DỪNG xe sát lề an toàn, bật đèn cảnh báo, giữ cự ly 3-5m quan sát; nói giọng trầm ấm và đặt ít thức ăn nhử nhẹ nhàng.'
+        text: 'Dừng xe sát lề, bật đèn cảnh báo và giữ cự ly 3-5m giúp bảo vệ bạn và ngăn cún hoảng loạn lao ra đường.'
       },
       {
         id: 'opt-c',
@@ -275,7 +274,7 @@ export const RESCUE_SCENARIOS = [
     ],
     recommendedAnswer: 'opt-b',
     supportiveNote: 'Lòng trắc ẩn muốn cứu bé ngay là rất đáng quý, nhưng sự vội vã có thể đẩy cả bạn và bé vào làn xe nguy hiểm.',
-    explanation: 'Khi bị thương hoặc hoảng loạn, thú nhỏ rất dễ cắn phòng vệ hoặc giật mình lao bổ ra giữa dòng xe cộ. Nguyên tắc DỪNG nhắc nhở chúng ta: Luôn đảm bảo an toàn giao thông cho chính mình trước tiên, giữ khoảng cách quan sát phản xạ, và tạo sự tin cậy bằng giọng nói dịu dàng trước khi tiếp cận.',
+    explanation: 'Thú nhỏ khi bị thương hoặc hoảng loạn rất dễ cắn phòng vệ hoặc lao ra giữa dòng xe.',
     sceneReactions: {
       safeZone: true,
       calmAnimal: true,
@@ -292,12 +291,11 @@ export const RESCUE_SCENARIOS = [
     sceneType: 'box',
     animalType: 'cat',
     animalName: 'Ba bé mèo con',
-    description: 'Bạn phát hiện một thùng giấy dưới mái hiên chứa 3 bé mèo con còn đỏ hỏn chưa mở mắt, người lạnh ngắt và kêu ngắt quãng vì đói. Bạn chưa từng nuôi thú nhỏ sơ sinh, hành động đúng đắn và an toàn nhất là gì?',
     options: [
       {
         id: 'opt-a',
         actionLabel: 'Ủ ấm & Tìm sữa chuyên dụng',
-        text: 'Ủ ấm cho các bé ngay (khăn mềm bọc chai nước ấm), TUYỆT ĐỐI KHÔNG cho uống sữa bò có đường, và liên hệ ngay bác sĩ thú y để xin sữa chuyên dụng KMR.'
+        text: 'Ủ ấm khẩn cấp bằng khăn mềm bọc chai nước ấm là điều sống còn đầu tiên đối với mèo con chưa mở mắt.'
       },
       {
         id: 'opt-b',
@@ -312,7 +310,7 @@ export const RESCUE_SCENARIOS = [
     ],
     recommendedAnswer: 'opt-a',
     supportiveNote: 'Nhiều người thường nghĩ sữa bò là nguồn dinh dưỡng tốt, nhưng đối với mèo sơ sinh thì lại là mối nguy hại lớn.',
-    explanation: 'Mèo con chưa mở mắt thiếu enzyme phân giải đường lactose trong sữa bò, uống vào sẽ bị chướng bụng và tiêu chảy cấp tính dẫn đến tử vong rất nhanh. Mèo con cũng chưa tự điều hòa thân nhiệt nên ủ ấm bằng khăn/chai nước ấm bọc vải là điều sống còn số 1, sau đó cho bú sữa chuyên dụng cho thú cưng (KMR / Bio-Milk).',
+    explanation: 'Mèo con chưa mở mắt không tiêu hóa được sữa bò, uống vào sẽ bị tiêu chảy cấp dẫn đến tử vong. Chúng cũng chưa thể tự điều hòa thân nhiệt.',
     sceneReactions: {
       safeZone: true,
       calmAnimal: true,
@@ -330,7 +328,6 @@ export const RESCUE_SCENARIOS = [
     sceneType: 'empty-lot',
     animalType: 'dog',
     animalName: 'Bé cún hoảng sợ',
-    description: 'Một bé cún bị xích bỏ quên ở khu đất trống giữa trưa nắng gay gắt, gầy trơ xương, thở dốc và sủa gắt gao mỗi khi có ai bước lại gần rào. Bạn nên áp dụng nguyên tắc hỗ trợ như thế nào?',
     options: [
       {
         id: 'opt-a',
@@ -349,8 +346,8 @@ export const RESCUE_SCENARIOS = [
       }
     ],
     recommendedAnswer: 'opt-b',
-    supportiveNote: 'Cảm giác muốn tháo xích ngay cho bé rất dễ hiểu, nhưng thú nhỏ kiệt sức và căng thẳng tột độ rất dễ cắn vào tay bạn.',
-    explanation: 'Hành vi sủa gắt gỏng khi bị xích kẹt không phải là "hung dữ", mà là phản xạ tự vệ cuối cùng khi con vật bị dồn vào đường cùng và say nắng. Cung cấp nước sạch từ xa giúp hạ nhiệt cơ thể và tạo lập sự hòa hoãn ban đầu, sau đó liên hệ đội hỗ trợ có dụng cụ cắt xích an toàn.',
+    supportiveNote: 'Cảm giác muốn tháo xích ngay cho bé là rất dễ hiểu, nhưng thú nhỏ khi kiệt sức và căng thẳng tột độ sẽ cắn vào tay bạn theo phản xạ tự vệ.',
+    explanation: 'Hành vi sủa gắt gỏng khi bị xích kẹt là phản xạ tự vệ do say nắng và bị dồn vào đường cùng, không phải do hung dữ.',
     sceneReactions: {
       safeZone: true,
       calmAnimal: true,
@@ -368,7 +365,6 @@ export const RESCUE_SCENARIOS = [
     sceneType: 'rooftop',
     animalType: 'cat',
     animalName: 'Bé mèo kẹt mái',
-    description: 'Bạn nghe tiếng mèo con kêu khẩn thiết từ mép mái tôn cao hơn 4 mét giữa trưa hè oi ả. Mái tôn trơn dốc và bé đang hoảng hốt đi giật lùi rất dễ trượt chân rơi xuống mặt đường nhựa. Bạn nên xử lý ra sao?',
     options: [
       {
         id: 'opt-a',
@@ -387,8 +383,8 @@ export const RESCUE_SCENARIOS = [
       }
     ],
     recommendedAnswer: 'opt-b',
-    supportiveNote: 'Sự sốt sắng muốn trèo lên cứu bé là bản năng tốt, nhưng tai nạn độ cao có thể gây chấn thương nghiêm trọng cho cả bạn lẫn thú nhỏ.',
-    explanation: 'Mái tôn trơn trượt và nhiệt độ cao làm mèo cực kỳ hoảng loạn. Khi tự trèo lên, tiếng động và bóng người sẽ làm mèo sợ hãi phóng xuống đất gây gãy xương hoặc dập nội tạng. Giải pháp chuẩn xác là tạo vùng hứng an toàn bên dưới và GỌI ngay tổ chức cứu nạn có thang rút và vợt lưới chuyên nghiệp.',
+    supportiveNote: 'Sự sốt sắng trèo lên cứu là bản năng tốt, nhưng tai nạn độ cao có thể gây chấn thương nghiêm trọng cho cả bạn và thú nhỏ.',
+    explanation: 'Mái tôn trơn nóng khiến mèo dễ hoảng loạn. Tự trèo lên cứu sẽ làm mèo sợ hãi, nhảy xuống gây gãy xương hoặc dập nội tạng.',
     sceneReactions: {
       safeZone: true,
       calmAnimal: true,
@@ -471,8 +467,8 @@ export const PROJECT_STATS = {
 // Dữ liệu so sánh trực quan lấy cảm hứng từ phương pháp SavePet
 // Nhấn mạnh: "Đúng lúc & đúng cách quan trọng hơn chỉ thương xót thụ động"
 export const COMPARISON_DATA = {
-  headline: 'Đúng lúc quan trọng hơn đông thật nhiều.',
-  subheadline: 'Khi bắt gặp một bé chó mèo gặp nạn, một hành động đúng khoa học sẽ cứu sống một sinh mạng, thay vì sự hoang mang hay chia sẻ thụ động.',
+  headline: 'Đừng chỉ xót xa, hãy cứu giúp đúng cách.',
+  subheadline: 'Can thiệp bằng kiến thức khoa học và sự bình tĩnh chính là chìa khóa mở ra cơ hội sống sót cao nhất cho một sinh mệnh gặp nạn.',
   rows: [
     {
       category: 'Tiếp cận ban đầu',
@@ -567,13 +563,13 @@ export const FAQ_ITEMS = [
     id: 'faq-3',
     question: 'Có nên cho chó mèo con uống sữa bò tươi (Vinamilk, sữa đặc Ông Thọ)?',
     category: 'Dinh dưỡng khẩn cấp',
-    answer: 'TUYỆT ĐỐI KHÔNG. Đa phần chó mèo con thiếu enzyme Lactase để tiêu hóa đường lactose trong sữa bò. Cho uống sữa bò thông thường sẽ gây đau bụng, chướng hơi và tiêu chảy cấp tính dẫn đến mất nước tử vong rất nhanh. Lựa chọn an toàn nhất lúc đói là: nước ấm pha chút đường glucose nhẹ, hoặc sữa bột thú cưng Bio-Milk / KMR mua tại tiệm thú y.'
+    answer: 'TUYỆT ĐỐI KHÔNG. Đa phần chó mèo con thiếu enzyme Lactase nên không thể tiêu hóa đường lactose trong sữa bò. Cho uống sữa bò thông thường sẽ gây chướng hơi, tiêu chảy cấp và mất nước dẫn đến tử vong rất nhanh.'
   },
   {
     id: 'faq-4',
-    question: 'Trạm Yêu Thương (SSG105) có phải là đội cứu hộ hiện trường trực tiếp 24/7 không?',
+    question: 'GoGo & MeMe có phải là đội cứu hộ hiện trường trực tiếp 24/7 không?',
     category: 'Về dự án SSG105',
-    answer: 'Không. "Trạm Yêu Thương" là dự án cộng đồng sinh viên phi lợi nhuận thuộc môn học SSG105, với sứ mệnh nâng cao nhận thức cộng đồng, trang bị cẩm nang kỹ năng xử lý đúng đắn và kết nối danh bạ trạm cứu hộ đã được xác minh. Để cứu hộ hiện trường khẩn cấp, bạn vui lòng tra cứu số điện thoại trực tiếp của các Trạm cứu trợ đối tác trong mục "Tìm kiếm hỗ trợ".'
+    answer: 'Không. "GoGo & MeMe" là dự án cộng đồng sinh viên phi lợi nhuận thuộc môn học SSG105. Dự án mang sứ mệnh nâng cao nhận thức, trang bị cẩm nang kỹ năng xử lý đúng đắn và kết nối danh bạ trạm cứu hộ đã xác minh.'
   },
   {
     id: 'faq-5',
@@ -585,7 +581,7 @@ export const FAQ_ITEMS = [
     id: 'faq-6',
     question: 'Nếu tôi không có điều kiện tài chính hoặc chỗ ở, tôi có thể đóng góp gì?',
     category: 'Đồng hành',
-    answer: 'Lòng tốt không đo bằng tiền bạc! Bạn có thể: Gửi những lời chúc yêu thương vào Trạm Ảo; chia sẻ các bài viết cẩm nang DỪNG - NHÌN - GIÚP - GỌI đến bạn bè; ủng hộ các vật phẩm cũ (khăn bông, thau chậu, báo cũ, đệm cũ) cho các trạm cứu hộ địa phương; hoặc tham gia dắt chó đi dạo, dọn chuồng tình nguyện vào dịp cuối tuần.'
+    answer: 'Lòng tốt không đo bằng tiền bạc! Bạn có thể: Gửi những lời chúc yêu thương vào Trạm Ảo; chia sẻ các bài viết giúp tuyền truyền nâng cao ý thức; ủng hộ các vật phẩm cũ (khăn bông, thau chậu, báo cũ, đệm cũ) cho các trạm cứu hộ địa phương; dọn chuồng tình nguyện vào dịp cuối tuần.'
   }
 ];
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check } from '../ui/Icons';
 import { PROJECT_STATS } from '../../data/mockData';
+import DecorativeAsset from '../ui/DecorativeAsset';
 
 export default function ProjectJourneySection() {
   const verifiedStats = [
@@ -18,9 +19,6 @@ export default function ProjectJourneySection() {
           <h2 className="section-title">
             Hành Trình Dự Án SSG105
           </h2>
-          <p className="section-subtitle">
-            Sáng kiến truyền thông cộng đồng của nhóm sinh viên nhằm nâng cao nhận thức bảo vệ thú cưng và kết nối hỗ trợ các trạm cứu hộ địa phương.
-          </p>
         </div>
 
         {/* Clean 4 Verified Stats Row */}
@@ -37,7 +35,7 @@ export default function ProjectJourneySection() {
         <div className="journey-evidence-box">
           <h3 className="journey-evidence-title">Từ Giảng Đường Đến Hành Động Thực Tế</h3>
           <p className="journey-evidence-desc">
-            Dự án SSG105 khởi xướng từ mong muốn giản dị: Biến sự quan tâm trên mạng xã hội thành kiến thức sơ cứu khoa học và sự hỗ trợ thiết thực cho các mái ấm bảo trợ thú cưng. Chúng tôi xây dựng Trạm Yêu Thương như một không gian giáo dục tương tác, giúp mỗi người trẻ hiểu rõ cách xử lý an toàn khi gặp một sinh linh cơ nhỡ.
+            Dự án SSG105 khởi xướng từ mong muốn biến sự quan tâm trên mạng xã hội thành kiến thức sơ cứu khoa học và sự hỗ trợ thiết thực cho các mái ấm bảo trợ thú cưng.
           </p>
 
           <div className="journey-commitments-clean">
@@ -51,6 +49,9 @@ export default function ProjectJourneySection() {
             </span>
           </div>
         </div>
+
+        {/* Emotional Section Anchor */}
+        <DecorativeAsset asset="puppy-kitten" variant="anchor" />
       </div>
     </section>
   );

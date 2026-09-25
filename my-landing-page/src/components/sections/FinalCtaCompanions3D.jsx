@@ -15,15 +15,23 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
  * - Subtle pointer-following parallax
  * - Full memory & resource cleanup on unmount
  */
-export default function FinalCtaCompanions3D() {
+export default function FinalCtaCompanions3D({ theme = 'day' }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const controllerRef = useRef(null);
+  const initialThemeRef = useRef(theme);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
+    let disposed = false;
+
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let prefersReducedMotion = motionQuery.matches;
+    const isMobile = window.innerWidth <= 768;
+    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     let renderer = null;
     try {
@@ -38,14 +46,13 @@ export default function FinalCtaCompanions3D() {
       return;
     }
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.75));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMappingExposure = isMobile ? 1.28 : 1.1;
+    renderer.shadowMap.enabled = !isMobile;
 
     const width = container.clientWidth || 460;
-    const height = 240;
+    let height = container.clientHeight || 260;
     renderer.setSize(width, height);
 
     const scene = new THREE.Scene();
@@ -57,32 +64,48 @@ export default function FinalCtaCompanions3D() {
 
     // ── Warm Sanctuary Lighting for Dark Card ─────────────────────────────
     // Warm ambient base
-    const ambientLight = new THREE.AmbientLight(0xffecd6, 1.6);
+    const ambientLight = new THREE.HemisphereLight(0xfff2de, 0x5b3025, isMobile ? 2.05 : 1.72);
     scene.add(ambientLight);
 
     // Warm key light from top-front
-    const keyLight = new THREE.DirectionalLight(0xfffaea, 2.2);
+    const keyLight = new THREE.DirectionalLight(0xfffaea, isMobile ? 2.4 : 2.08);
     keyLight.position.set(3, 6, 4);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 1024;
-    keyLight.shadow.mapSize.height = 1024;
+    keyLight.castShadow = !isMobile;
+    keyLight.shadow.mapSize.width = 768;
+    keyLight.shadow.mapSize.height = 768;
     keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
     // Soft warm fill light from front-left
-    const fillLight = new THREE.DirectionalLight(0xffd8b8, 1.2);
+    const fillLight = new THREE.DirectionalLight(0xffd8b8, isMobile ? 1.55 : 1.25);
     fillLight.position.set(-3, 3, 3);
     scene.add(fillLight);
 
     // Golden rim light from behind (makes silhouette pop against dark background)
-    const rimLight = new THREE.DirectionalLight(0xffa764, 2.0);
+    const rimLight = new THREE.DirectionalLight(0xffa764, isMobile ? 1.75 : 1.48);
     rimLight.position.set(0, 3, -3.5);
     scene.add(rimLight);
 
     // Soft floor glow bounce
-    const groundBounce = new THREE.PointLight(0xff8855, 0.8, 6, 1.5);
+    const groundBounce = new THREE.PointLight(0xff8855, 0.55, 6, 1.5);
     groundBounce.position.set(0, -0.2, 0.8);
     scene.add(groundBounce);
+
+    let themeMix = initialThemeRef.current === 'night' ? 1 : 0;
+    let targetThemeMix = themeMix;
+    const dayAmbient = ambientLight.color.clone();
+    const nightAmbient = new THREE.Color(0xc6c8f0);
+    const dayRim = rimLight.color.clone();
+    const nightRim = new THREE.Color(0xacb9ff);
+    const dayGround = ambientLight.groundColor.clone();
+    const nightGround = new THREE.Color(0x302538);
+    const applyTheme = () => {
+      ambientLight.color.copy(dayAmbient).lerp(nightAmbient, themeMix);
+      ambientLight.groundColor.copy(dayGround).lerp(nightGround, themeMix);
+      rimLight.color.copy(dayRim).lerp(nightRim, themeMix);
+      groundBounce.intensity = 0.55 + themeMix * 0.12;
+    };
+    applyTheme();
 
     // ── Soft Contact Shadow Texture ──────────────────────────────────────
     const createShadowTex = () => {
@@ -125,6 +148,31 @@ export default function FinalCtaCompanions3D() {
     scene.add(companionsGroup);
     companionsGroup.position.set(0, 0.02, 0);
 
+    // A shared ceramic plinth visually reunites the pair and catches their contact shadows.
+    const plinth = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.52, 1.66, 0.09, 48),
+      new THREE.MeshPhysicalMaterial({
+        color: 0x7e4939,
+        roughness: 0.72,
+        metalness: 0,
+        clearcoat: 0.12,
+        clearcoatRoughness: 0.78
+      })
+    );
+    plinth.position.set(0, -0.045, 0.02);
+    plinth.scale.z = 0.42;
+    plinth.receiveShadow = true;
+    companionsGroup.add(plinth);
+
+    const plinthInlay = new THREE.Mesh(
+      new THREE.TorusGeometry(1.08, 0.018, 8, 48),
+      new THREE.MeshStandardMaterial({ color: 0xe5a06f, roughness: 0.65 })
+    );
+    plinthInlay.rotation.x = Math.PI / 2;
+    plinthInlay.scale.y = 0.42;
+    plinthInlay.position.y = 0.012;
+    companionsGroup.add(plinthInlay);
+
     // Cat Anchor: positioned left, angled slightly toward dog and camera
     const catAnchor = new THREE.Group();
     catAnchor.position.set(-0.54, 0.02, 0.02);
@@ -155,13 +203,14 @@ export default function FinalCtaCompanions3D() {
       '/assets/models/shiba_dog.glb',
       (gltf) => {
         const model = gltf.scene;
+        if (disposed) { disposeObject(model); return; }
         model.scale.setScalar(0.88);
         model.traverse((child) => {
           if (child.isMesh) {
-            child.castShadow = true;
+            child.castShadow = !isMobile;
             child.receiveShadow = true;
             if (child.material) {
-              child.material.roughness = 0.6;
+              child.material.roughness = 0.68;
               child.material.metalness = 0.0;
               if (child.material.map) {
                 child.material.map.colorSpace = THREE.SRGBColorSpace;
@@ -176,6 +225,7 @@ export default function FinalCtaCompanions3D() {
         });
         dogAnchor.add(model);
         checkAllLoaded();
+        requestRender();
       },
       undefined,
       (err) => console.warn('Could not load shiba_dog.glb in FinalCta:', err)
@@ -186,13 +236,14 @@ export default function FinalCtaCompanions3D() {
       '/assets/models/tabby_cat.glb',
       (gltf) => {
         const model = gltf.scene;
+        if (disposed) { disposeObject(model); return; }
         model.scale.setScalar(0.76);
         model.traverse((child) => {
           if (child.isMesh) {
-            child.castShadow = true;
+            child.castShadow = !isMobile;
             child.receiveShadow = true;
             if (child.material) {
-              child.material.roughness = 0.6;
+              child.material.roughness = 0.68;
               child.material.metalness = 0.0;
               if (child.material.map) {
                 child.material.map.colorSpace = THREE.SRGBColorSpace;
@@ -207,6 +258,7 @@ export default function FinalCtaCompanions3D() {
         });
         catAnchor.add(model);
         checkAllLoaded();
+        requestRender();
       },
       undefined,
       (err) => console.warn('Could not load tabby_cat.glb in FinalCta:', err)
@@ -217,6 +269,7 @@ export default function FinalCtaCompanions3D() {
     let targetMouseX = 0, targetMouseY = 0;
 
     const onPointerMove = (e) => {
+      if (prefersReducedMotion || !hasFinePointer) return;
       const rect = container.getBoundingClientRect();
       const cx = rect.left + rect.width * 0.5;
       const cy = rect.top + rect.height * 0.5;
@@ -224,96 +277,153 @@ export default function FinalCtaCompanions3D() {
       targetMouseY = Math.max(-1, Math.min(1, (e.clientY - cy) / (rect.height * 0.5)));
     };
 
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    if (hasFinePointer) {
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+    }
 
     // Handle Resize
     const handleResize = () => {
       if (!renderer || !container) return;
       const w = container.clientWidth || 460;
+      height = container.clientHeight || 260;
       camera.aspect = w / height;
       camera.updateProjectionMatrix();
       renderer.setSize(w, height);
+      requestRender();
     };
 
     window.addEventListener('resize', handleResize);
 
     // ── Animation Loop ───────────────────────────────────────────────────
-    let clock = new THREE.Clock();
+    let lastTime = performance.now();
+    let elapsed = 0;
     let animId = null;
+    let isSceneVisible = true;
 
-    function renderLoop() {
-      animId = requestAnimationFrame(renderLoop);
-      const t = clock.getElapsedTime();
+    const requestRender = () => {
+      if (!disposed && animId === null && isSceneVisible && !document.hidden) {
+        lastTime = performance.now();
+        animId = requestAnimationFrame(renderLoop);
+      }
+    };
+
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isSceneVisible = entry.isIntersecting;
+      if (isSceneVisible) {
+        themeMix = targetThemeMix;
+        applyTheme();
+        requestRender();
+      }
+      else if (animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    }, { threshold: 0.02 });
+    visibilityObserver.observe(container);
+
+    const onVisibilityChange = () => {
+      if (document.hidden && animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      } else {
+        requestRender();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    const onMotionChange = () => {
+      prefersReducedMotion = motionQuery.matches;
+      if (prefersReducedMotion) mouseX = mouseY = targetMouseX = targetMouseY = 0;
+      requestRender();
+    };
+    motionQuery.addEventListener('change', onMotionChange);
+
+    controllerRef.current = {
+      setTheme(nextTheme) {
+        targetThemeMix = nextTheme === 'night' ? 1 : 0;
+        if (prefersReducedMotion || !isSceneVisible || document.hidden) themeMix = targetThemeMix;
+        requestRender();
+      }
+    };
+
+    function renderLoop(now) {
+      animId = null;
+      if (!isSceneVisible || document.hidden) return;
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+      elapsed += dt;
+      const t = elapsed;
+      themeMix += (targetThemeMix - themeMix) * (1 - Math.exp(-dt * 7));
+      if (Math.abs(targetThemeMix - themeMix) < 0.002) themeMix = targetThemeMix;
+      applyTheme();
 
       // Smooth pointer interpolation
       mouseX += (targetMouseX - mouseX) * 0.06;
       mouseY += (targetMouseY - mouseY) * 0.06;
 
       // Group slight rotation toward pointer
-      companionsGroup.rotation.y = mouseX * 0.12;
+      companionsGroup.rotation.y = mouseX * 0.1;
+      companionsGroup.position.y = prefersReducedMotion ? 0.02 : 0.02 + Math.sin(t * 0.72) * 0.006;
 
       // 1. Organic breathing idle
-      const dogBreath = Math.sin(t * 2.2) * 0.012;
-      const catBreath = Math.sin(t * 2.6 + 0.9) * 0.012;
+      const dogBreath = prefersReducedMotion ? 0 : Math.sin(t * 2.2) * 0.009;
+      const catBreath = prefersReducedMotion ? 0 : Math.sin(t * 2.6 + 0.9) * 0.009;
       dogAnchor.scale.set(1 + dogBreath, 1 + dogBreath * 1.2, 1 + dogBreath);
       catAnchor.scale.set(1 + catBreath, 1 + catBreath * 1.2, 1 + catBreath);
 
       // 2. Tail movements
       if (dogBones['Tail'] && dogBones['Tail'].userData.origRot) {
         const o = dogBones['Tail'].userData.origRot;
-        dogBones['Tail'].rotation.y = o.y + Math.sin(t * 4.2) * 0.18;
+        dogBones['Tail'].rotation.y = o.y + (prefersReducedMotion ? 0 : Math.sin(t * 4.2) * 0.16);
       }
       if (dogBones['Tail1'] && dogBones['Tail1'].userData.origRot) {
         const o = dogBones['Tail1'].userData.origRot;
-        dogBones['Tail1'].rotation.y = o.y + Math.sin(t * 4.2 - 0.3) * 0.14;
+        dogBones['Tail1'].rotation.y = o.y + (prefersReducedMotion ? 0 : Math.sin(t * 4.2 - 0.3) * 0.13);
       }
 
       if (catBones['Tail'] && catBones['Tail'].userData.origRot) {
         const o = catBones['Tail'].userData.origRot;
-        catBones['Tail'].rotation.y = o.y + Math.sin(t * 1.8) * 0.14;
+        catBones['Tail'].rotation.y = o.y + (prefersReducedMotion ? 0 : Math.sin(t * 1.8) * 0.12);
       }
       if (catBones['Tail1'] && catBones['Tail1'].userData.origRot) {
         const o = catBones['Tail1'].userData.origRot;
-        catBones['Tail1'].rotation.y = o.y + Math.sin(t * 1.8 - 0.4) * 0.12;
+        catBones['Tail1'].rotation.y = o.y + (prefersReducedMotion ? 0 : Math.sin(t * 1.8 - 0.4) * 0.1);
       }
 
       // 3. Head subtle movements toward cursor
       if (dogBones['Head'] && dogBones['Head'].userData.origRot) {
         const o = dogBones['Head'].userData.origRot;
-        dogBones['Head'].rotation.y = o.y + mouseX * 0.14 + Math.sin(t * 1.3) * 0.02;
+        dogBones['Head'].rotation.y = o.y + mouseX * 0.14 + (prefersReducedMotion ? 0 : Math.sin(t * 1.3) * 0.018);
         dogBones['Head'].rotation.x = o.x - mouseY * 0.06;
       }
 
       if (catBones['Head'] && catBones['Head'].userData.origRot) {
         const o = catBones['Head'].userData.origRot;
-        catBones['Head'].rotation.y = o.y + mouseX * 0.12 + Math.sin(t * 1.2 + 1.0) * 0.02;
+        catBones['Head'].rotation.y = o.y + mouseX * 0.12 + (prefersReducedMotion ? 0 : Math.sin(t * 1.2 + 1.0) * 0.018);
         catBones['Head'].rotation.x = o.x - mouseY * 0.05;
       }
 
       renderer.render(scene, camera);
+      if (!prefersReducedMotion) animId = requestAnimationFrame(renderLoop);
     }
 
-    renderLoop();
+    requestRender();
 
     // ── Cleanup ──────────────────────────────────────────────────────────
     return () => {
-      cancelAnimationFrame(animId);
+      disposed = true;
+      controllerRef.current = null;
+      if (animId !== null) cancelAnimationFrame(animId);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      motionQuery.removeEventListener('change', onMotionChange);
+      visibilityObserver.disconnect();
 
       try {
         shadowTex.dispose();
         shadowMat.dispose();
-        scene.traverse((obj) => {
-          if (obj.geometry) obj.geometry.dispose();
-          if (obj.material) {
-            if (Array.isArray(obj.material)) {
-              obj.material.forEach((m) => m.dispose());
-            } else {
-              obj.material.dispose();
-            }
-          }
-        });
+        disposeObject(scene);
+        keyLight.shadow.dispose();
         renderer.dispose();
       } catch (err) {
         console.warn('Error during FinalCta 3D disposal:', err);
@@ -321,11 +431,15 @@ export default function FinalCtaCompanions3D() {
     };
   }, []);
 
+  useEffect(() => {
+    controllerRef.current?.setTheme(theme);
+  }, [theme]);
+
   return (
     <div
       ref={containerRef}
       className={`final-cta-3d-wrapper ${isLoaded ? 'is-ready' : 'is-loading'}`}
-      aria-label="3D Shiba Dog và Tabby Cat từ Hero đồng hành cùng Trạm Yêu Thương"
+      aria-label="3D Shiba Dog và Tabby Cat từ Hero đồng hành cùng GoGo & MeMe"
     >
       <canvas ref={canvasRef} className="final-cta-3d-canvas" />
       {!isLoaded && (
@@ -338,3 +452,20 @@ export default function FinalCtaCompanions3D() {
   );
 }
 
+function disposeObject(root) {
+  const disposedResources = new Set();
+  const dispose = (resource) => {
+    if (!resource || disposedResources.has(resource)) return;
+    disposedResources.add(resource);
+    resource.dispose();
+  };
+  root.traverse((object) => {
+    dispose(object.geometry);
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    for (const material of materials) {
+      if (!material) continue;
+      for (const value of Object.values(material)) if (value?.isTexture) dispose(value);
+      dispose(material);
+    }
+  });
+}

@@ -22,9 +22,9 @@ export default function Footer() {
           <div className="footer-nav-col">
             <h4 className="footer-col-title">Trải Nghiệm</h4>
             <ul className="footer-links-list">
+              <li><a href="#about" onClick={scrollTo('about')}>Về GoGo & MeMe</a></li>
               <li><a href="#choose-friend" onClick={scrollTo('choose-friend')}>Chọn người bạn nhỏ</a></li>
               <li><a href="#station" onClick={scrollTo('station')}>Khu vườn lời chúc</a></li>
-              <li><a href="#about" onClick={scrollTo('about')}>Về GoGo & MeMe</a></li>
             </ul>
           </div>
 

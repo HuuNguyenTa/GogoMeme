@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PhoneCall, ExternalLink, ShieldAlert, Paw } from '../ui/Icons';
 import { RESCUE_CENTERS } from '../../data/mockData';
+import DecorativeAsset from '../ui/DecorativeAsset';
 
 export default function FindSupportSection() {
   const [selectedCity, setSelectedCity] = useState('all');
@@ -12,6 +13,8 @@ export default function FindSupportSection() {
 
   return (
     <section className="landing-section" id="support">
+      {/* Decorative Edge Peeking Dog */}
+      <DecorativeAsset asset="peeking-dog" variant="edge-right" />
       <div className="section-container">
         {/* Section Header with 1 subtle animal accent */}
         <div className="section-header">

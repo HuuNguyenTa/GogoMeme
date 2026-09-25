@@ -15,7 +15,6 @@ export function mountLiquidMetal(host) {
   let targetGlow = 0;
   let currentGlow = 0;
   let rafId = 0;
-  let isHovered = false;
 
   const rippleContainer = host.querySelector('.glass-ripple-container');
 
@@ -40,19 +39,19 @@ export function mountLiquidMetal(host) {
       targetMagX = ((x - cx) / cx) * 3.5;
       targetMagY = ((y - cy) / cy) * 2.5;
     }
+    requestMotion();
   };
 
   const onPointerEnter = (e) => {
-    isHovered = true;
     targetGlow = 1;
     onPointerMove(e);
   };
 
   const onPointerLeave = () => {
-    isHovered = false;
     targetGlow = 0;
     targetMagX = 0;
     targetMagY = 0;
+    requestMotion();
   };
 
   const onPointerDown = (e) => {
@@ -79,6 +78,8 @@ export function mountLiquidMetal(host) {
   };
 
   const updateMotion = () => {
+    rafId = 0;
+    if (document.hidden) return;
     if (!prefersReduced) {
       currentMagX += (targetMagX - currentMagX) * 0.14;
       currentMagY += (targetMagY - currentMagY) * 0.14;
@@ -89,7 +90,13 @@ export function mountLiquidMetal(host) {
     currentGlow += (targetGlow - currentGlow) * 0.12;
     host.style.setProperty('--glow-opacity', currentGlow.toFixed(3));
 
-    rafId = requestAnimationFrame(updateMotion);
+    if (Math.abs(targetGlow - currentGlow) + Math.abs(targetMagX - currentMagX) + Math.abs(targetMagY - currentMagY) > 0.002) {
+      rafId = requestAnimationFrame(updateMotion);
+    }
+  };
+
+  const requestMotion = () => {
+    if (!rafId && !document.hidden) rafId = requestAnimationFrame(updateMotion);
   };
 
   host.addEventListener('pointerenter', onPointerEnter);

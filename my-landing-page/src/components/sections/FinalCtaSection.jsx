@@ -1,8 +1,7 @@
 import React from 'react';
 import { Heart, ArrowRight, MapPin, Sparkles } from '../ui/Icons';
-import FinalCtaCompanions3D from './FinalCtaCompanions3D';
 
-export default function FinalCtaSection({ onOpenJourney }) {
+export default function FinalCtaSection({ onOpenJourney, companions }) {
   const scrollToSupport = () => {
     const el = document.getElementById('support');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -22,12 +21,11 @@ export default function FinalCtaSection({ onOpenJourney }) {
       <div className="section-container">
         <div className="final-cta-card-unified">
           <div className="section-badge section-badge--dark">
-            <Sparkles size={14} />
             <span>Chung tay vì cộng đồng bốn chân</span>
           </div>
 
           <h2 className="final-cta-title">
-            Cùng Trạm Yêu Thương <br />
+            Cùng GoGo & MeMe <br />
             Thắp Sáng Mái Nhà Cho Các Bé.
           </h2>
 
@@ -48,9 +46,8 @@ export default function FinalCtaSection({ onOpenJourney }) {
             </button>
           </div>
 
-          {/* 3D Companions Duo (Shiba Dog & Tabby Cat from Hero) resting naturally at the bottom */}
           <div className="final-cta-mascot-grounded">
-            <FinalCtaCompanions3D />
+            {companions}
           </div>
         </div>
       </div>

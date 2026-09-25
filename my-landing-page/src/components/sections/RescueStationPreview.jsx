@@ -8,14 +8,22 @@ import {
 import {
   appendResidentsByWishId,
   GARDEN_BEHAVIORS,
-  nextResidentRandom
+  nextResidentRandom,
+  placeResidentForLayout
 } from '../garden/gardenResidentModel';
 import MascotIllustration from '../garden/MascotIllustration';
+import DecorativeAsset from '../ui/DecorativeAsset';
 
 const COLLISION_DISTANCE = 62;
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function getGardenLayoutMode() {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+    ? 'mobile'
+    : 'desktop';
 }
 
 function formatCreatedAt(createdAt, fallback) {
@@ -32,6 +40,7 @@ function formatCreatedAt(createdAt, fallback) {
 }
 
 function chooseTarget(resident, residents, bounds, width, height) {
+  const collisionDistance = resident.layoutMode === 'mobile' ? 54 : COLLISION_DISTANCE;
   let bestCandidate = null;
   let bestDistance = -1;
 
@@ -49,7 +58,7 @@ function chooseTarget(resident, residents, bounds, width, height) {
       nearestDistance = Math.min(nearestDistance, Math.hypot(dx, dy));
     }
 
-    if (nearestDistance > COLLISION_DISTANCE * 1.15) {
+    if (nearestDistance > collisionDistance * 1.15) {
       bestCandidate = candidate;
       break;
     }
@@ -65,11 +74,38 @@ function chooseTarget(resident, residents, bounds, width, height) {
   resident.behavior = GARDEN_BEHAVIORS[Math.floor(nextResidentRandom(resident) * GARDEN_BEHAVIORS.length)];
 }
 
+const USER_WISHES_STORAGE_KEY = 'tram-yeu-thuong-my-wishes-v1';
+
+function getLocalMyWishIds() {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = window.localStorage.getItem(USER_WISHES_STORAGE_KEY);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveLocalMyWishId(wishId) {
+  if (typeof window === 'undefined' || !wishId) return;
+  try {
+    const current = getLocalMyWishIds();
+    current.add(wishId);
+    window.localStorage.setItem(USER_WISHES_STORAGE_KEY, JSON.stringify(Array.from(current)));
+  } catch {
+    /* Storage optional */
+  }
+}
+
 const MascotNode = React.memo(function MascotNode({
   resident,
   isSelected,
   isHovered,
   isEntering,
+  isLocalHighlight,
+  isMyPet,
   registerElement,
   onHover,
   onLeave,
@@ -80,7 +116,7 @@ const MascotNode = React.memo(function MascotNode({
       ref={(node) => registerElement(resident.residentId, node)}
       className={`garden-resident-anchor ${isSelected ? 'is-selected' : ''} ${
         isHovered ? 'is-hovered' : ''
-      } ${isEntering ? 'is-entering' : ''}`}
+      } ${isEntering ? 'is-entering' : ''} ${(isMyPet || isLocalHighlight) ? 'is-my-pet is-local-highlight' : ''}`}
       data-behavior={resident.behavior}
       data-moving="false"
     >
@@ -95,6 +131,14 @@ const MascotNode = React.memo(function MascotNode({
         aria-label={`Đọc lời chúc gửi ${resident.animalName} từ ${getPublicSenderName(resident)}`}
         aria-pressed={isSelected}
       >
+        {/* Permanent Bouncing Arrow Indicator for User's Pet */}
+        {(isMyPet || isLocalHighlight) ? (
+          <span className="my-pet-marker" aria-label="Bé của bạn">
+            <span className="my-pet-badge">Bé của bạn ⭐</span>
+            <span className="my-pet-arrow" aria-hidden="true">▼</span>
+          </span>
+        ) : null}
+
         <span className="garden-resident-visual" aria-hidden="true">
           {isEntering ? (
             <span className="resident-entrance-particles">
@@ -108,13 +152,13 @@ const MascotNode = React.memo(function MascotNode({
               variant={resident.visualVariant}
               size={68}
               hasFlower={resident.hasFlower}
-              hasHeart={isEntering}
+              hasHeart={isEntering || isLocalHighlight || isMyPet}
             />
           </span>
           <span className="garden-resident-shadow" />
         </span>
 
-        <span className="garden-resident-name">{resident.animalName}</span>
+        <span className={`garden-resident-name ${(isMyPet || isLocalHighlight) ? 'is-my-pet-name' : ''}`}>{resident.animalName}</span>
 
         {isHovered ? (
           <span className="garden-resident-tooltip" role="tooltip">
@@ -136,7 +180,15 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
   const [hoveredWishId, setHoveredWishId] = useState(null);
   const [enteringIds, setEnteringIds] = useState(() => new Set());
   const [welcomedWishId, setWelcomedWishId] = useState(null);
+  const [localHighlightWishId, setLocalHighlightWishId] = useState(null);
+  const [myWishIds, setMyWishIds] = useState(() => getLocalMyWishIds());
+  const [latestLocalWishId, setLatestLocalWishId] = useState(() => {
+    const ids = Array.from(getLocalMyWishIds());
+    return ids.length > 0 ? ids[ids.length - 1] : null;
+  });
+  const [showFindHelper, setShowFindHelper] = useState(() => getLocalMyWishIds().size > 0);
 
+  const canvasRef = useRef(null);
   const meadowRef = useRef(null);
   const residentsRef = useRef([]);
   const elementRefs = useRef(new Map());
@@ -145,8 +197,11 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
   const hoveredWishIdRef = useRef(null);
   const enteringTimersRef = useRef(new Map());
   const welcomeTimerRef = useRef(null);
+  const localHighlightTimerRef = useRef(null);
   const lastLocalWishIdRef = useRef(null);
+  const layoutModeRef = useRef(getGardenLayoutMode());
   const isGardenVisibleRef = useRef(true);
+  const resumeGardenMotionRef = useRef(() => {});
 
   useEffect(() => {
     residentsRef.current = residents;
@@ -180,16 +235,26 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
     welcomeTimerRef.current = window.setTimeout(() => setWelcomedWishId(null), 2400);
   }, []);
 
-  const appendWish = useCallback((wish, { entrance = false, select = false } = {}) => {
+  const markLocalWish = useCallback((wishId) => {
+    saveLocalMyWishId(wishId);
+    setMyWishIds((prev) => new Set([...prev, wishId]));
+    setLatestLocalWishId(wishId);
+    setShowFindHelper(true);
+    setLocalHighlightWishId(wishId);
+  }, []);
+
+  const appendWish = useCallback((wish, { entrance = false, select = false, local = false } = {}) => {
     if (!wish?.id) return;
 
     const exists = residentsRef.current.some((resident) => resident.residentId === wish.id);
     if (!exists) {
-      const next = appendResidentsByWishId(residentsRef.current, [wish]);
+      const next = appendResidentsByWishId(residentsRef.current, [wish], layoutModeRef.current);
       residentsRef.current = next;
       setResidents(next);
-      if (entrance) markEntrance(wish.id);
     }
+
+    if (entrance) markEntrance(wish.id);
+    if (local) markLocalWish(wish.id);
 
     if (select) {
       selectedWishIdRef.current = wish.id;
@@ -197,7 +262,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       setSelectedWishId(wish.id);
       setActiveTab('all');
     }
-  }, [markEntrance]);
+  }, [markEntrance, markLocalWish]);
 
   useEffect(() => {
     let isCurrent = true;
@@ -208,9 +273,11 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
 
     fetchPublicWishes().then((wishes) => {
       if (!isCurrent) return;
-      const next = appendResidentsByWishId(residentsRef.current, wishes);
+      const next = appendResidentsByWishId(residentsRef.current, wishes, layoutModeRef.current);
       residentsRef.current = next;
       setResidents(next);
+    }).catch(() => {
+      // Keep the Garden usable when the network is unavailable; realtime can still recover later.
     });
 
     return () => {
@@ -223,7 +290,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
     if (!newWish?.id || lastLocalWishIdRef.current === newWish.id) return undefined;
     lastLocalWishIdRef.current = newWish.id;
     const frame = window.requestAnimationFrame(() => {
-      appendWish(newWish, { entrance: true, select: true });
+      appendWish(newWish, { entrance: true, select: true, local: true });
     });
     return () => window.cancelAnimationFrame(frame);
   }, [appendWish, newWish]);
@@ -231,6 +298,38 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
   useEffect(() => () => {
     for (const timer of enteringTimersRef.current.values()) window.clearTimeout(timer);
     if (welcomeTimerRef.current) window.clearTimeout(welcomeTimerRef.current);
+    if (localHighlightTimerRef.current) window.clearTimeout(localHighlightTimerRef.current);
+  }, []);
+
+  useEffect(() => {
+    const compactQuery = window.matchMedia('(max-width: 768px)');
+
+    const centerGarden = () => {
+      const canvas = canvasRef.current;
+      if (!canvas || !compactQuery.matches) return;
+      canvas.scrollLeft = Math.max(0, (canvas.scrollWidth - canvas.clientWidth) / 2);
+      canvas.scrollTop = Math.max(0, (canvas.scrollHeight - canvas.clientHeight) / 2);
+    };
+
+    const syncLayout = () => {
+      const nextMode = compactQuery.matches ? 'mobile' : 'desktop';
+      if (layoutModeRef.current !== nextMode) {
+        layoutModeRef.current = nextMode;
+        residentsRef.current.forEach((resident, index) => {
+          placeResidentForLayout(resident, index, nextMode);
+        });
+        resumeGardenMotionRef.current();
+      }
+      window.requestAnimationFrame(centerGarden);
+    };
+
+    syncLayout();
+    compactQuery.addEventListener('change', syncLayout);
+    window.addEventListener('resize', syncLayout, { passive: true });
+    return () => {
+      compactQuery.removeEventListener('change', syncLayout);
+      window.removeEventListener('resize', syncLayout);
+    };
   }, []);
 
   useEffect(() => {
@@ -240,6 +339,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
     const observer = new IntersectionObserver(([entry]) => {
       isGardenVisibleRef.current = entry.isIntersecting;
       meadow.classList.toggle('is-motion-paused', !entry.isIntersecting);
+      if (entry.isIntersecting) resumeGardenMotionRef.current();
     }, { threshold: 0.05 });
     observer.observe(meadow);
     return () => observer.disconnect();
@@ -263,8 +363,12 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       }
     };
 
+    const scheduleFrame = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(tick);
+    };
+
     const tick = (now) => {
-      animationFrame = window.requestAnimationFrame(tick);
+      animationFrame = 0;
       const meadow = meadowRef.current;
       if (!meadow) return;
 
@@ -325,6 +429,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
         }
       }
 
+      const collisionDistance = layoutModeRef.current === 'mobile' ? 54 : COLLISION_DISTANCE;
       for (let firstIndex = 0; firstIndex < residentsNow.length; firstIndex += 1) {
         const first = residentsNow[firstIndex];
         for (let secondIndex = firstIndex + 1; secondIndex < residentsNow.length; secondIndex += 1) {
@@ -333,7 +438,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
           let dy = ((second.y - first.y) / 100) * rect.height;
           let distance = Math.hypot(dx, dy);
 
-          if (distance >= COLLISION_DISTANCE) continue;
+          if (distance >= collisionDistance) continue;
           if (distance < 0.1) {
             const angle = (nextResidentRandom(first) + nextResidentRandom(second)) * Math.PI;
             dx = Math.cos(angle);
@@ -341,7 +446,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
             distance = 1;
           }
 
-          const separation = Math.min(1.2, (COLLISION_DISTANCE - distance) * 0.035);
+          const separation = Math.min(1.2, (collisionDistance - distance) * 0.035);
           const offsetX = (dx / distance) * separation;
           const offsetY = (dy / distance) * separation;
 
@@ -357,10 +462,15 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       }
 
       renderPositions(rect.width, rect.height);
+      scheduleFrame();
     };
 
-    animationFrame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(animationFrame);
+    resumeGardenMotionRef.current = scheduleFrame;
+    scheduleFrame();
+    return () => {
+      resumeGardenMotionRef.current = () => {};
+      window.cancelAnimationFrame(animationFrame);
+    };
   }, []);
 
   const handleHover = useCallback((wishId) => {
@@ -390,6 +500,43 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
     setSelectedWishId(null);
   }, []);
 
+  const handleGardenBackgroundClick = useCallback((event) => {
+    if (event.target instanceof Element && event.target.closest('.garden-resident-hitbox')) return;
+    handleCloseDetails();
+  }, [handleCloseDetails]);
+
+  const handleFindLatestResident = useCallback(() => {
+    if (!latestLocalWishId) return;
+    setActiveTab('all');
+    handleSelect(latestLocalWishId);
+    setShowFindHelper(false);
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const canvas = canvasRef.current;
+        const residentElement = elementRefs.current.get(latestLocalWishId);
+        if (!canvas || !residentElement) return;
+
+        const canvasRect = canvas.getBoundingClientRect();
+        const residentRect = residentElement.getBoundingClientRect();
+        const targetLeft = canvas.scrollLeft
+          + residentRect.left + residentRect.width / 2
+          - canvasRect.left - canvas.clientWidth / 2;
+        const targetTop = canvas.scrollTop
+          + residentRect.top + residentRect.height / 2
+          - canvasRect.top - canvas.clientHeight / 2;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        canvas.scrollTo({
+          left: clamp(targetLeft, 0, canvas.scrollWidth - canvas.clientWidth),
+          top: clamp(targetTop, 0, canvas.scrollHeight - canvas.clientHeight),
+          behavior: reduceMotion ? 'auto' : 'smooth'
+        });
+        residentElement.querySelector('.garden-resident-hitbox')?.focus({ preventScroll: true });
+      });
+    });
+  }, [handleSelect, latestLocalWishId]);
+
   const displayedResidents = useMemo(() => residents.filter((resident) => {
     if (activeTab === 'cat') return resident.animalType === 'cat';
     if (activeTab === 'dog') return resident.animalType === 'dog';
@@ -406,6 +553,8 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
 
   return (
     <section className="landing-section wish-garden-section" id="station">
+      <div id="garden" style={{ position: 'relative', top: '-60px' }} aria-hidden="true" />
+      <DecorativeAsset asset="mushroom-lantern" variant="corner-bottom-left" />
       <div className="section-container">
         <div className="section-header">
           <div className="section-badge">
@@ -430,8 +579,21 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
           </div>
         </div>
 
-        <div className="wish-garden-canvas-wrap">
-          <div className="wish-garden-meadow wish-garden-meadow--wandering" ref={meadowRef}>
+        {latestLocalWishId && showFindHelper ? (
+          <button type="button" className="garden-find-resident" onClick={handleFindLatestResident}>
+            <Sparkles size={15} />
+            <span>Tìm bé của bạn</span>
+          </button>
+        ) : null}
+
+        <div className="wish-garden-explorer">
+          <div
+            className="wish-garden-canvas-wrap"
+            ref={canvasRef}
+            onClick={handleGardenBackgroundClick}
+            aria-label="Khu vườn lời chúc có thể kéo để khám phá"
+          >
+            <div className="wish-garden-meadow wish-garden-meadow--wandering" ref={meadowRef}>
             <div className="garden-sun-glow" />
             <div className="garden-dandelion-puff p1" />
             <div className="garden-dandelion-puff p2" />
@@ -439,6 +601,29 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
             <div className="garden-hill-bg" />
             <div className="garden-hill-mid" />
             <div className="garden-hill-fore" />
+            <div className="garden-fireflies" aria-hidden="true">
+              <i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
+            </div>
+            <div className="garden-landscape-details" aria-hidden="true">
+              <div className="garden-winding-path">
+                <span className="garden-path-stone stone-a" />
+                <span className="garden-path-stone stone-b" />
+                <span className="garden-path-stone stone-c" />
+                <span className="garden-path-stone stone-d" />
+              </div>
+              <div className="garden-low-fence">
+                <span /><span /><span /><span /><span /><span />
+              </div>
+              <div className="garden-grass-cluster grass-a"><i /><i /><i /></div>
+              <div className="garden-grass-cluster grass-b"><i /><i /><i /></div>
+              <div className="garden-grass-cluster grass-c"><i /><i /><i /></div>
+              <div className="garden-grass-cluster grass-d"><i /><i /><i /></div>
+              <div className="garden-flower-cluster cluster-a"><i /><i /><i /></div>
+              <div className="garden-flower-cluster cluster-b"><i /><i /><i /></div>
+              <div className="garden-pebble pebble-a" />
+              <div className="garden-pebble pebble-b" />
+              <div className="garden-pebble pebble-c" />
+            </div>
             <div className="garden-prop-picnic-mat" style={{ left: '46%', top: '56%' }}>
               <div className="picnic-bowl" />
               <div className="picnic-toy-ball" />
@@ -472,13 +657,29 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
                 isSelected={selectedWishId === resident.residentId}
                 isHovered={hoveredWishId === resident.residentId}
                 isEntering={enteringIds.has(resident.residentId)}
+                isLocalHighlight={localHighlightWishId === resident.residentId}
+                isMyPet={myWishIds.has(resident.residentId)}
                 registerElement={registerElement}
                 onHover={handleHover}
                 onLeave={handleLeave}
                 onSelect={handleSelect}
               />
             ))}
+            </div>
           </div>
+
+          {selectedResident ? (
+            <div className="garden-mobile-detail" role="status" aria-live="polite">
+              <div className="garden-mobile-detail-copy">
+                <strong>{selectedResident.animalName}</strong>
+                <small>Gửi bởi {getPublicSenderName(selectedResident)}</small>
+                <p>“{selectedResident.message}”</p>
+              </div>
+              <button type="button" onClick={handleCloseDetails} aria-label="Đóng lời chúc đang chọn">
+                <X size={18} />
+              </button>
+            </div>
+          ) : null}
         </div>
 
         <div className="garden-detail-panel-wrap">

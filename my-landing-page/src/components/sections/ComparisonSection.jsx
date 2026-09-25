@@ -26,10 +26,10 @@ export default function ComparisonSection() {
         {/* Section Header: 1 headline + 1 short supporting sentence */}
         <div className="section-header">
           <h2 className="section-title">
-            Đúng lúc quan trọng hơn đông thật nhiều.
+            Đừng chỉ xót xa, hãy cứu giúp đúng cách.
           </h2>
           <p className="section-subtitle">
-            Khi bắt gặp một bé gặp nạn, một hành động đúng khoa học sẽ cứu sống một sinh mạng, thay vì sự hoang mang hay chia sẻ thụ động.
+           Can thiệp bằng kiến thức khoa học và sự bình tĩnh chính là chìa khóa mở ra cơ hội sống sót cao nhất cho một sinh mệnh gặp nạn.
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export default function ComparisonSection() {
               <div className="comp-col comp-col--ours">
                 <span className="comp-header-badge comp-badge--primary">
                   <Paw size={14} fill="currentColor" style={{ display: 'inline', marginRight: 6 }} />
-                  Giải pháp Trạm Yêu Thương
+                  Giải pháp GoGo & MeMe
                 </span>
               </div>
             </div>
@@ -55,9 +55,11 @@ export default function ComparisonSection() {
               {comparisonItems.map((row, idx) => (
                 <div key={idx} className="comparison-row">
                   <div className="comp-col comp-col--category">
+                    <span className="comp-mobile-label">Tình huống</span>
                     <span className="comp-category-tag">{row.category}</span>
                   </div>
                   <div className="comp-col comp-col--traditional">
+                    <span className="comp-mobile-label comp-mobile-label--avoid">Tránh</span>
                     <div className="comp-item-inner">
                       <div className="comp-icon-indicator comp-icon--negative">
                         <X size={15} />
@@ -66,6 +68,7 @@ export default function ComparisonSection() {
                     </div>
                   </div>
                   <div className="comp-col comp-col--ours">
+                    <span className="comp-mobile-label comp-mobile-label--recommended">Nên làm</span>
                     <div className="comp-item-inner">
                       <div className="comp-icon-indicator comp-icon--positive">
                         <Check size={15} />

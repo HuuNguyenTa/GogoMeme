@@ -340,7 +340,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       isGardenVisibleRef.current = entry.isIntersecting;
       meadow.classList.toggle('is-motion-paused', !entry.isIntersecting);
       if (entry.isIntersecting) resumeGardenMotionRef.current();
-    }, { threshold: 0, rootMargin: '120px 0px 120px 0px' });
+    }, { threshold: 0.05 });
     observer.observe(meadow);
     return () => observer.disconnect();
   }, []);
@@ -375,7 +375,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       const rect = meadow.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
 
-      if (!isGardenVisibleRef.current) {
+      if (!isGardenVisibleRef.current || reduceMotion.matches) {
         renderPositions(rect.width, rect.height);
         previousTime = now;
         return;

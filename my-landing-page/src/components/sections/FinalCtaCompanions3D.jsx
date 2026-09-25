@@ -273,20 +273,13 @@ export default function FinalCtaCompanions3D({ theme = 'day' }) {
       const rect = container.getBoundingClientRect();
       const cx = rect.left + rect.width * 0.5;
       const cy = rect.top + rect.height * 0.5;
-      const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
-      if (typeof clientX !== 'number' || typeof clientY !== 'number') return;
-      targetMouseX = Math.max(-1, Math.min(1, (clientX - cx) / (rect.width * 0.5)));
-      targetMouseY = Math.max(-1, Math.min(1, (clientY - cy) / (rect.height * 0.5)));
-    };
-    const onTouchEnd = () => {
-      targetMouseX = 0;
-      targetMouseY = 0;
+      targetMouseX = Math.max(-1, Math.min(1, (e.clientX - cx) / (rect.width * 0.5)));
+      targetMouseY = Math.max(-1, Math.min(1, (e.clientY - cy) / (rect.height * 0.5)));
     };
 
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('touchmove', onPointerMove, { passive: true });
-    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    if (hasFinePointer) {
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+    }
 
     // Handle Resize
     const handleResize = () => {
@@ -325,7 +318,7 @@ export default function FinalCtaCompanions3D({ theme = 'day' }) {
         cancelAnimationFrame(animId);
         animId = null;
       }
-    }, { threshold: 0, rootMargin: '160px 0px 160px 0px' });
+    }, { threshold: 0.02 });
     visibilityObserver.observe(container);
 
     const onVisibilityChange = () => {
@@ -421,8 +414,6 @@ export default function FinalCtaCompanions3D({ theme = 'day' }) {
       controllerRef.current = null;
       if (animId !== null) cancelAnimationFrame(animId);
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('touchmove', onPointerMove);
-      window.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       motionQuery.removeEventListener('change', onMotionChange);

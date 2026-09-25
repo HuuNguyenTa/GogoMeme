@@ -94,7 +94,10 @@ html[data-theme='night'] .pixel-pet__frame {
 
 @media (prefers-reduced-motion: reduce) {
   .pixel-pet {
-    /* Gentle, calm transition rather than freezing */
-    transition-timing-function: ease-out;
+    transition: none;
+  }
+
+  .pixel-pet__strip {
+    animation: none;
   }
 }

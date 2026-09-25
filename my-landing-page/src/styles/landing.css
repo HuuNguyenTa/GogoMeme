@@ -2600,18 +2600,27 @@
   color: #8c736a;
 }
 
-/* Prefers-reduced-motion: gentle, calm animations instead of freezing */
+/* Prefers-reduced-motion: disable hops, sways & bounces */
 @media (prefers-reduced-motion: reduce) {
   .mascot-anim-idle-soft,
   .mascot-anim-bounce,
   .mascot-anim-sway,
   .mascot-anim-sleepy,
   .mascot-anim-tiny-hop,
-  .mascot-anim-look-around {
-    animation-duration: 3.5s;
+  .mascot-anim-look-around,
+  .mascot-entrance-pop,
+  .entrance-particle,
+  .entrance-pulse,
+  .garden-prop-flower,
+  .garden-dandelion-puff,
+  .garden-sun-glow,
+  .garden-pending-halo,
+  .garden-selection-ring {
+    animation: none !important;
   }
   .mascot-entrance-pop {
     opacity: 1 !important;
+    transform: none !important;
   }
   .garden-mascot-hitbox-btn {
     transition: none !important;
@@ -3163,8 +3172,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .garden-welcome-toast {
-    animation-duration: 2s;
+  .garden-mascot-roamer,
+  .garden-mascot-bobber,
+  .garden-welcome-toast,
+  .mascot-entrance-pop,
+  .entrance-particle {
+    animation: none;
+  }
+
+  .garden-mascot-roamer {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -4752,11 +4769,15 @@
   }
 }
 
-/* Reduced Motion: Gentle motion instead of freezing */
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .scene-mascot-svg,
-  .tiny-kitten {
-    animation-duration: 4s;
+  .tiny-kitten,
+  .scene-leaf,
+  .pulse-dot,
+  .scene-safe-distance-ring,
+  .scene-warmth-glow {
+    animation: none !important;
   }
 }
 
@@ -7258,9 +7279,26 @@
 
 /* ── 8. Refined Footer ──────────────────────────────────────────────────── */
 .landing-footer {
-  background: #1f1613;
+  position: relative;
+  z-index: 10;
+  background: #181210 !important;
+  background-color: #181210 !important;
   color: #c9b9b0;
   padding: 64px 0 36px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.landing-footer::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 120vh;
+  background: #181210 !important;
+  background-color: #181210 !important;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .footer-top {
@@ -7431,8 +7469,12 @@
 @media (prefers-reduced-motion: reduce) {
   .mascot-sleeping-halo,
   .mascot-sleeping-body,
+  .mascot-zzz-float,
+  .grounded-dog-group,
+  .grounded-cat-group,
   .mascot-tail-wag {
-    animation-duration: 4s;
+    animation: none !important;
+    transform: none !important;
   }
 }
 
@@ -7723,8 +7765,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .garden-resident-tooltip {
-    transition: opacity 0.2s ease;
+  .garden-resident-anchor,
+  .garden-resident-visual,
+  .garden-resident-mascot,
+  .garden-resident-tooltip,
+  .resident-entrance-particles span {
+    animation: none;
+    transition: none;
+  }
+
+  .garden-resident-anchor {
+    will-change: auto;
   }
 }
 

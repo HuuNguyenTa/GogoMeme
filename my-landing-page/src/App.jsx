@@ -62,23 +62,24 @@ export default function App() {
         onOpenJourney={handleNavigateToChoose}
         onExploreGarden={handleNavigateToGarden}
       />
-
-      {/* 2. Section A: Về GoGo & MeMe Yêu Thương & Sứ Mệnh */}
-      <AboutSection onOpenJourney={handleNavigateToChoose} />
-
-      {/* 3. Section Comparison: "Đúng lúc quan trọng hơn đông thật nhiều" (Inspiration from SavePet) */}
-      <ComparisonSection />
-
-      {/* 4. Section B: Chọn một người bạn bốn chân & Viết thư trao gửi yêu thương */}
+      {/*VietDH: đã sửa lại vị trị của section 4 và 5 xuống dưới 2 và 3*/}
+      {/* 2. Section B: Chọn một người bạn bốn chân & Viết thư trao gửi yêu thương */}
       <ChooseFriendPreview
         onWishSubmitted={handleWishSubmitted}
       />
 
-      {/* 5. Section D: Trạm Cứu Hộ Ảo (Khu Vườn Yêu Thương) */}
+      {/* 3. Section D: Trạm Cứu Hộ Ảo (Khu Vườn Yêu Thương) */}
       <RescueStationPreview
         newWish={newWish}
         onGoToScenarios={handleGoToScenarios}
       />
+      {/* 4. Section A: Về GoGo & MeMe Yêu Thương & Sứ Mệnh */}
+      <AboutSection onOpenJourney={handleNavigateToChoose} />
+
+      {/* 5. Section Comparison: "Đúng lúc quan trọng hơn đông thật nhiều" (Inspiration from SavePet) */}
+      <ComparisonSection />
+
+
 
       {/* 6. Section Protection Layers: "Phát triển theo từng lớp bảo vệ" (Inspiration from SavePet) */}
       <ProtectionLayersSection />

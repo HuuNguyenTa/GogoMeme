@@ -45,7 +45,7 @@ export default function ComparisonSection() {
               <div className="comp-col comp-col--ours">
                 <span className="comp-header-badge comp-badge--primary">
                   <Paw size={14} fill="currentColor" style={{ display: 'inline', marginRight: 6 }} />
-                  Giải pháp Trạm Yêu Thương
+                  Giải pháp GoGo & MeMe
                 </span>
               </div>
             </div>
@@ -55,9 +55,11 @@ export default function ComparisonSection() {
               {comparisonItems.map((row, idx) => (
                 <div key={idx} className="comparison-row">
                   <div className="comp-col comp-col--category">
+                    <span className="comp-mobile-label">Tình huống</span>
                     <span className="comp-category-tag">{row.category}</span>
                   </div>
                   <div className="comp-col comp-col--traditional">
+                    <span className="comp-mobile-label comp-mobile-label--avoid">Tránh</span>
                     <div className="comp-item-inner">
                       <div className="comp-icon-indicator comp-icon--negative">
                         <X size={15} />
@@ -66,6 +68,7 @@ export default function ComparisonSection() {
                     </div>
                   </div>
                   <div className="comp-col comp-col--ours">
+                    <span className="comp-mobile-label comp-mobile-label--recommended">Nên làm</span>
                     <div className="comp-item-inner">
                       <div className="comp-icon-indicator comp-icon--positive">
                         <Check size={15} />

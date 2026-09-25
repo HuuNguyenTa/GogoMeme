@@ -61,7 +61,7 @@ ALTER TABLE public.wishes
     CHECK (sender_display_name IS NULL OR char_length(trim(sender_display_name)) <= 30);
 
 -- 4. Schema Documentation Comments
-COMMENT ON TABLE public.wishes IS 'Community wishes sent to rescued animals in Trạm Yêu Thương.';
+COMMENT ON TABLE public.wishes IS 'Community wishes sent to rescued animals in GoGo & MeMe.';
 COMMENT ON COLUMN public.wishes.sender_display_name IS 'Optional public display name chosen by sender (max 30 chars). NULL if sender prefers anonymity.';
 COMMENT ON COLUMN public.wishes.status IS 'Moderation status: pending (default), approved, or rejected.';
 

@@ -30,8 +30,17 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
   const isMobile = window.innerWidth <= 768;
   const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+  const readRenderSize = () => {
+    const hostRect = hostElement?.getBoundingClientRect();
+    return {
+      width: Math.max(1, Math.round(hostRect?.width || canvas.clientWidth || window.innerWidth)),
+      height: Math.max(1, Math.round(hostRect?.height || canvas.clientHeight || window.innerHeight))
+    };
+  };
+  const initialRenderSize = readRenderSize();
+
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.35 : 1.8));
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(initialRenderSize.width, initialRenderSize.height, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
   renderer.shadowMap.enabled = true;
@@ -40,11 +49,12 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
   scene.fog = new THREE.FogExp2(0xfff7ee, 0.024);
 
   // Isometric-feel Perspective Camera positioned so left 48% is dedicated to typography
-  const baseCamX = -0.25;
-  const baseCamY = 2.25;
-  const baseCamZ = 7.7;
+  let baseCamX = -0.25;
+  let baseCamY = 2.25;
+  let baseCamZ = 7.7;
+  let baseDioramaY = -0.22;
   const lookTarget = new THREE.Vector3(-0.25, 0.45, 0);
-  const camera = new THREE.PerspectiveCamera(34, window.innerWidth / window.innerHeight, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(34, initialRenderSize.width / initialRenderSize.height, 0.1, 100);
   camera.position.set(baseCamX, baseCamY, baseCamZ);
   camera.lookAt(lookTarget);
 
@@ -53,6 +63,33 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
   scene.add(dioramaRoot);
   // Shift to right side (~70% horizontal position) leaving left half pristine for typography & CTAs
   dioramaRoot.position.set(2.25, -0.08, 0);
+
+  const applyResponsiveFraming = () => {
+    const compact = window.matchMedia('(max-width: 768px)').matches;
+    if (compact) {
+      baseCamX = 0;
+      baseCamY = 2.4;
+      baseCamZ = 9.15;
+      baseDioramaY = -1.72;
+      lookTarget.set(0, -0.25, 0);
+      camera.fov = 39;
+      dioramaRoot.position.x = 0;
+      dioramaRoot.scale.setScalar(0.78);
+    } else {
+      baseCamX = -0.25;
+      baseCamY = 2.25;
+      baseCamZ = 7.7;
+      baseDioramaY = -0.22;
+      lookTarget.set(-0.25, 0.45, 0);
+      camera.fov = 34;
+      dioramaRoot.position.x = 2.25;
+      dioramaRoot.scale.setScalar(1);
+    }
+    dioramaRoot.position.y = baseDioramaY;
+    camera.position.set(baseCamX, baseCamY, baseCamZ);
+    camera.lookAt(lookTarget);
+  };
+  applyResponsiveFraming();
 
   const envGroup = new THREE.Group();
   scene.add(envGroup);
@@ -843,9 +880,12 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
 
   const onResize = () => {
     if (!renderer || !canvas) return;
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const renderSize = readRenderSize();
+    applyResponsiveFraming();
+    camera.aspect = renderSize.width / renderSize.height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, renderSize.width <= 768 ? 1.35 : 1.8));
+    renderer.setSize(renderSize.width, renderSize.height, false);
     requestRender();
   };
   window.addEventListener('resize', onResize);
@@ -911,8 +951,8 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
     if (disposed || !isSceneVisible || document.hidden) return;
     const dt = Math.min((now - lastTime) / 1000, 0.05);
     lastTime = now;
-    if (!prefersReducedMotion) elapsed += dt;
-    const t = prefersReducedMotion ? 0 : elapsed;
+    elapsed += dt;
+    const t = elapsed;
     const previousThemeMix = themeMix;
     if (prefersReducedMotion) themeMix = targetThemeMix;
     else if (themeMix !== targetThemeMix) {
@@ -928,7 +968,7 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
 
     // Gentle diorama floating orbit & subtle pointer parallax
     const hoverY = prefersReducedMotion ? 0 : Math.sin(t * 1.0) * 0.025;
-    dioramaRoot.position.y = -0.22 + hoverY - scrollDepth * 0.11;
+    dioramaRoot.position.y = baseDioramaY + hoverY - scrollDepth * 0.11;
     dioramaRoot.rotation.y = 0.15 + mouseX * 0.11 + (prefersReducedMotion ? 0 : Math.sin(t * 0.35) * 0.02);
     dioramaRoot.rotation.x = -mouseY * 0.055;
 
@@ -939,48 +979,74 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
     camera.lookAt(lookTarget);
 
     // ── Procedural Organic Character Animation (Rest-Pose Relative) ─────────
-    // 1. Gentle character breathing (natural volume expansion, no bone distortion)
-    if (!prefersReducedMotion) {
-      const dogBreath = Math.sin(t * 2.2) * 0.010;
-      const catBreath = Math.sin(t * 2.6 + 0.9) * 0.010;
-      dogAnchor.scale.set(1 + dogBreath, 1 + dogBreath * 1.2, 1 + dogBreath);
-      catAnchor.scale.set(1 + catBreath, 1 + catBreath * 1.2, 1 + catBreath);
+    // 1. Organic Idle & Look-Around (Active on both mobile touch and desktop cursor)
+    const isTouchDevice = !hasFinePointer;
+    const idleLookX = isTouchDevice ? Math.sin(t * 0.8) * 0.28 : 0;
+    const idleLookY = isTouchDevice ? Math.sin(t * 0.55 + 0.8) * 0.12 : 0;
+    const effectiveMouseX = mouseX + idleLookX;
+    const effectiveMouseY = mouseY + idleLookY;
 
-      // 2. Small character body rotation toward the pointer
-      dogAnchor.rotation.y = baseDogRotY + mouseX * 0.10;
-      catAnchor.rotation.y = baseCatRotY + mouseX * 0.08;
+    // 2. Visible, charming character breathing (alive on all devices)
+    const dogBreath = Math.sin(t * 2.4) * 0.020;
+    const catBreath = Math.sin(t * 2.8 + 0.9) * 0.020;
+    dogAnchor.scale.set(1 + dogBreath, 1 + dogBreath * 1.3, 1 + dogBreath);
+    catAnchor.scale.set(1 + catBreath, 1 + catBreath * 1.3, 1 + catBreath);
 
-      // 3. Subtle head movement relative to original rest-pose
-      if (dogBones['Head'] && dogBones['Head'].userData.origRot) {
-        const o = dogBones['Head'].userData.origRot;
-        dogBones['Head'].rotation.y = o.y + mouseX * 0.16 + Math.sin(t * 1.5) * 0.025;
-        dogBones['Head'].rotation.x = o.x - mouseY * 0.07 + Math.cos(t * 1.3) * 0.02;
-      }
+    // 3. Body orientation toward look target
+    dogAnchor.rotation.y = baseDogRotY + effectiveMouseX * 0.14;
+    catAnchor.rotation.y = baseCatRotY + effectiveMouseX * 0.12;
 
-      if (catBones['Head'] && catBones['Head'].userData.origRot) {
-        const o = catBones['Head'].userData.origRot;
-        catBones['Head'].rotation.y = o.y + mouseX * 0.14 + Math.sin(t * 1.4 + 1.2) * 0.025;
-        catBones['Head'].rotation.x = o.x - mouseY * 0.05;
-      }
+    // 4. Expressive head movement with natural look-around
+    if (dogBones['Head'] && dogBones['Head'].userData.origRot) {
+      const o = dogBones['Head'].userData.origRot;
+      dogBones['Head'].rotation.y = o.y + effectiveMouseX * 0.24 + Math.sin(t * 1.6) * 0.05;
+      dogBones['Head'].rotation.x = o.x - effectiveMouseY * 0.10 + Math.cos(t * 1.3) * 0.03;
+      dogBones['Head'].rotation.z = o.z + Math.sin(t * 1.1) * 0.025;
+    }
 
-      // 4. Subtle tail movement relative to original rest-pose
-      if (dogBones['Tail'] && dogBones['Tail'].userData.origRot) {
-        const o = dogBones['Tail'].userData.origRot;
-        dogBones['Tail'].rotation.y = o.y + Math.sin(t * 4.8) * 0.20;
-      }
-      if (dogBones['Tail1'] && dogBones['Tail1'].userData.origRot) {
-        const o = dogBones['Tail1'].userData.origRot;
-        dogBones['Tail1'].rotation.y = o.y + Math.sin(t * 4.8 - 0.4) * 0.16;
-      }
+    if (catBones['Head'] && catBones['Head'].userData.origRot) {
+      const o = catBones['Head'].userData.origRot;
+      catBones['Head'].rotation.y = o.y + effectiveMouseX * 0.22 + Math.sin(t * 1.5 + 1.2) * 0.045;
+      catBones['Head'].rotation.x = o.x - effectiveMouseY * 0.08 + Math.sin(t * 1.0) * 0.025;
+      catBones['Head'].rotation.z = o.z + Math.cos(t * 1.3) * 0.025;
+    }
 
-      if (catBones['Tail'] && catBones['Tail'].userData.origRot) {
-        const o = catBones['Tail'].userData.origRot;
-        catBones['Tail'].rotation.y = o.y + Math.sin(t * 1.7) * 0.14;
-      }
-      if (catBones['Tail1'] && catBones['Tail1'].userData.origRot) {
-        const o = catBones['Tail1'].userData.origRot;
-        catBones['Tail1'].rotation.y = o.y + Math.sin(t * 1.7 - 0.4) * 0.12;
-      }
+    // Ear twitches
+    if (dogBones['LeftEar'] && dogBones['LeftEar'].userData.origRot) {
+      const earTwitch = Math.sin(t * 5.0) > 0.88 ? Math.sin(t * 24.0) * 0.08 : 0;
+      dogBones['LeftEar'].rotation.z = dogBones['LeftEar'].userData.origRot.z + earTwitch;
+    }
+    if (catBones['RightEar'] && catBones['RightEar'].userData.origRot) {
+      const catEarTwitch = Math.sin(t * 4.4 + 2.0) > 0.88 ? Math.sin(t * 22.0) * 0.07 : 0;
+      catBones['RightEar'].rotation.z = catBones['RightEar'].userData.origRot.z + catEarTwitch;
+    }
+
+    // 5. Tail movement: Happy dog wagging & smooth cat tail sway
+    if (dogBones['Tail'] && dogBones['Tail'].userData.origRot) {
+      const o = dogBones['Tail'].userData.origRot;
+      dogBones['Tail'].rotation.y = o.y + Math.sin(t * 5.2) * 0.36;
+    }
+    if (dogBones['Tail1'] && dogBones['Tail1'].userData.origRot) {
+      const o = dogBones['Tail1'].userData.origRot;
+      dogBones['Tail1'].rotation.y = o.y + Math.sin(t * 5.2 - 0.4) * 0.28;
+    }
+    if (dogBones['Tail2'] && dogBones['Tail2'].userData.origRot) {
+      const o = dogBones['Tail2'].userData.origRot;
+      dogBones['Tail2'].rotation.y = o.y + Math.sin(t * 5.2 - 0.8) * 0.22;
+    }
+
+    if (catBones['Tail'] && catBones['Tail'].userData.origRot) {
+      const o = catBones['Tail'].userData.origRot;
+      catBones['Tail'].rotation.y = o.y + Math.sin(t * 2.2) * 0.26;
+      catBones['Tail'].rotation.x = o.x + Math.cos(t * 1.8) * 0.08;
+    }
+    if (catBones['Tail1'] && catBones['Tail1'].userData.origRot) {
+      const o = catBones['Tail1'].userData.origRot;
+      catBones['Tail1'].rotation.y = o.y + Math.sin(t * 2.2 - 0.4) * 0.22;
+    }
+    if (catBones['Tail2'] && catBones['Tail2'].userData.origRot) {
+      const o = catBones['Tail2'].userData.origRot;
+      catBones['Tail2'].rotation.y = o.y + Math.sin(t * 2.2 - 0.8) * 0.18;
     }
 
     // Swaying garden flowers in the gentle breeze
@@ -1013,7 +1079,7 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
     moteGeom.attributes.color.needsUpdate = true;
 
     renderer.render(scene, camera);
-    if (!prefersReducedMotion) raf = requestAnimationFrame(animate);
+    raf = requestAnimationFrame(animate);
   }
 
   requestRender();
@@ -1037,6 +1103,7 @@ export function initThreeSanctuary(canvas, hostElement, initialTheme = 'day') {
     clearTimeout(readyTimer);
     clearTimeout(introTimer);
     window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('touchmove', onPointerMove);
     window.removeEventListener('scroll', onScroll);
     window.removeEventListener('resize', onResize);
     document.removeEventListener('visibilitychange', onVisibilityChange);

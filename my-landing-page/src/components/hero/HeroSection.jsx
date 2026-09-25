@@ -13,7 +13,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
   const initialThemeRef = useRef(theme);
 
   useEffect(() => {
-    let cleanupExplore = () => {};
+    let cleanupExplore = () => { };
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     try {
@@ -26,17 +26,16 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
 
     const configureLiquid = () => {
       cleanupExplore();
-      cleanupExplore = () => {};
+      cleanupExplore = () => { };
       if (exploreBtnRef.current && !motionQuery.matches) {
-        cleanupExplore = mountLiquidMetal(exploreBtnRef.current) || (() => {});
+        cleanupExplore = mountLiquidMetal(exploreBtnRef.current) || (() => { });
       }
     };
     configureLiquid();
 
     // Pointer Parallax on Hero Container
     const heroEl = heroRef.current;
-    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    let canParallax = !motionQuery.matches && finePointer;
+    let canParallax = true;
     let px = 0, py = 0, targetPx = 0, targetPy = 0;
     let rafParallax = 0;
     let isHeroVisible = true;
@@ -46,8 +45,10 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
       const rect = heroEl.getBoundingClientRect();
       const cx = rect.left + rect.width * 0.5;
       const cy = rect.top + rect.height * 0.5;
-      targetPx = Math.max(-1, Math.min(1, (e.clientX - cx) / (rect.width * 0.5)));
-      targetPy = Math.max(-1, Math.min(1, (e.clientY - cy) / (rect.height * 0.5)));
+      const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
+      targetPx = Math.max(-1, Math.min(1, (clientX - cx) / (rect.width * 0.5)));
+      targetPy = Math.max(-1, Math.min(1, (clientY - cy) / (rect.height * 0.5)));
 
       // Dock specular rim tracking
       if (dockRef.current) {
@@ -99,7 +100,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
     };
 
     const onMotionChange = () => {
-      canParallax = !motionQuery.matches && finePointer;
+      canParallax = !motionQuery.matches;
       configureLiquid();
       if (!canParallax) {
         px = py = targetPx = targetPy = 0;
@@ -119,12 +120,14 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
     }, { threshold: 0.02 });
 
     if (heroEl) visibilityObserver.observe(heroEl);
-    if (finePointer) window.addEventListener('pointermove', handlePointer, { passive: true });
+    window.addEventListener('pointermove', handlePointer, { passive: true });
+    window.addEventListener('touchmove', handlePointer, { passive: true });
     requestParallax();
 
     return () => {
       cancelAnimationFrame(rafParallax);
       window.removeEventListener('pointermove', handlePointer);
+      window.removeEventListener('touchmove', handlePointer);
       visibilityObserver.disconnect();
       motionQuery.removeEventListener('change', onMotionChange);
       sceneRef.current?.dispose();
@@ -159,42 +162,49 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
             href="#hero"
             onClick={scrollTo('hero')}
             style={{ '--d': '120ms' }}
-            aria-label="Trạm Yêu Thương — Trang chủ"
+            aria-label="GoGo & MeMe — Trang chủ"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
           </a>
 
-          <a className="dock-item is-active" href="#about" onClick={scrollTo('about')} style={{ '--d': '160ms' }}>
+          <a
+            className="dock-item dock-item--mobile-secondary is-active"
+            href="#about"
+            onClick={scrollTo('about')}
+            style={{ '--d': '160ms' }}
+            aria-label="Về GoGo & MeMe"
+            title="Về GoGo & MeMe"
+          >
             <span className="glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
             </span>
-            <span>Về Trạm</span>
+            <span>Về GoGo & MeMe</span>
           </a>
 
-          <a className="dock-item" href="#choose" onClick={scrollTo('choose')} style={{ '--d': '200ms' }}>
+          <a className="dock-item" href="#choose" onClick={scrollTo('choose')} style={{ '--d': '200ms' }} aria-label="Chọn bạn" title="Chọn bạn">
             <span className="glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0 10 0V7a5 5 0 0 0-5-5z" /></svg>
             </span>
             <span>Chọn Bạn</span>
           </a>
 
-          <a className="dock-item" href="#station" onClick={scrollTo('station')} style={{ '--d': '240ms' }}>
+          <a className="dock-item" href="#station" onClick={scrollTo('station')} style={{ '--d': '240ms' }} aria-label="Khu vườn lời chúc" title="Khu vườn lời chúc">
             <span className="glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
             </span>
             <span>Trạm Cứu Hộ</span>
           </a>
 
-          <a className="dock-item" href="#learn" onClick={scrollTo('learn')} style={{ '--d': '280ms' }}>
+          <a className="dock-item" href="#learn" onClick={scrollTo('learn')} style={{ '--d': '280ms' }} aria-label="Cẩm nang cứu hộ" title="Cẩm nang cứu hộ">
             <span className="glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
             </span>
             <span>Cẩm Nang</span>
           </a>
 
-          <a className="dock-item" href="#support" onClick={scrollTo('support')} style={{ '--d': '320ms' }}>
+          <a className="dock-item" href="#support" onClick={scrollTo('support')} style={{ '--d': '320ms' }} aria-label="Nơi hỗ trợ" title="Nơi hỗ trợ">
             <span className="glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
             </span>
@@ -209,6 +219,8 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
               if (onOpenJourney) onOpenJourney();
             }}
             style={{ '--d': '360ms' }}
+            aria-label="Bắt đầu hành trình"
+            title="Bắt đầu hành trình"
           >
             <span className="glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" /></svg>
@@ -230,7 +242,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
 
         {/* Ghost Wordmark */}
         <div className="ghost" aria-hidden="true">
-          TRẠM YÊU THƯƠNG
+          GoGo & MeMe
         </div>
 
 
@@ -253,7 +265,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
             className="primary-glass-cta"
             ref={exploreBtnRef}
             onClick={onOpenJourney}
-            aria-label="Bắt đầu hành trình cùng Trạm Yêu Thương"
+            aria-label="Bắt đầu hành trình cùng GoGo & MeMe"
           >
             <span className="glass-base-plate" aria-hidden="true" />
             <span className="glass-liquid-sheen" aria-hidden="true" />
@@ -288,7 +300,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
 
 
         {/* 3D World Floating Indicator (Top Right) */}
-        <div className="hero-world-tag" style={{ '--pd': '10' }}>          
+        <div className="hero-world-tag" style={{ '--pd': '10' }}>
           <span className="world-tag-name">Trạm Yêu Thương Thu Nhỏ</span>
         </div>
 

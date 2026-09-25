@@ -25,7 +25,7 @@ export default function FinalCtaSection({ onOpenJourney, companions }) {
           </div>
 
           <h2 className="final-cta-title">
-            Cùng Trạm Yêu Thương <br />
+            Cùng GoGo & MeMe <br />
             Thắp Sáng Mái Nhà Cho Các Bé.
           </h2>
 

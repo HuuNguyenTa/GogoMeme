@@ -8129,30 +8129,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ambient-background,
-  .ambient-field,
-  .ambient-particles i,
-  [data-motion-reveal],
-  [data-motion-reveal].is-motion-visited,
-  .hero .headline,
-  .hero .lede,
-  .hero .hero-actions-row,
-  .hero .scroll,
-  .hero #scene,
-  .journey-steps-track::after,
-  .journey-verified-grid::before,
-  .final-cta-card-unified::before {
-    animation: none !important;
-    transition: none !important;
+  /* Calmed animations instead of complete shutdown so mobile battery saver doesn't freeze the page */
+  [data-motion-reveal] {
+    transition-duration: 250ms !important;
+  }
+
+  [data-motion-reveal].is-motion-visible {
+    opacity: 1 !important;
     transform: none !important;
   }
 
-  .ambient-particles {
-    display: none;
-  }
-
-  [data-motion-reveal],
-  [data-motion-reveal].is-motion-visited,
   .hero .headline,
   .hero .lede,
   .hero .hero-actions-row,

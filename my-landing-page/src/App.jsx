@@ -16,8 +16,10 @@ import LandingMotionController from './components/motion/LandingMotionController
 import useLandingTheme from './hooks/useLandingTheme';
 import ThemeToggle from './components/theme/ThemeToggle';
 import FinalCtaCompanions3D from './components/sections/FinalCtaCompanions3D';
+import PixelPetsOverlay from './components/pixel-pets/PixelPetsOverlay';
 import './styles/landing.css';
 import './styles/night-theme.css';
+import './styles/mobile.css';
 
 export default function App() {
   const { theme, toggleTheme } = useLandingTheme();
@@ -52,6 +54,7 @@ export default function App() {
     <div className="landing-shell">
       <AmbientBackgroundLayer />
       <LandingMotionController />
+      <PixelPetsOverlay />
       {/* 1. 3D WebGL Hero Experience */}
       <HeroSection
         theme={theme}
@@ -60,7 +63,7 @@ export default function App() {
         onExploreGarden={handleNavigateToGarden}
       />
 
-      {/* 2. Section A: Về Trạm Yêu Thương & Sứ Mệnh */}
+      {/* 2. Section A: Về GoGo & MeMe Yêu Thương & Sứ Mệnh */}
       <AboutSection onOpenJourney={handleNavigateToChoose} />
 
       {/* 3. Section Comparison: "Đúng lúc quan trọng hơn đông thật nhiều" (Inspiration from SavePet) */}

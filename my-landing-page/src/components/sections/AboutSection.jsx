@@ -22,7 +22,7 @@ export default function AboutSection({ onOpenJourney }) {
           <div className="about-story-content">
             <div className="section-badge section-badge--soft">
               <Heart size={14} fill="currentColor" />
-              <span>Sứ mệnh Trạm Yêu Thương</span>
+              <span>Sứ mệnh của GoGo & MeMe</span>
             </div>
 
             <h2 className="section-title text-left">
@@ -32,7 +32,7 @@ export default function AboutSection({ onOpenJourney }) {
 
             <p className="section-subtitle text-left">
               Mỗi sinh mạng lang thang nơi góc phố đều mong ước một vòng tay chở che.
-              Trạm Yêu Thương đồng hành cùng bạn từ sự thấu cảm đầu tiên cho đến phương pháp cứu hộ khoa học và kết nối trạm bảo trợ.
+              GoGo & MeMe đồng hành cùng bạn từ sự thấu cảm đầu tiên cho đến phương pháp cứu hộ khoa học và kết nối trạm bảo trợ.
             </p>
 
             {/* 3 Clean Narrative Pillars (Not bulky cards) */}

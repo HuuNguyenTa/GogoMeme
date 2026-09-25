@@ -1,0 +1,103 @@
+.pixel-pets-overlay {
+  --pixel-pet-size: 56px;
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  height: var(--pixel-pet-size);
+  z-index: var(--z-companions, 35);
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+.pixel-pet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--pixel-pet-size);
+  height: var(--pixel-pet-size);
+  opacity: 1;
+  transition: opacity 160ms ease-out;
+}
+
+.pixel-pet[data-moving='true'] {
+  will-change: transform;
+}
+
+.pixel-pet__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  filter: drop-shadow(0 2px 2px rgba(45, 30, 20, 0.2));
+}
+
+.pixel-pet__strip {
+  display: block;
+  width: 400%;
+  max-width: none;
+  height: 100%;
+  object-fit: fill;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  animation: pixel-pet-frames var(--pixel-pet-frame-duration, 1200ms) steps(4) infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+.pixel-pet[data-state^='walk'] {
+  --pixel-pet-frame-duration: 680ms;
+}
+
+.pixel-pet[data-state='idle'] {
+  --pixel-pet-frame-duration: 1480ms;
+}
+
+.pixel-pet[data-state='sit'] {
+  --pixel-pet-frame-duration: 1900ms;
+}
+
+.pixel-pet[data-visible='false'] .pixel-pet__strip {
+  animation-play-state: paused;
+}
+
+html[data-theme='night'] .pixel-pet__frame {
+  filter:
+    drop-shadow(0 -1px 0 rgba(220, 229, 255, 0.35))
+    drop-shadow(0 3px 3px rgba(4, 9, 22, 0.45))
+    drop-shadow(0 0 6px rgba(194, 211, 255, 0.15));
+}
+
+@keyframes pixel-pet-frames {
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .pixel-pets-overlay {
+    --pixel-pet-size: 48px;
+  }
+}
+
+@media (max-width: 767px) {
+  .pixel-pets-overlay {
+    --pixel-pet-size: 44px;
+    bottom: calc(6px + env(safe-area-inset-bottom));
+  }
+
+  .pixel-pet {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-pet {
+    transition: none;
+  }
+
+  .pixel-pet__strip {
+    animation: none;
+  }
+}

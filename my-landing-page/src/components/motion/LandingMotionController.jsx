@@ -18,6 +18,7 @@ const REVEAL_GROUPS = [
 export default function LandingMotionController() {
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const compactMotion = window.matchMedia('(max-width: 768px)');
     const revealElements = [];
 
     for (const [rootSelector, selectors] of REVEAL_GROUPS) {
@@ -31,8 +32,10 @@ export default function LandingMotionController() {
           element.dataset.motionReveal = selector.includes('photo') || selector.includes('visual') || selector.includes('3d-column')
             ? 'depth'
             : 'rise';
-          element.style.setProperty('--motion-delay', `${Math.min(order, 6) * 65}ms`);
-          element.style.setProperty('--motion-replay-delay', `${Math.min(order, 5) * 35}ms`);
+          const entranceDelay = compactMotion.matches ? Math.min(order, 3) * 30 : Math.min(order, 6) * 65;
+          const replayDelay = compactMotion.matches ? 0 : Math.min(order, 5) * 35;
+          element.style.setProperty('--motion-delay', `${entranceDelay}ms`);
+          element.style.setProperty('--motion-replay-delay', `${replayDelay}ms`);
           revealElements.push(element);
           order += 1;
         }
@@ -53,7 +56,7 @@ export default function LandingMotionController() {
           const isVisited = target.classList.contains('is-motion-visited');
 
           // Hysteresis entrance: requires at least 25% intersection ratio or 80px visible height
-          const shouldEnter = entry.isIntersecting && (entry.intersectionRatio >= 0.25 || entry.intersectionRect.height >= 80);
+          const shouldEnter = entry.isIntersecting && (entry.intersectionRatio >= 0.08 || entry.intersectionRect.height >= 25);
 
           if (shouldEnter) {
             if (!isVisible) {
@@ -76,8 +79,8 @@ export default function LandingMotionController() {
           }
         }
       }, {
-        threshold: [0, 0.25],
-        rootMargin: '-30px 0px -30px 0px'
+        threshold: [0, 0.1, 0.25],
+        rootMargin: '20px 0px -20px 0px'
       });
 
       revealElements.forEach((element) => revealObserver.observe(element));
@@ -119,6 +122,10 @@ export default function LandingMotionController() {
       }
 
       for (const element of parallaxElements) {
+        if (compactMotion.matches) {
+          element.style.removeProperty('--section-parallax');
+          continue;
+        }
         const rect = element.getBoundingClientRect();
         if (rect.bottom < -80 || rect.top > viewportHeight + 80) continue;
         const centerOffset = (rect.top + rect.height * 0.5 - viewportHeight * 0.5) / viewportHeight;
@@ -131,10 +138,8 @@ export default function LandingMotionController() {
     };
 
     updateProgress();
-    if (!reduceMotion) {
-      window.addEventListener('scroll', requestProgressUpdate, { passive: true });
-      window.addEventListener('resize', requestProgressUpdate, { passive: true });
-    }
+    window.addEventListener('scroll', requestProgressUpdate, { passive: true });
+    window.addEventListener('resize', requestProgressUpdate, { passive: true });
 
     return () => {
       revealObserver?.disconnect();

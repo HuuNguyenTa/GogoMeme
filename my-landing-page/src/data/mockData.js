@@ -567,9 +567,9 @@ export const FAQ_ITEMS = [
   },
   {
     id: 'faq-4',
-    question: 'Trạm Yêu Thương có phải là đội cứu hộ hiện trường trực tiếp 24/7 không?',
+    question: 'GoGo & MeMe có phải là đội cứu hộ hiện trường trực tiếp 24/7 không?',
     category: 'Về dự án SSG105',
-    answer: 'Không. "Trạm Yêu Thương" là dự án cộng đồng sinh viên phi lợi nhuận thuộc môn học SSG105. Dự án mang sứ mệnh nâng cao nhận thức, trang bị cẩm nang kỹ năng xử lý đúng đắn và kết nối danh bạ trạm cứu hộ đã xác minh.'
+    answer: 'Không. "GoGo & MeMe" là dự án cộng đồng sinh viên phi lợi nhuận thuộc môn học SSG105. Dự án mang sứ mệnh nâng cao nhận thức, trang bị cẩm nang kỹ năng xử lý đúng đắn và kết nối danh bạ trạm cứu hộ đã xác minh.'
   },
   {
     id: 'faq-5',

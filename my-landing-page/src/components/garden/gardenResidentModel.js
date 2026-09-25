@@ -20,18 +20,45 @@ function seededFraction(seed, salt) {
   return (value >>> 0) / 4294967295;
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+export function getResidentPlacement(wish, index = 0, layoutMode = 'desktop') {
+  const seed = hashString(wish.id);
+
+  if (layoutMode === 'mobile') {
+    const column = index % 5;
+    const row = Math.floor(index / 5) % 7;
+    const x = 9 + column * 20.5 + (seededFraction(seed, 11) - 0.5) * 5;
+    const y = 12 + row * 12.7 + (seededFraction(seed, 12) - 0.5) * 4.5;
+
+    return {
+      x: clamp(x, 7, 93),
+      y: clamp(y, 9, 91)
+    };
+  }
+
+  const column = index % 6;
+  const row = Math.floor(index / 6) % 6;
+  const x = 9 + column * 16.4 + (seededFraction(seed, 1) - 0.5) * 4;
+  const y = 18 + row * 13.8 + (seededFraction(seed, 2) - 0.5) * 4;
+
+  return {
+    x: clamp(x, 7, 93),
+    y: clamp(y, 14, 88)
+  };
+}
+
 export function getVisualVariant(wish) {
   if (wish.variant) return wish.variant;
   const variants = wish.animalType === 'dog' ? DOG_VARIANTS : CAT_VARIANTS;
   return variants[hashString(wish.id) % variants.length];
 }
 
-export function createGardenResident(wish, index = 0) {
+export function createGardenResident(wish, index = 0, layoutMode = 'desktop') {
   const seed = hashString(wish.id);
-  const column = index % 6;
-  const row = Math.floor(index / 6) % 6;
-  const x = 9 + column * 16.4 + (seededFraction(seed, 1) - 0.5) * 4;
-  const y = 18 + row * 13.8 + (seededFraction(seed, 2) - 0.5) * 4;
+  const { x, y } = getResidentPlacement(wish, index, layoutMode);
 
   return {
     ...wish,
@@ -40,30 +67,43 @@ export function createGardenResident(wish, index = 0) {
     visualVariant: getVisualVariant(wish),
     variant: getVisualVariant(wish),
     hasFlower: seed % 3 === 0,
-    x: Math.max(7, Math.min(93, x)),
-    y: Math.max(14, Math.min(88, y)),
-    targetX: Math.max(7, Math.min(93, x)),
-    targetY: Math.max(14, Math.min(88, y)),
+    x,
+    y,
+    targetX: x,
+    targetY: y,
     speed: 11 + seededFraction(seed, 3) * 10,
     direction: seededFraction(seed, 4) > 0.5 ? 1 : -1,
     behavior: BEHAVIORS[seed % BEHAVIORS.length],
     pauseUntil: 0,
-    randomState: seed || 1
+    randomState: seed || 1,
+    layoutMode
   };
+}
+
+export function placeResidentForLayout(resident, index, layoutMode) {
+  if (!resident || resident.layoutMode === layoutMode) return resident;
+  const { x, y } = getResidentPlacement(resident, index, layoutMode);
+  resident.x = x;
+  resident.y = y;
+  resident.targetX = x;
+  resident.targetY = y;
+  resident.pauseUntil = 0;
+  resident.layoutMode = layoutMode;
+  return resident;
 }
 
 /**
  * Merge wishes into residents using wish.id as the only identity key.
  * Animal, sender, and message values intentionally have no role in deduplication.
  */
-export function appendResidentsByWishId(currentResidents, incomingWishes) {
+export function appendResidentsByWishId(currentResidents, incomingWishes, layoutMode = 'desktop') {
   const residentIds = new Set(currentResidents.map((resident) => resident.residentId));
   const nextResidents = [...currentResidents];
 
   for (const wish of incomingWishes) {
     if (!wish?.id || residentIds.has(wish.id)) continue;
     residentIds.add(wish.id);
-    nextResidents.push(createGardenResident(wish, nextResidents.length));
+    nextResidents.push(createGardenResident(wish, nextResidents.length, layoutMode));
   }
 
   return nextResidents;

@@ -439,7 +439,7 @@ export default function FinalCtaCompanions3D({ theme = 'day' }) {
     <div
       ref={containerRef}
       className={`final-cta-3d-wrapper ${isLoaded ? 'is-ready' : 'is-loading'}`}
-      aria-label="3D Shiba Dog và Tabby Cat từ Hero đồng hành cùng Trạm Yêu Thương"
+      aria-label="3D Shiba Dog và Tabby Cat từ Hero đồng hành cùng GoGo & MeMe"
     >
       <canvas ref={canvasRef} className="final-cta-3d-canvas" />
       {!isLoaded && (

@@ -7279,9 +7279,26 @@
 
 /* ── 8. Refined Footer ──────────────────────────────────────────────────── */
 .landing-footer {
-  background: #1f1613;
+  position: relative !important;
+  z-index: 20 !important;
+  background: #1f1613 !important;
+  background-color: #1f1613 !important;
   color: #c9b9b0;
   padding: 64px 0 36px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.landing-footer::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 150vh;
+  background: #1f1613 !important;
+  background-color: #1f1613 !important;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .footer-top {
@@ -8118,9 +8135,6 @@
     height: 16px;
   }
 
-  .hero .secondary-garden-cta {
-    min-height: 44px;
-  }
 
   .hero .garden-cta-icon-disc {
     width: 40px;

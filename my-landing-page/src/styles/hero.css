@@ -533,7 +533,6 @@
   gap: calc(12 * var(--u));
   background: transparent;
   border: none;
-  border-radius: 999px;
   padding: calc(4 * var(--u)) calc(12 * var(--u)) calc(4 * var(--u)) 0;
   cursor: pointer;
   outline: none;

@@ -9,8 +9,8 @@ Trạm Yêu Thương là nền tảng lan tỏa tình yêu thương và nâng ca
 - **Kiến trúc**: One-page scroll application
 
 ## Yêu cầu môi trường
-- **Node.js**: >= 18.0.0
-- **npm**: >= 9.0.0
+- **Node.js**: >= 22.12.0 (yêu cầu bởi Vite 8 và các thư viện hiện tại)
+- **npm**: >= 10.0.0
 
 ## Cách chạy local
 1. Di chuyển vào thư mục dự án:
@@ -20,14 +20,19 @@ Trạm Yêu Thương là nền tảng lan tỏa tình yêu thương và nâng ca
 2. Cài đặt các gói phụ thuộc:
    ```bash
    npm install
+   # hoặc dùng 'npm ci' khi cần cài đặt đồng bộ chuẩn xác từ package-lock.json
    ```
 3. Tạo file cấu hình môi trường:
-   Sao chép `.env.example` thành `.env.local` và điền thông tin Supabase:
+   Sao chép `.env.example` thành `.env` (hoặc `.env.local`) và kiểm tra thông tin Supabase:
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
-   (Điền `VITE_SUPABASE_URL` và `VITE_SUPABASE_PUBLISHABLE_KEY` lấy từ Supabase Dashboard).
-4. Khởi chạy dev server:
+   (Cần có `VITE_SUPABASE_URL` và `VITE_SUPABASE_PUBLISHABLE_KEY` lấy từ Supabase Dashboard).
+4. Kiểm tra mã nguồn (lint):
+   ```bash
+   npm run lint
+   ```
+5. Khởi chạy dev server:
    ```bash
    npm run dev
    ```
@@ -45,5 +50,9 @@ Kết quả build được tạo tại thư mục `dist/`.
 - `public/`: Chứa các tài nguyên tĩnh phục vụ trực tiếp cho website (icons, fonts, static assets).
 - `supabase/`: Chứa các file migrations và kịch bản cơ sở dữ liệu Supabase.
 
-## Ghi chú
-Dự án được thiết kế cơ chế tự động chuyển sang sử dụng mock data (`src/data/mockData.js`) khi chưa cấu hình kết nối Supabase, đảm bảo toàn bộ luồng trải nghiệm trên giao diện vẫn hoạt động bình thường.
+## Chế độ hoạt động (Supabase & Mock Mode)
+- **Chế độ kết nối Supabase (Production / Default khi có .env)**:
+  Các lời chúc gửi lên sẽ được lưu trữ lâu dài vào bảng `wishes` của Supabase và tự động phát sóng realtime qua Postgres Changes đến toàn bộ người dùng đang mở trang.
+- **Chế độ Mock data (Dev fallback khi thiếu .env)**:
+  Nếu chưa cấu hình `VITE_SUPABASE_URL` hoặc `VITE_SUPABASE_PUBLISHABLE_KEY`, ứng dụng sẽ tự động chuyển sang chế độ Mock (`src/data/mockData.js`). Mọi tính năng giao diện và khu vườn vẫn hoạt động đầy đủ, lời chúc mới gửi sẽ xuất hiện tức thì trong phiên duyệt web hiện tại nhưng **không lưu trữ vĩnh viễn** (dữ liệu mock mới tạo sẽ reset về danh sách mẫu khi tải lại trang).
+

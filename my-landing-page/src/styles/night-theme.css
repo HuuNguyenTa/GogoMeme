@@ -368,28 +368,71 @@ html[data-theme='night'] .landing-section--final-cta {
 
 /* ── 12. Footer ──────────────────────────────────────────────────────────── */
 html[data-theme='night'] .landing-footer {
-  background: linear-gradient(180deg, #101424 0%, #090c16 100%) !important;
-  background-color: #101424 !important;
+  background: #0d121c !important;
+  background-color: #0d121c !important;
   border-top: 1px solid rgba(185, 200, 240, 0.08);
   transition: none !important;
 }
 
 html[data-theme='night'] .landing-footer::after {
-  background: #090c16 !important;
-  background-color: #090c16 !important;
+  background: #0d121c !important;
+  background-color: #0d121c !important;
   transition: none !important;
 }
 
-html[data-theme='night'] :is(.footer-brand-title, .footer-col-title) {
-  color: var(--text-primary);
+html[data-theme='night'] .footer-brand-title,
+html[data-theme='night'] .footer-col-title {
+  color: #f8fafc !important;
 }
 
-html[data-theme='night'] :is(.footer-brand-desc, .footer-links-list a, .footer-bottom) {
-  color: var(--text-muted);
+html[data-theme='night'] .footer-col-title::after {
+  background: #818cf8;
+}
+
+html[data-theme='night'] .footer-brand-desc {
+  color: #94a3b8 !important;
+}
+
+html[data-theme='night'] .footer-brand-badge {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(129, 140, 248, 0.25);
+  color: #a5b4fc;
+}
+
+html[data-theme='night'] .footer-meta-pill {
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+html[data-theme='night'] .footer-links-list a {
+  color: #94a3b8 !important;
 }
 
 html[data-theme='night'] .footer-links-list a:hover {
-  color: var(--accent-primary);
+  color: #c7d2fe !important;
+}
+
+html[data-theme='night'] .footer-quote-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(185, 200, 240, 0.08);
+}
+
+html[data-theme='night'] .footer-quote-text {
+  color: #cbd5e1;
+}
+
+html[data-theme='night'] .footer-quote-link {
+  color: #a5b4fc;
+}
+
+html[data-theme='night'] .footer-divider {
+  background: rgba(185, 200, 240, 0.08);
+}
+
+html[data-theme='night'] .footer-bottom,
+html[data-theme='night'] .footer-copyright {
+  color: #64748b !important;
 }
 
 /* ── Premium Cards & Surfaces (Translucent Border + Soft Specular Highlight) ─ */

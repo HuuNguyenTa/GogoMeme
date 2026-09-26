@@ -1032,14 +1032,14 @@
     height: 210px;
   }
 
-  /* Footer: Bỏ hoàn toàn hiệu ứng chuyển màu background ở footer trên mobile, cố định màu nâu ấm #1f1613 */
+  /* Footer: Giao diện di động gọn gàng, cách điệu đẹp mắt, không cấn chó mèo */
   .landing-footer {
     position: relative !important;
     z-index: 25 !important;
-    background: #1f1613 !important;
-    background-color: #1f1613 !important;
+    background: #1b1411 !important;
+    background-color: #1b1411 !important;
     transition: none !important;
-    padding: 64px 20px calc(92px + env(safe-area-inset-bottom)) !important;
+    padding: 56px 20px calc(96px + env(safe-area-inset-bottom)) !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -1050,8 +1050,8 @@
     left: 0;
     right: 0;
     height: 150vh;
-    background: #1f1613 !important;
-    background-color: #1f1613 !important;
+    background: #1b1411 !important;
+    background-color: #1b1411 !important;
     transition: none !important;
     pointer-events: none;
     z-index: -1;
@@ -1062,42 +1062,56 @@
     transition: none !important;
   }
 
-  /* Bỏ hiệu ứng chuyển màu ambient background khi cuộn tới footer trên mobile */
   .ambient-background[data-tone='final'] {
     transition: none !important;
   }
 
-  .landing-footer :is(.footer-brand-title, .footer-col-title) {
-    color: #ffffff !important;
-    font-size: 19px;
-  }
-
-  .landing-footer :is(.footer-brand-desc, .footer-links-list a, .footer-bottom, .footer-copyright, .footer-heart-credit) {
-    color: #d1c4bc !important;
-  }
-
+  .footer-main-grid,
   .footer-top {
     grid-template-columns: 1fr;
-    gap: 30px;
-    padding-bottom: 32px;
+    gap: 32px;
   }
 
   .footer-brand {
     grid-column: auto;
   }
 
+  .footer-brand-title {
+    font-size: 20px !important;
+    color: #ffffff !important;
+  }
+
+  .footer-col-title {
+    font-size: 16px !important;
+    color: #ffffff !important;
+  }
+
   .footer-brand-desc {
-    max-width: 42rem;
+    max-width: 100%;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #bcaaa0 !important;
   }
 
   .footer-links-list {
-    gap: 4px;
+    gap: 6px;
   }
 
   .footer-links-list a {
-    min-height: 44px;
+    min-height: 38px;
     display: inline-flex;
     align-items: center;
+    font-size: 14px;
+    color: #b8a79e !important;
+  }
+
+  .footer-quote-card {
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .footer-divider {
+    margin: 32px 0 20px 0;
   }
 
   .footer-bottom {
@@ -1105,6 +1119,8 @@
     flex-direction: column;
     gap: 12px;
     text-align: left;
+    font-size: 12.5px;
+    color: #9c8a80 !important;
   }
 
   /* Calm mobile atmosphere: particles only support the Hero and Garden. */

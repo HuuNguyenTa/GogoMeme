@@ -42,20 +42,19 @@
   object-fit: fill;
   image-rendering: crisp-edges;
   image-rendering: pixelated;
-  animation: pixel-pet-frames var(--pixel-pet-frame-duration, 1200ms) steps(4) infinite;
   transform: translate3d(0, 0, 0);
 }
 
-.pixel-pet[data-state^='walk'] {
-  --pixel-pet-frame-duration: 680ms;
+.pixel-pet[data-state^='walk'] .pixel-pet__strip {
+  animation: pixel-pet-frames 680ms steps(4) infinite;
 }
 
-.pixel-pet[data-state='idle'] {
-  --pixel-pet-frame-duration: 1480ms;
+.pixel-pet[data-state='idle'] .pixel-pet__strip {
+  animation: pixel-pet-frames 1400ms steps(4) infinite;
 }
 
-.pixel-pet[data-state='sit'] {
-  --pixel-pet-frame-duration: 1900ms;
+.pixel-pet[data-state='sit'] .pixel-pet__strip {
+  animation: pixel-pet-frames 1800ms steps(4) infinite;
 }
 
 .pixel-pet[data-visible='false'] .pixel-pet__strip {

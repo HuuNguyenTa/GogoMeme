@@ -23,47 +23,50 @@ const SPRITES = {
   }
 };
 
+// 62px per second matches the 680ms 4-frame walk stride without any foot slipping
+const WALK_SPEED = 62;
+
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 
 function readPetSize(element) {
   const value = Number.parseFloat(window.getComputedStyle(element).width);
-  return Number.isFinite(value) ? value : 48;
+  return Number.isFinite(value) && value > 0 ? value : 56;
 }
 
 function getLaneBounds(lane, viewportWidth, petSize) {
   const isMobile = viewportWidth < 768;
-  const edgeInset = isMobile ? 12 : viewportWidth >= 1200 ? 24 : 16;
+  const leftEdge = isMobile ? 12 : 24;
+  // Right edge keeps 36px on desktop to stay completely clear of Windows scrollbars
+  const rightEdge = isMobile ? 12 : 36;
 
   if (isMobile) {
-    // Mobile: Both pets stay inside the visible viewport and walk actively
     if (lane === 'left') {
-      // Dog wanders on the left side
       return {
-        min: edgeInset,
-        max: Math.max(edgeInset + 40, Math.floor(viewportWidth * 0.44))
+        min: leftEdge,
+        max: Math.max(leftEdge + 50, Math.floor(viewportWidth * 0.44))
       };
     }
-    // Cat wanders on the right side, guaranteed visible
-    const rightMax = Math.max(edgeInset + 80, viewportWidth - petSize - edgeInset);
-    const rightMin = Math.min(rightMax - 40, Math.floor(viewportWidth * 0.52));
+    const rightMax = Math.max(leftEdge + 90, viewportWidth - petSize - rightEdge);
+    const rightMin = Math.min(rightMax - 50, Math.floor(viewportWidth * 0.54));
     return {
-      min: Math.max(edgeInset + 30, rightMin),
+      min: Math.max(leftEdge + 40, rightMin),
       max: rightMax
     };
   }
 
-  // Desktop / Tablet
-  const laneWidth = Math.min(320, viewportWidth * 0.28);
-  if (lane === 'right') {
+  // Desktop / Tablet: Generous exploration zones so they roam naturally across the footer
+  if (lane === 'left') {
     return {
-      min: Math.max(edgeInset, viewportWidth - laneWidth),
-      max: Math.max(edgeInset, viewportWidth - petSize - edgeInset)
+      min: leftEdge,
+      max: Math.max(leftEdge + 140, Math.floor(viewportWidth * 0.44))
     };
   }
 
+  const catMax = Math.max(leftEdge + 200, viewportWidth - petSize - rightEdge);
+  const catMin = Math.min(catMax - 140, Math.floor(viewportWidth * 0.56));
   return {
-    min: edgeInset,
-    max: Math.max(edgeInset, laneWidth - petSize)
+    min: Math.max(leftEdge + 120, catMin),
+    max: catMax
   };
 }
 
@@ -110,7 +113,11 @@ export default function PixelPet({ kind, lane }) {
       pet.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
     };
 
-    const readBounds = () => getLaneBounds(lane, overlay.clientWidth, readPetSize(pet));
+    const getAvailableWidth = () => {
+      return document.documentElement.clientWidth || overlay.clientWidth || window.innerWidth;
+    };
+
+    const readBounds = () => getLaneBounds(lane, getAvailableWidth(), readPetSize(pet));
 
     const chooseDestination = () => {
       const bounds = readBounds();
@@ -119,15 +126,13 @@ export default function PixelPet({ kind, lane }) {
 
     const placePet = () => {
       const bounds = readBounds();
-      const isMobile = overlay.clientWidth < 768;
+      const isMobile = getAvailableWidth() < 768;
       if (currentX === 0) {
-        // Initial placement
         const initialX = lane === 'left'
-          ? bounds.min + (isMobile ? 8 : 16)
-          : bounds.max - (isMobile ? 12 : 24);
+          ? bounds.min + (isMobile ? 8 : 20)
+          : bounds.max - (isMobile ? 12 : 28);
         setPosition(Math.min(bounds.max, Math.max(bounds.min, initialX)));
       } else {
-        // Clamp to current bounds on resize
         setPosition(Math.min(bounds.max, Math.max(bounds.min, currentX)));
       }
       if (!pet.dataset.moving || pet.dataset.moving === 'false') {
@@ -137,15 +142,22 @@ export default function PixelPet({ kind, lane }) {
     };
 
     const moveTo = async (destination, duration) => {
+      if (disposed) return false;
+      const isRight = destination >= currentX;
       pet.dataset.moving = 'true';
-      setPetState(destination >= currentX ? 'walk-right' : 'walk-left');
+      setPetState(isRight ? 'walk-right' : 'walk-left');
+
+      if (currentAnimation) {
+        try { currentAnimation.cancel(); } catch {}
+        currentAnimation = null;
+      }
+
       currentAnimation = pet.animate([
         { transform: `translate3d(${currentX.toFixed(1)}px, 0, 0)` },
         { transform: `translate3d(${destination.toFixed(1)}px, 0, 0)` }
       ], {
         duration,
-        easing: 'ease-in-out',
-        fill: 'forwards'
+        easing: 'linear' // Constant linear movement synchronizes with footsteps
       });
 
       try {
@@ -158,6 +170,8 @@ export default function PixelPet({ kind, lane }) {
       }
 
       if (disposed) return false;
+      // Properly cancel animation after finishing so no lingering forward fills collide
+      try { currentAnimation?.cancel(); } catch {}
       currentAnimation = null;
       setPosition(destination);
       pet.dataset.moving = 'false';
@@ -166,8 +180,8 @@ export default function PixelPet({ kind, lane }) {
     };
 
     const runBehavior = async () => {
-      // Small staggered start
-      await pause(kind === 'dog' ? randomBetween(500, 1400) : randomBetween(1000, 2000));
+      // Natural staggered startup
+      await pause(kind === 'dog' ? randomBetween(500, 1400) : randomBetween(1200, 2400));
 
       while (!disposed) {
         if (reducedMotionQuery.matches) {
@@ -176,29 +190,37 @@ export default function PixelPet({ kind, lane }) {
           continue;
         }
 
-        // 68% chance to walk
-        if (Math.random() < 0.68) {
+        // 70% chance to walk
+        if (Math.random() < 0.70) {
           const bounds = readBounds();
-          let destination = chooseDestination();
-          if (Math.abs(destination - currentX) < 16) {
-            destination = Math.abs(currentX - bounds.min) > Math.abs(currentX - bounds.max)
-              ? bounds.min
-              : bounds.max;
+          const range = bounds.max - bounds.min;
+
+          if (range > 35) {
+            let destination = chooseDestination();
+            // Guarantee at least 45px of walking distance for a deliberate, cute stroll
+            if (Math.abs(destination - currentX) < 45 && range >= 90) {
+              destination = currentX < (bounds.min + bounds.max) / 2
+                ? randomBetween(currentX + 45, bounds.max)
+                : randomBetween(bounds.min, currentX - 45);
+            }
+            destination = Math.max(bounds.min, Math.min(bounds.max, destination));
+
+            const distance = Math.abs(destination - currentX);
+            if (distance >= 15) {
+              const duration = (distance / WALK_SPEED) * 1000 * (isNight ? 1.08 : 1);
+              const completed = await moveTo(destination, duration);
+              if (!completed) continue;
+            }
           }
-
-          const distance = Math.abs(destination - currentX);
-          // Pace around 38px/sec for natural, lively motion
-          const duration = Math.max(1600, (distance / 38) * 1000) * (isNight ? 1.15 : 1);
-
-          const completed = await moveTo(destination, duration);
-          if (!completed) continue;
         }
 
-        // Sitting or idle pause
-        const shouldSit = Math.random() < (kind === 'cat' ? 0.45 : 0.32);
+        // Relaxing pose: Sit down (adorable tail wag / blink) or Stand alert (idle)
+        const shouldSit = Math.random() < (kind === 'cat' ? 0.55 : 0.40);
         setPetState(shouldSit ? 'sit' : 'idle');
-        const pauseDuration = shouldSit ? randomBetween(2200, 5200) : randomBetween(1200, 3200);
-        await pause(pauseDuration * (isNight ? 1.2 : 1));
+        const restDuration = shouldSit
+          ? randomBetween(2600, 5500)
+          : randomBetween(1400, 3200);
+        await pause(restDuration * (isNight ? 1.2 : 1));
       }
     };
 
@@ -214,7 +236,7 @@ export default function PixelPet({ kind, lane }) {
     };
 
     const handleLayoutChange = () => {
-      currentAnimation?.cancel();
+      try { currentAnimation?.cancel(); } catch {}
       currentAnimation = null;
       wakeBehavior?.();
       placePet();
@@ -229,7 +251,7 @@ export default function PixelPet({ kind, lane }) {
 
     return () => {
       disposed = true;
-      currentAnimation?.cancel();
+      try { currentAnimation?.cancel(); } catch {}
       timerIds.forEach((timerId) => window.clearTimeout(timerId));
       themeObserver.disconnect();
       document.removeEventListener('visibilitychange', handleVisibilityChange);

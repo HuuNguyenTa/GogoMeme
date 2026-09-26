@@ -1032,12 +1032,13 @@
     height: 210px;
   }
 
-  /* Footer groups stack in reading order with solid brown background */
+  /* Footer: Bỏ hoàn toàn hiệu ứng chuyển màu background ở footer trên mobile, cố định màu nâu ấm #1f1613 */
   .landing-footer {
     position: relative !important;
-    z-index: 20 !important;
+    z-index: 25 !important;
     background: #1f1613 !important;
     background-color: #1f1613 !important;
+    transition: none !important;
     padding: 64px 20px calc(92px + env(safe-area-inset-bottom)) !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
@@ -1051,8 +1052,19 @@
     height: 150vh;
     background: #1f1613 !important;
     background-color: #1f1613 !important;
+    transition: none !important;
     pointer-events: none;
     z-index: -1;
+  }
+
+  .landing-footer,
+  .landing-footer * {
+    transition: none !important;
+  }
+
+  /* Bỏ hiệu ứng chuyển màu ambient background khi cuộn tới footer trên mobile */
+  .ambient-background[data-tone='final'] {
+    transition: none !important;
   }
 
   .landing-footer :is(.footer-brand-title, .footer-col-title) {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Heart, Paw } from '../ui/Icons';
 
+// Footer component - SSG105 GoGo & MeMe community project
+
 export default function Footer() {
   const scrollTo = (id) => (e) => {
     e.preventDefault();

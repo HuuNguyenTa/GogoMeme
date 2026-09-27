@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowRight, Heart, Sparkles, X } from '../ui/Icons';
 import {
   fetchPublicWishes,
+  fetchRotationSample,
+  fetchWishById,
   getGardenResidentLabel,
   getPublicSenderName,
   subscribeToWishInserts
@@ -16,7 +18,7 @@ import MascotIllustration from '../garden/MascotIllustration';
 import DecorativeAsset from '../ui/DecorativeAsset';
 
 const COLLISION_DISTANCE = 62;
-const MAX_GARDEN_RESIDENTS = 70;
+const MAX_GARDEN_RESIDENTS = 40;
 
 function trimResidents(
   residentsList,
@@ -99,6 +101,9 @@ function chooseTarget(resident, residents, bounds, width, height) {
       y: bounds.minY + nextResidentRandom(resident) * (bounds.maxY - bounds.minY)
     };
 
+    const targetDist = Math.hypot(((candidate.x - resident.x) / 100) * width, ((candidate.y - resident.y) / 100) * height);
+    if (targetDist < 25) continue;
+
     let nearestDistance = Number.POSITIVE_INFINITY;
     for (const other of residents) {
       if (other.residentId === resident.residentId) continue;
@@ -117,8 +122,16 @@ function chooseTarget(resident, residents, bounds, width, height) {
     }
   }
 
-  resident.targetX = bestCandidate?.x ?? resident.x;
-  resident.targetY = bestCandidate?.y ?? resident.y;
+  if (!bestCandidate) {
+    bestCandidate = {
+      x: bounds.minX + nextResidentRandom(resident) * (bounds.maxX - bounds.minX),
+      y: bounds.minY + nextResidentRandom(resident) * (bounds.maxY - bounds.minY)
+    };
+  }
+
+  resident.targetX = bestCandidate.x;
+  resident.targetY = bestCandidate.y;
+  resident.targetChosenAt = performance.now();
   resident.speed = 11 + nextResidentRandom(resident) * 11;
   resident.behavior = GARDEN_BEHAVIORS[Math.floor(nextResidentRandom(resident) * GARDEN_BEHAVIORS.length)];
 }
@@ -338,9 +351,27 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       if (isCurrent) appendWish(wish, { entrance: true });
     });
 
-    fetchPublicWishes().then((wishes) => {
+    fetchPublicWishes().then(async (wishes) => {
       if (!isCurrent) return;
-      const next = appendResidentsByWishId(residentsRef.current, wishes, layoutModeRef.current);
+      let finalWishes = Array.isArray(wishes) ? wishes : [];
+      const localId = latestLocalWishIdRef.current;
+      if (localId && !finalWishes.some((w) => w.id === localId)) {
+        try {
+          const result = await fetchWishById(localId);
+          if (!isCurrent) return;
+          if (result?.status === 'found' && result.wish?.id) {
+            finalWishes = [...finalWishes, result.wish];
+          } else if (result?.status === 'not_found') {
+            setShowFindHelper(false);
+          }
+          // On network/query error (result?.status === 'error'):
+          // Do not treat as proof that the wish no longer exists.
+          // Keep the helper visible, keep local ID, keep Garden working normally.
+        } catch {
+          // Network exception: keep helper and do not treat as non-existence
+        }
+      }
+      const next = appendResidentsByWishId(residentsRef.current, finalWishes, layoutModeRef.current);
       const trimmed = trimResidents(next, MAX_GARDEN_RESIDENTS, latestLocalWishIdRef.current, selectedWishIdRef.current);
       residentsRef.current = trimmed;
       setResidents(trimmed);
@@ -353,6 +384,97 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       unsubscribe();
     };
   }, [appendWish]);
+
+  const rotateResidents = useCallback((incomingWishes) => {
+    if (!Array.isArray(incomingWishes) || incomingWishes.length === 0) return;
+
+    const current = residentsRef.current;
+    if (current.length === 0) return;
+
+    const currentIds = new Set(current.map((r) => r.residentId));
+    const uniqueIncoming = incomingWishes.filter((w) => w?.id && !currentIds.has(w.id));
+    if (uniqueIncoming.length === 0) return;
+
+    const replaceCount = Math.min(uniqueIncoming.length, 15);
+    const toAdd = uniqueIncoming.slice(0, replaceCount);
+
+    const protectedSet = new Set([
+      latestLocalWishIdRef.current,
+      selectedWishIdRef.current
+    ].filter(Boolean));
+
+    const nonProtected = [];
+    for (let i = 0; i < current.length; i += 1) {
+      const res = current[i];
+      if (!protectedSet.has(res.residentId)) {
+        nonProtected.push(res);
+      }
+    }
+
+    if (nonProtected.length === 0) return;
+
+    // Evict oldest non-protected residents (FIFO)
+    const evictedIds = new Set(nonProtected.slice(0, replaceCount).map((r) => r.residentId));
+    for (const evictedId of evictedIds) {
+      pausedIdsRef.current.delete(evictedId);
+    }
+
+    const remaining = current.filter((r) => !evictedIds.has(r.residentId));
+    const next = appendResidentsByWishId(remaining, toAdd, layoutModeRef.current);
+    const trimmed = trimResidents(
+      next,
+      MAX_GARDEN_RESIDENTS,
+      latestLocalWishIdRef.current,
+      selectedWishIdRef.current
+    );
+
+    residentsRef.current = trimmed;
+    setResidents(trimmed);
+  }, []);
+
+  useEffect(() => {
+    let rotationTimer = null;
+    let isMounted = true;
+    const ROTATION_INTERVAL_MS = 60000;
+
+    const performRotation = async () => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      if (!isGardenVisibleRef.current) return;
+
+      try {
+        const currentIds = new Set(residentsRef.current.map((r) => r.residentId));
+        const sampled = await fetchRotationSample(currentIds, 12);
+        if (!isMounted || !Array.isArray(sampled) || sampled.length === 0) return;
+        rotateResidents(sampled);
+      } catch {
+        // Safe: keep current residents on any network issue
+      }
+    };
+
+    const scheduleRotation = () => {
+      if (rotationTimer) window.clearTimeout(rotationTimer);
+      rotationTimer = window.setTimeout(async () => {
+        await performRotation();
+        if (isMounted) scheduleRotation();
+      }, ROTATION_INTERVAL_MS);
+    };
+
+    scheduleRotation();
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isGardenVisibleRef.current) {
+        scheduleRotation();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      isMounted = false;
+      if (rotationTimer) window.clearTimeout(rotationTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [rotateResidents]);
 
   useEffect(() => {
     if (!newWish?.id || lastLocalWishIdRef.current === newWish.id) return undefined;
@@ -478,17 +600,19 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
         let dyPixels = ((resident.targetY - resident.y) / 100) * rect.height;
         let distance = Math.hypot(dxPixels, dyPixels);
 
-        if (distance < 3) {
-          if (!resident.pauseUntil) {
-            resident.pauseUntil = now + 850 + nextResidentRandom(resident) * 2400;
-            resident.behavior = nextResidentRandom(resident) > 0.72 ? 'small-hop' : 'idle';
-          } else if (now >= resident.pauseUntil) {
+        const isStuck = !resident.pauseUntil && resident.targetChosenAt && (now - resident.targetChosenAt > 7000);
+
+        if (resident.pauseUntil) {
+          if (now >= resident.pauseUntil) {
             resident.pauseUntil = 0;
             chooseTarget(resident, activeResidents, bounds, rect.width, rect.height);
             dxPixels = ((resident.targetX - resident.x) / 100) * rect.width;
             dyPixels = ((resident.targetY - resident.y) / 100) * rect.height;
             distance = Math.hypot(dxPixels, dyPixels);
           }
+        } else if (distance < 3 || isStuck) {
+          resident.pauseUntil = now + (isStuck ? 300 : 850) + nextResidentRandom(resident) * (isStuck ? 500 : 2400);
+          resident.behavior = nextResidentRandom(resident) > 0.72 ? 'small-hop' : 'idle';
         }
 
         if (!resident.pauseUntil && distance >= 3) {
@@ -523,13 +647,23 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
           const offsetX = (dx / distance) * separation;
           const offsetY = (dy / distance) * separation;
 
+          const firstBlockedY = (first.y <= bounds.minY && offsetY > 0) || (first.y >= bounds.maxY && offsetY < 0);
+          const secondBlockedY = (second.y <= bounds.minY && offsetY < 0) || (second.y >= bounds.maxY && offsetY > 0);
+          const firstScaleY = firstBlockedY ? 0 : (secondBlockedY ? 2 : 1);
+          const secondScaleY = secondBlockedY ? 0 : (firstBlockedY ? 2 : 1);
+
+          const firstBlockedX = (first.x <= bounds.minX && offsetX > 0) || (first.x >= bounds.maxX && offsetX < 0);
+          const secondBlockedX = (second.x <= bounds.minX && offsetX < 0) || (second.x >= bounds.maxX && offsetX > 0);
+          const firstScaleX = firstBlockedX ? 0 : (secondBlockedX ? 2 : 1);
+          const secondScaleX = secondBlockedX ? 0 : (firstBlockedX ? 2 : 1);
+
           if (!pausedIdsRef.current.has(first.residentId)) {
-            first.x = clamp(first.x - (offsetX / rect.width) * 100, bounds.minX, bounds.maxX);
-            first.y = clamp(first.y - (offsetY / rect.height) * 100, bounds.minY, bounds.maxY);
+            first.x = clamp(first.x - (offsetX * firstScaleX / rect.width) * 100, bounds.minX, bounds.maxX);
+            first.y = clamp(first.y - (offsetY * firstScaleY / rect.height) * 100, bounds.minY, bounds.maxY);
           }
           if (!pausedIdsRef.current.has(second.residentId)) {
-            second.x = clamp(second.x + (offsetX / rect.width) * 100, bounds.minX, bounds.maxX);
-            second.y = clamp(second.y + (offsetY / rect.height) * 100, bounds.minY, bounds.maxY);
+            second.x = clamp(second.x + (offsetX * secondScaleX / rect.width) * 100, bounds.minX, bounds.maxX);
+            second.y = clamp(second.y + (offsetY * secondScaleY / rect.height) * 100, bounds.minY, bounds.maxY);
           }
         }
       }
@@ -580,6 +714,10 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
 
   const handleFindLatestResident = useCallback(() => {
     if (!latestLocalWishId) return;
+    const exists = residentsRef.current.some((r) => r.residentId === latestLocalWishId);
+    if (!exists) {
+      return;
+    }
     setActiveTab('all');
     handleSelect(latestLocalWishId);
     setShowFindHelper(false);

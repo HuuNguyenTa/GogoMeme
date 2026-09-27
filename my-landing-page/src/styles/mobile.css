@@ -664,15 +664,8 @@
   }
 
   .garden-resident-name {
-    display: none;
     max-width: 120px;
     font-size: 9.5px;
-  }
-
-  .garden-resident-anchor.is-selected .garden-resident-name,
-  .garden-resident-anchor.is-local-highlight .garden-resident-name,
-  .garden-resident-hitbox:focus-visible .garden-resident-name {
-    display: block;
   }
 
   .garden-resident-tooltip {

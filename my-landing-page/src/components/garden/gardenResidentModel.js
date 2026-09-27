@@ -29,23 +29,23 @@ export function getResidentPlacement(wish, index = 0, layoutMode = 'desktop') {
 
   if (layoutMode === 'mobile') {
     const column = index % 5;
-    const row = Math.floor(index / 5) % 7;
-    const x = 9 + column * 20.5 + (seededFraction(seed, 11) - 0.5) * 5;
-    const y = 12 + row * 12.7 + (seededFraction(seed, 12) - 0.5) * 4.5;
+    const row = Math.min(7, Math.floor(index / 5));
+    const x = 9 + column * 20.5 + (seededFraction(seed, 11) - 0.5) * 4;
+    const y = 14 + row * 10.3 + (seededFraction(seed, 12) - 0.5) * 3.5;
 
     return {
-      x: clamp(x, 7, 93),
-      y: clamp(y, 9, 91)
+      x: clamp(x, 8, 92),
+      y: clamp(y, 12, 88)
     };
   }
 
   const column = index % 6;
-  const row = Math.floor(index / 6) % 6;
+  const row = Math.min(6, Math.floor(index / 6));
   const x = 9 + column * 16.4 + (seededFraction(seed, 1) - 0.5) * 4;
-  const y = 18 + row * 13.8 + (seededFraction(seed, 2) - 0.5) * 4;
+  const y = 16 + row * 11.5 + (seededFraction(seed, 2) - 0.5) * 3.5;
 
   return {
-    x: clamp(x, 7, 93),
+    x: clamp(x, 8, 92),
     y: clamp(y, 14, 88)
   };
 }

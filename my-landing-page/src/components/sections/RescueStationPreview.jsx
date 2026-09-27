@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowRight, Heart, Sparkles, X } from '../ui/Icons';
 import {
   fetchPublicWishes,
+  getGardenResidentLabel,
   getPublicSenderName,
   subscribeToWishInserts
 } from '../../services/wishService';
@@ -206,7 +207,7 @@ const MascotNode = React.memo(function MascotNode({
           <span className="garden-resident-shadow" />
         </span>
 
-        <span className={`garden-resident-name ${(isMyPet || isLocalHighlight) ? 'is-my-pet-name' : ''}`}>{resident.animalName}</span>
+        <span className={`garden-resident-name ${(isMyPet || isLocalHighlight) ? 'is-my-pet-name' : ''}`}>{getGardenResidentLabel(resident)}</span>
 
         {isHovered ? (
           <span className="garden-resident-tooltip" role="tooltip">

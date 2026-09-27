@@ -19,6 +19,25 @@ export function getPublicSenderName(wish) {
   return 'Một người bạn ẩn danh';
 }
 
+/**
+ * Computes the always-visible Garden resident label.
+ * 1. If sender_display_name exists and is non-empty: "Bé của {sender_display_name}"
+ * 2. If null, empty or whitespace: fallback to animal display name (e.g. "Bé Bơ")
+ * 3. Truncates unusually long sender names deterministically to safeguard Garden pills.
+ */
+export function getGardenResidentLabel(resident, maxSenderLength = 16) {
+  if (!resident) return '';
+  const rawSender = resident.senderDisplayName ?? resident.sender_display_name;
+  if (typeof rawSender === 'string' && rawSender.trim()) {
+    const cleanSender = rawSender.trim();
+    const truncatedSender = cleanSender.length > maxSenderLength
+      ? `${cleanSender.slice(0, maxSenderLength - 1).trimEnd()}…`
+      : cleanSender;
+    return `Bé của ${truncatedSender}`;
+  }
+  return resident.animalName || 'Bé ngoan';
+}
+
 const ANIMAL_PROFILE_MAP = {
   'dog-bo': { name: 'Bé Bơ', type: 'dog', breed: 'Shiba Inu lai', avatar: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&auto=format&fit=crop&q=80' },
   'cat-may': { name: 'Bé Mây', type: 'cat', breed: 'Mèo mướp Tabby', avatar: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80' },

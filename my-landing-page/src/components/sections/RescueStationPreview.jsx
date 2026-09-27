@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowRight, Heart, Sparkles, X } from '../ui/Icons';
 import {
   fetchPublicWishes,
+  fetchRotationSample,
+  fetchWishById,
+  getGardenResidentLabel,
   getPublicSenderName,
   subscribeToWishInserts
 } from '../../services/wishService';
@@ -15,6 +18,54 @@ import MascotIllustration from '../garden/MascotIllustration';
 import DecorativeAsset from '../ui/DecorativeAsset';
 
 const COLLISION_DISTANCE = 62;
+const MAX_GARDEN_RESIDENTS = 40;
+
+function trimResidents(
+  residentsList,
+  maxCount = MAX_GARDEN_RESIDENTS,
+  protectedWishId = null,
+  selectedId = null
+) {
+  if (residentsList.length <= maxCount) return residentsList;
+
+  const excess = residentsList.length - maxCount;
+  const protectedSet = new Set([protectedWishId, selectedId].filter(Boolean));
+
+  const candidateIndices = [];
+  const protectedIndices = [];
+
+  for (let i = 0; i < residentsList.length; i += 1) {
+    const res = residentsList[i];
+    const time = res.createdAt ? new Date(res.createdAt).getTime() : 0;
+    if (!protectedSet.has(res.residentId)) {
+      candidateIndices.push({ index: i, time });
+    } else {
+      protectedIndices.push({ index: i, time });
+    }
+  }
+
+  candidateIndices.sort((a, b) => a.time - b.time);
+
+  let indicesToRemove;
+  if (candidateIndices.length >= excess) {
+    indicesToRemove = new Set(candidateIndices.slice(0, excess).map((c) => c.index));
+  } else {
+    const neededFromProtected = excess - candidateIndices.length;
+    protectedIndices.sort((a, b) => {
+      const aIsSelected = residentsList[a.index].residentId === selectedId ? 1 : 0;
+      const bIsSelected = residentsList[b.index].residentId === selectedId ? 1 : 0;
+      if (aIsSelected !== bIsSelected) return aIsSelected - bIsSelected;
+      return a.time - b.time;
+    });
+    const removedFromProtected = protectedIndices.slice(0, neededFromProtected);
+    indicesToRemove = new Set([
+      ...candidateIndices.map((c) => c.index),
+      ...removedFromProtected.map((p) => p.index)
+    ]);
+  }
+
+  return residentsList.filter((_, idx) => !indicesToRemove.has(idx));
+}
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -50,6 +101,9 @@ function chooseTarget(resident, residents, bounds, width, height) {
       y: bounds.minY + nextResidentRandom(resident) * (bounds.maxY - bounds.minY)
     };
 
+    const targetDist = Math.hypot(((candidate.x - resident.x) / 100) * width, ((candidate.y - resident.y) / 100) * height);
+    if (targetDist < 25) continue;
+
     let nearestDistance = Number.POSITIVE_INFINITY;
     for (const other of residents) {
       if (other.residentId === resident.residentId) continue;
@@ -68,8 +122,16 @@ function chooseTarget(resident, residents, bounds, width, height) {
     }
   }
 
-  resident.targetX = bestCandidate?.x ?? resident.x;
-  resident.targetY = bestCandidate?.y ?? resident.y;
+  if (!bestCandidate) {
+    bestCandidate = {
+      x: bounds.minX + nextResidentRandom(resident) * (bounds.maxX - bounds.minX),
+      y: bounds.minY + nextResidentRandom(resident) * (bounds.maxY - bounds.minY)
+    };
+  }
+
+  resident.targetX = bestCandidate.x;
+  resident.targetY = bestCandidate.y;
+  resident.targetChosenAt = performance.now();
   resident.speed = 11 + nextResidentRandom(resident) * 11;
   resident.behavior = GARDEN_BEHAVIORS[Math.floor(nextResidentRandom(resident) * GARDEN_BEHAVIORS.length)];
 }
@@ -158,7 +220,7 @@ const MascotNode = React.memo(function MascotNode({
           <span className="garden-resident-shadow" />
         </span>
 
-        <span className={`garden-resident-name ${(isMyPet || isLocalHighlight) ? 'is-my-pet-name' : ''}`}>{resident.animalName}</span>
+        <span className={`garden-resident-name ${(isMyPet || isLocalHighlight) ? 'is-my-pet-name' : ''}`}>{getGardenResidentLabel(resident)}</span>
 
         {isHovered ? (
           <span className="garden-resident-tooltip" role="tooltip">
@@ -202,6 +264,16 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
   const layoutModeRef = useRef(getGardenLayoutMode());
   const isGardenVisibleRef = useRef(true);
   const resumeGardenMotionRef = useRef(() => {});
+  const activeTabRef = useRef(activeTab);
+  const latestLocalWishIdRef = useRef(latestLocalWishId);
+
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
+
+  useEffect(() => {
+    latestLocalWishIdRef.current = latestLocalWishId;
+  }, [latestLocalWishId]);
 
   useEffect(() => {
     residentsRef.current = residents;
@@ -239,6 +311,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
     saveLocalMyWishId(wishId);
     setMyWishIds((prev) => new Set([...prev, wishId]));
     setLatestLocalWishId(wishId);
+    latestLocalWishIdRef.current = wishId;
     setShowFindHelper(true);
     setLocalHighlightWishId(wishId);
   }, []);
@@ -246,11 +319,18 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
   const appendWish = useCallback((wish, { entrance = false, select = false, local = false } = {}) => {
     if (!wish?.id) return;
 
+    if (local) {
+      latestLocalWishIdRef.current = wish.id;
+    }
+
     const exists = residentsRef.current.some((resident) => resident.residentId === wish.id);
     if (!exists) {
       const next = appendResidentsByWishId(residentsRef.current, [wish], layoutModeRef.current);
-      residentsRef.current = next;
-      setResidents(next);
+      const activeProtectedWishId = local ? wish.id : latestLocalWishIdRef.current;
+      const activeSelectedId = select ? wish.id : selectedWishIdRef.current;
+      const trimmed = trimResidents(next, MAX_GARDEN_RESIDENTS, activeProtectedWishId, activeSelectedId);
+      residentsRef.current = trimmed;
+      setResidents(trimmed);
     }
 
     if (entrance) markEntrance(wish.id);
@@ -271,11 +351,30 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       if (isCurrent) appendWish(wish, { entrance: true });
     });
 
-    fetchPublicWishes().then((wishes) => {
+    fetchPublicWishes().then(async (wishes) => {
       if (!isCurrent) return;
-      const next = appendResidentsByWishId(residentsRef.current, wishes, layoutModeRef.current);
-      residentsRef.current = next;
-      setResidents(next);
+      let finalWishes = Array.isArray(wishes) ? wishes : [];
+      const localId = latestLocalWishIdRef.current;
+      if (localId && !finalWishes.some((w) => w.id === localId)) {
+        try {
+          const result = await fetchWishById(localId);
+          if (!isCurrent) return;
+          if (result?.status === 'found' && result.wish?.id) {
+            finalWishes = [...finalWishes, result.wish];
+          } else if (result?.status === 'not_found') {
+            setShowFindHelper(false);
+          }
+          // On network/query error (result?.status === 'error'):
+          // Do not treat as proof that the wish no longer exists.
+          // Keep the helper visible, keep local ID, keep Garden working normally.
+        } catch {
+          // Network exception: keep helper and do not treat as non-existence
+        }
+      }
+      const next = appendResidentsByWishId(residentsRef.current, finalWishes, layoutModeRef.current);
+      const trimmed = trimResidents(next, MAX_GARDEN_RESIDENTS, latestLocalWishIdRef.current, selectedWishIdRef.current);
+      residentsRef.current = trimmed;
+      setResidents(trimmed);
     }).catch(() => {
       // Keep the Garden usable when the network is unavailable; realtime can still recover later.
     });
@@ -285,6 +384,97 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       unsubscribe();
     };
   }, [appendWish]);
+
+  const rotateResidents = useCallback((incomingWishes) => {
+    if (!Array.isArray(incomingWishes) || incomingWishes.length === 0) return;
+
+    const current = residentsRef.current;
+    if (current.length === 0) return;
+
+    const currentIds = new Set(current.map((r) => r.residentId));
+    const uniqueIncoming = incomingWishes.filter((w) => w?.id && !currentIds.has(w.id));
+    if (uniqueIncoming.length === 0) return;
+
+    const replaceCount = Math.min(uniqueIncoming.length, 15);
+    const toAdd = uniqueIncoming.slice(0, replaceCount);
+
+    const protectedSet = new Set([
+      latestLocalWishIdRef.current,
+      selectedWishIdRef.current
+    ].filter(Boolean));
+
+    const nonProtected = [];
+    for (let i = 0; i < current.length; i += 1) {
+      const res = current[i];
+      if (!protectedSet.has(res.residentId)) {
+        nonProtected.push(res);
+      }
+    }
+
+    if (nonProtected.length === 0) return;
+
+    // Evict oldest non-protected residents (FIFO)
+    const evictedIds = new Set(nonProtected.slice(0, replaceCount).map((r) => r.residentId));
+    for (const evictedId of evictedIds) {
+      pausedIdsRef.current.delete(evictedId);
+    }
+
+    const remaining = current.filter((r) => !evictedIds.has(r.residentId));
+    const next = appendResidentsByWishId(remaining, toAdd, layoutModeRef.current);
+    const trimmed = trimResidents(
+      next,
+      MAX_GARDEN_RESIDENTS,
+      latestLocalWishIdRef.current,
+      selectedWishIdRef.current
+    );
+
+    residentsRef.current = trimmed;
+    setResidents(trimmed);
+  }, []);
+
+  useEffect(() => {
+    let rotationTimer = null;
+    let isMounted = true;
+    const ROTATION_INTERVAL_MS = 60000;
+
+    const performRotation = async () => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      if (!isGardenVisibleRef.current) return;
+
+      try {
+        const currentIds = new Set(residentsRef.current.map((r) => r.residentId));
+        const sampled = await fetchRotationSample(currentIds, 12);
+        if (!isMounted || !Array.isArray(sampled) || sampled.length === 0) return;
+        rotateResidents(sampled);
+      } catch {
+        // Safe: keep current residents on any network issue
+      }
+    };
+
+    const scheduleRotation = () => {
+      if (rotationTimer) window.clearTimeout(rotationTimer);
+      rotationTimer = window.setTimeout(async () => {
+        await performRotation();
+        if (isMounted) scheduleRotation();
+      }, ROTATION_INTERVAL_MS);
+    };
+
+    scheduleRotation();
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isGardenVisibleRef.current) {
+        scheduleRotation();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      isMounted = false;
+      if (rotationTimer) window.clearTimeout(rotationTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [rotateResidents]);
 
   useEffect(() => {
     if (!newWish?.id || lastLocalWishIdRef.current === newWish.id) return undefined;
@@ -384,6 +574,11 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       const deltaSeconds = Math.min(0.05, Math.max(0, (now - previousTime) / 1000));
       previousTime = now;
       const residentsNow = residentsRef.current;
+      const currentTab = activeTabRef.current;
+      const activeResidents = currentTab === 'all'
+        ? residentsNow
+        : residentsNow.filter((r) => r.animalType === currentTab);
+
       const horizontalPadding = clamp((48 / rect.width) * 100, 7, 17);
       const verticalPadding = clamp((54 / rect.height) * 100, 11, 17);
       const bounds = {
@@ -393,7 +588,7 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
         maxY: 100 - verticalPadding
       };
 
-      for (const resident of residentsNow) {
+      for (const resident of activeResidents) {
         const isPaused = pausedIdsRef.current.has(resident.residentId);
         const element = elementRefs.current.get(resident.residentId);
         if (isPaused) {
@@ -405,17 +600,19 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
         let dyPixels = ((resident.targetY - resident.y) / 100) * rect.height;
         let distance = Math.hypot(dxPixels, dyPixels);
 
-        if (distance < 3) {
-          if (!resident.pauseUntil) {
-            resident.pauseUntil = now + 850 + nextResidentRandom(resident) * 2400;
-            resident.behavior = nextResidentRandom(resident) > 0.72 ? 'small-hop' : 'idle';
-          } else if (now >= resident.pauseUntil) {
+        const isStuck = !resident.pauseUntil && resident.targetChosenAt && (now - resident.targetChosenAt > 7000);
+
+        if (resident.pauseUntil) {
+          if (now >= resident.pauseUntil) {
             resident.pauseUntil = 0;
-            chooseTarget(resident, residentsNow, bounds, rect.width, rect.height);
+            chooseTarget(resident, activeResidents, bounds, rect.width, rect.height);
             dxPixels = ((resident.targetX - resident.x) / 100) * rect.width;
             dyPixels = ((resident.targetY - resident.y) / 100) * rect.height;
             distance = Math.hypot(dxPixels, dyPixels);
           }
+        } else if (distance < 3 || isStuck) {
+          resident.pauseUntil = now + (isStuck ? 300 : 850) + nextResidentRandom(resident) * (isStuck ? 500 : 2400);
+          resident.behavior = nextResidentRandom(resident) > 0.72 ? 'small-hop' : 'idle';
         }
 
         if (!resident.pauseUntil && distance >= 3) {
@@ -430,10 +627,10 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
       }
 
       const collisionDistance = layoutModeRef.current === 'mobile' ? 54 : COLLISION_DISTANCE;
-      for (let firstIndex = 0; firstIndex < residentsNow.length; firstIndex += 1) {
-        const first = residentsNow[firstIndex];
-        for (let secondIndex = firstIndex + 1; secondIndex < residentsNow.length; secondIndex += 1) {
-          const second = residentsNow[secondIndex];
+      for (let firstIndex = 0; firstIndex < activeResidents.length; firstIndex += 1) {
+        const first = activeResidents[firstIndex];
+        for (let secondIndex = firstIndex + 1; secondIndex < activeResidents.length; secondIndex += 1) {
+          const second = activeResidents[secondIndex];
           let dx = ((second.x - first.x) / 100) * rect.width;
           let dy = ((second.y - first.y) / 100) * rect.height;
           let distance = Math.hypot(dx, dy);
@@ -450,13 +647,23 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
           const offsetX = (dx / distance) * separation;
           const offsetY = (dy / distance) * separation;
 
+          const firstBlockedY = (first.y <= bounds.minY && offsetY > 0) || (first.y >= bounds.maxY && offsetY < 0);
+          const secondBlockedY = (second.y <= bounds.minY && offsetY < 0) || (second.y >= bounds.maxY && offsetY > 0);
+          const firstScaleY = firstBlockedY ? 0 : (secondBlockedY ? 2 : 1);
+          const secondScaleY = secondBlockedY ? 0 : (firstBlockedY ? 2 : 1);
+
+          const firstBlockedX = (first.x <= bounds.minX && offsetX > 0) || (first.x >= bounds.maxX && offsetX < 0);
+          const secondBlockedX = (second.x <= bounds.minX && offsetX < 0) || (second.x >= bounds.maxX && offsetX > 0);
+          const firstScaleX = firstBlockedX ? 0 : (secondBlockedX ? 2 : 1);
+          const secondScaleX = secondBlockedX ? 0 : (firstBlockedX ? 2 : 1);
+
           if (!pausedIdsRef.current.has(first.residentId)) {
-            first.x = clamp(first.x - (offsetX / rect.width) * 100, bounds.minX, bounds.maxX);
-            first.y = clamp(first.y - (offsetY / rect.height) * 100, bounds.minY, bounds.maxY);
+            first.x = clamp(first.x - (offsetX * firstScaleX / rect.width) * 100, bounds.minX, bounds.maxX);
+            first.y = clamp(first.y - (offsetY * firstScaleY / rect.height) * 100, bounds.minY, bounds.maxY);
           }
           if (!pausedIdsRef.current.has(second.residentId)) {
-            second.x = clamp(second.x + (offsetX / rect.width) * 100, bounds.minX, bounds.maxX);
-            second.y = clamp(second.y + (offsetY / rect.height) * 100, bounds.minY, bounds.maxY);
+            second.x = clamp(second.x + (offsetX * secondScaleX / rect.width) * 100, bounds.minX, bounds.maxX);
+            second.y = clamp(second.y + (offsetY * secondScaleY / rect.height) * 100, bounds.minY, bounds.maxY);
           }
         }
       }
@@ -507,6 +714,10 @@ export default function RescueStationPreview({ newWish, onGoToScenarios }) {
 
   const handleFindLatestResident = useCallback(() => {
     if (!latestLocalWishId) return;
+    const exists = residentsRef.current.some((r) => r.residentId === latestLocalWishId);
+    if (!exists) {
+      return;
+    }
     setActiveTab('all');
     handleSelect(latestLocalWishId);
     setShowFindHelper(false);

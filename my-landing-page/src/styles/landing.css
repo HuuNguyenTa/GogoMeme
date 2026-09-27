@@ -7629,7 +7629,7 @@
   top: -2px;
   left: 50%;
   z-index: 3;
-  max-width: 84px;
+  max-width: 124px;
   padding: 2px 7px;
   overflow: hidden;
   border: 1px solid rgba(220, 190, 175, 0.58);
@@ -7791,7 +7791,7 @@
   }
 
   .garden-resident-name {
-    max-width: 72px;
+    max-width: 120px;
     font-size: 9.5px;
   }
 

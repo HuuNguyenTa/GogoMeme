@@ -25,7 +25,7 @@ export default function FindSupportSection() {
             Tìm Nơi Hỗ Trợ Cứu Trợ
           </h2>
           <p className="section-subtitle">
-            Danh bạ các mái ấm và đội tình nguyện viên cứu trợ chó mèo đã được nhóm SSG105 xác thực thông tin liên hệ.
+            Danh bạ đầu mối hỗ trợ cứu hộ chó mèo tại Hà Nội, TP. Hồ Chí Minh và Cần Thơ.
           </p>
         </div>
 
@@ -41,7 +41,6 @@ export default function FindSupportSection() {
               <option value="all">Tất cả các tỉnh / thành phố</option>
               <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
               <option value="Hà Nội">Hà Nội</option>
-              <option value="Đà Nẵng">Đà Nẵng</option>
               <option value="Cần Thơ">Cần Thơ</option>
             </select>
           </div>
@@ -55,12 +54,10 @@ export default function FindSupportSection() {
           {filteredCenters.map((rc) => (
             <div className="rescue-card-clean" key={rc.id}>
               <div className="rescue-card-top">
-                <span className="rescue-location-tag">{rc.city} · {rc.district}</span>
+                <span className="rescue-location-tag">{rc.city}</span>
               </div>
 
               <h3 className="rescue-name">{rc.name}</h3>
-              <p className="rescue-desc">{rc.description}</p>
-
               <div className="rescue-actions-clean">
                 {rc.phone && (
                   <a href={`tel:${rc.phone.replace(/\s+/g, '')}`} className="rescue-btn-call">
@@ -68,6 +65,7 @@ export default function FindSupportSection() {
                     <span>{rc.phone}</span>
                   </a>
                 )}
+                {rc.email && <span className="rescue-email"><strong>Email:</strong> {rc.email}</span>}
                 {rc.facebookUrl && (
                   <a href={rc.facebookUrl} target="_blank" rel="noopener noreferrer" className="rescue-btn-fb">
                     <ExternalLink size={14} />

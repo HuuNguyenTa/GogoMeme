@@ -7,7 +7,7 @@ export default function ProjectJourneySection() {
   const verifiedStats = [
     { num: PROJECT_STATS.totalWishes || '2.400+', label: 'Lời chúc ấm áp từ cộng đồng' },
     { num: PROJECT_STATS.participants || '1.250+', label: 'Người tham gia chiến dịch nhận thức' },
-    { num: PROJECT_STATS.sheltersConnected || '6+', label: 'Trạm cứu trợ xác minh tại 4 thành phố' },
+    { num: PROJECT_STATS.sheltersConnected || '12', label: 'Đầu mối liên hệ tại 3 thành phố' },
     { num: '100%', label: 'Dự án sinh viên phi lợi nhuận' }
   ];
 

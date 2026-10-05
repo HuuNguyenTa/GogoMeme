@@ -6625,6 +6625,13 @@
   background: #ffe3d6;
 }
 
+.rescue-email {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
 .rescue-btn-fb {
   display: inline-flex;
   align-items: center;

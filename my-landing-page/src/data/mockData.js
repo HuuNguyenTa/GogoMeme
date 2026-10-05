@@ -396,63 +396,87 @@ export const RESCUE_SCENARIOS = [
 export const RESCUE_CENTERS = [
   {
     id: 'rc-1',
-    name: 'Trạm Cứu Hộ Động Vật Sài Gòn Time (SGT)',
-    city: 'TP. Hồ Chí Minh',
-    district: 'Huyện Bình Chánh / TP. Thủ Đức',
-    phone: '090 123 4567',
-    facebookUrl: 'https://facebook.com',
-    description: 'Một trong những mái ấm lâu năm cưu mang hàng trăm bé chó mèo già yếu, khuyết tật và bị bạo hành.',
-    verifiedDate: 'Tháng 09/2026'
+    name: 'Tổ chức động vật châu Á (Animals Asia)',
+    city: 'Hà Nội',
+    phone: '02439289264',
+    facebookUrl: 'https://www.facebook.com/AnimalsAsia'
   },
   {
     id: 'rc-2',
-    name: 'SAR - Saigon Animal Rescue',
-    city: 'TP. Hồ Chí Minh',
-    district: 'Quận 7 / Nhà Bè',
-    phone: '093 888 9911',
-    facebookUrl: 'https://facebook.com',
-    description: 'Đội ngũ tình nguyện viên phản ứng nhanh hỗ trợ các ca tai nạn giao thông và tìm nhà mới cho chó mèo.',
-    verifiedDate: 'Tháng 09/2026'
+    name: 'Trung Tâm Bảo Tồn Động Vật Hoang Dã Việt (Four Paws)',
+    city: 'Hà Nội',
+    phone: '0862712886',
+    facebookUrl: 'https://www.facebook.com/fourpawsviet.org'
   },
   {
     id: 'rc-3',
-    name: 'Hà Nội Pet Adoption',
+    name: 'Nhóm cứu hộ chó mèo Sân Nhà Nhiều Chó (SNNC)',
     city: 'Hà Nội',
-    district: 'Quận Đống Đa / Cầu Giấy',
-    phone: '096 777 8822',
-    facebookUrl: 'https://facebook.com',
-    description: 'Tổ chức tình nguyện hoạt động từ năm 2015, thúc đẩy nhận thức triệt sản, tiêm phòng và cứu trợ thú cưng.',
-    verifiedDate: 'Tháng 09/2026'
+    phone: '0866178788',
+    facebookUrl: 'https://www.facebook.com/Sannhanhieucho'
   },
   {
     id: 'rc-4',
-    name: 'Sân Nhà Nhiều Chó (Hà Nội)',
+    name: 'Nhận Nuôi Thú Cưng – Hanoi Pet Adoption (HPA)',
     city: 'Hà Nội',
-    district: 'Huyện Gia Lâm / Long Biên',
-    phone: '091 445 6677',
-    facebookUrl: 'https://facebook.com',
-    description: 'Mái nhà ấm áp dành cho các bé chó mèo bị bỏ rơi, tổ chức các buổi gặp gỡ nhận nuôi hàng tháng.',
-    verifiedDate: 'Tháng 08/2026'
+    phone: '0393201068',
+    facebookUrl: 'https://www.facebook.com/hanoipetadoption'
   },
   {
     id: 'rc-5',
-    name: 'Đà Nẵng Animal Rescue (DAR)',
-    city: 'Đà Nẵng',
-    district: 'Quận Sơn Trà / Hải Châu',
-    phone: '098 333 4455',
-    facebookUrl: 'https://facebook.com',
-    description: 'Mạng lưới kết nối các phòng khám thú y và tình nguyện viên cứu nạn động vật tại miền Trung.',
-    verifiedDate: 'Tháng 09/2026'
+    name: 'Trạm Cứu Hộ Động Vật Nông Nghiệp Hà Nội (VNUA)',
+    city: 'Hà Nội',
+    phone: '0981737545',
+    facebookUrl: 'https://www.facebook.com/Tramcuuhodongvatnongnghiephanoi'
   },
   {
     id: 'rc-6',
-    name: 'Nhóm Cứu Trợ Động Vật Cần Thơ',
+    name: 'Tổ chức từ thiện động vật Pet Mart Charities (PMC)',
+    city: 'Hà Nội',
+    phone: '028 7106 9906',
+    facebookUrl: 'https://www.facebook.com/petmartvietnam'
+  },
+  {
+    id: 'rc-7',
+    name: 'Hội bảo vệ động vật Việt Nam (VAWA)',
+    city: 'TP. Hồ Chí Minh',
+    phone: '0982570289',
+    facebookUrl: 'https://www.facebook.com/vawa.org/'
+  },
+  {
+    id: 'rc-8',
+    name: 'Yeudongvat Foundation (YDV)',
+    city: 'TP. Hồ Chí Minh',
+    email: 'info@yeudongvat.org',
+    facebookUrl: 'https://www.facebook.com/yeudongvat.org/'
+  },
+  {
+    id: 'rc-9',
+    name: 'Nhóm Cứu Trợ Động Vật (SAR)',
+    city: 'TP. Hồ Chí Minh',
+    email: 'nhomcuutrodvsg@gmail.com',
+    facebookUrl: 'https://www.facebook.com/nhomcuutrodongvatsaigon/'
+  },
+  {
+    id: 'rc-10',
+    name: 'Cứu Hộ Chó Mèo Sài Gòn Time (SGT)',
+    city: 'TP. Hồ Chí Minh',
+    email: 'nhuknh09@gmail.com',
+    facebookUrl: 'https://www.facebook.com/savesgt'
+  },
+  {
+    id: 'rc-11',
+    name: 'Laws For Paws Vietnam (LFPV)',
+    city: 'TP. Hồ Chí Minh',
+    email: 'l4pawsvietnam@gmail.com',
+    facebookUrl: 'https://www.facebook.com/lawsforpawsvietnam'
+  },
+  {
+    id: 'rc-12',
+    name: 'Can Tho Pet Shelter',
     city: 'Cần Thơ',
-    district: 'Quận Ninh Kiều',
-    phone: '094 555 6688',
-    facebookUrl: 'https://facebook.com',
-    description: 'Cộng đồng sinh viên và người yêu động vật đồng bằng sông Cửu Long chăm sóc các bé cơ nhỡ.',
-    verifiedDate: 'Tháng 08/2026'
+    phone: '0971061311',
+    facebookUrl: 'https://www.facebook.com/tambinhyenpetrescue'
   }
 ];
 
@@ -461,7 +485,7 @@ export const PROJECT_STATS = {
   fundRaised: 'Đang cập nhật',
   totalWishes: '2.400+',
   participants: '1.250+',
-  sheltersConnected: '6+'
+  sheltersConnected: '12'
 };
 
 // Dữ liệu so sánh trực quan lấy cảm hứng từ phương pháp SavePet

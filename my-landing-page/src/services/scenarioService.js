@@ -1,7 +1,13 @@
 // scenarioService.js - Educational Rescue Scenario Service for Trạm Yêu Thương
 // Encapsulates scenario retrieval, resilient offline fallback, and DỪNG - NHÌN - GIÚP - GỌI framework data.
+//
+// NOTE: The current visible application UI (LearnToHelpSection.jsx) intentionally renders
+// directly from verified static content (RESCUE_SCENARIOS in mockData.js) to guarantee instant,
+// zero-latency rendering and maintain the frozen UI contract.
+// fetchScenarios is maintained as a resilient utility with verified fallback for future remote sync.
 
 import { RESCUE_SCENARIOS } from '../data/mockData';
+import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 export const FRAMEWORK_STEPS = [
   {
@@ -55,10 +61,9 @@ export const FRAMEWORK_STEPS = [
  * @returns {Promise<Array>} Array of scenarios
  */
 export async function fetchScenarios() {
-  try {
-    // If Supabase client exists in environment, attempt query
-    if (typeof window !== 'undefined' && window.__supabaseClient) {
-      const { data, error } = await window.__supabaseClient
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
         .from('scenarios')
         .select('*')
         .eq('is_active', true)
@@ -67,9 +72,9 @@ export async function fetchScenarios() {
       if (!error && data && data.length > 0) {
         return data;
       }
+    } catch (err) {
+      console.warn('[scenarioService] Using verified fallback scenarios:', err?.message || err);
     }
-  } catch (err) {
-    console.warn('[scenarioService] Using verified fallback scenarios:', err?.message || err);
   }
 
   // Resilient fallback to verified content (FR-040, FR-046)

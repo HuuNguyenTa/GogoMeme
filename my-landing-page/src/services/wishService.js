@@ -19,6 +19,25 @@ export function getPublicSenderName(wish) {
   return 'Một người bạn ẩn danh';
 }
 
+/**
+ * Computes the always-visible Garden resident label.
+ * 1. If sender_display_name exists and is non-empty: "Bé của {sender_display_name}"
+ * 2. If null, empty or whitespace: fallback to animal display name (e.g. "Bé Bơ")
+ * 3. Truncates unusually long sender names deterministically to safeguard Garden pills.
+ */
+export function getGardenResidentLabel(resident, maxSenderLength = 16) {
+  if (!resident) return '';
+  const rawSender = resident.senderDisplayName ?? resident.sender_display_name;
+  if (typeof rawSender === 'string' && rawSender.trim()) {
+    const cleanSender = rawSender.trim();
+    const truncatedSender = cleanSender.length > maxSenderLength
+      ? `${cleanSender.slice(0, maxSenderLength - 1).trimEnd()}…`
+      : cleanSender;
+    return `Bé của ${truncatedSender}`;
+  }
+  return resident.animalName || 'Bé ngoan';
+}
+
 const ANIMAL_PROFILE_MAP = {
   'dog-bo': { name: 'Bé Bơ', type: 'dog', breed: 'Shiba Inu lai', avatar: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&auto=format&fit=crop&q=80' },
   'cat-may': { name: 'Bé Mây', type: 'cat', breed: 'Mèo mướp Tabby', avatar: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80' },
@@ -186,20 +205,158 @@ export async function submitWish({
   };
 }
 
-export async function fetchPublicWishes() {
+let cachedApprovedCount = null;
+
+/**
+ * Fetches initial Garden wishes (up to 40) with a healthy mix of:
+ * - Fresh recent wishes (newest 24)
+ * - Sampled older approved wishes (16) if total approved wishes in DB > 40.
+ * Bounded query without downloading full table.
+ */
+export async function fetchPublicWishes({ limit = 40 } = {}) {
   if (!isSupabaseConfigured) return [...SAMPLE_WISHES];
 
-  const { data, error } = await supabase
-    .from('wishes')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(60);
+  const targetLimit = limit;
+  const recentSlice = Math.min(24, Math.floor(targetLimit * 0.6));
 
-  if (error) {
-    throw createSupabaseError('select', error);
+  const { data: recentRows, count, error: recentError } = await supabase
+    .from('wishes')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(0, targetLimit - 1);
+
+  if (recentError) {
+    throw createSupabaseError('select', recentError);
   }
 
-  return Array.isArray(data) ? data.map((row) => formatWishRow(row)).filter(Boolean) : [];
+  if (typeof count === 'number') {
+    cachedApprovedCount = count;
+  }
+
+  const rows = Array.isArray(recentRows) ? recentRows : [];
+  if (!count || count <= targetLimit || rows.length <= recentSlice) {
+    return rows.map((r) => formatWishRow(r)).filter(Boolean);
+  }
+
+  // When database contains more than 40 wishes, sample older approved wishes
+  // to achieve a healthy mix of recent + older approved wishes
+  const olderNeeded = targetLimit - recentSlice;
+  const maxOffset = Math.max(recentSlice, count - olderNeeded);
+  const randomOffset = recentSlice + Math.floor(Math.random() * (maxOffset - recentSlice + 1));
+
+  try {
+    const { data: sampledRows, error: sampleError } = await supabase
+      .from('wishes')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(randomOffset, randomOffset + olderNeeded - 1);
+
+    if (!sampleError && Array.isArray(sampledRows) && sampledRows.length > 0) {
+      const combinedMap = new Map();
+      for (const r of rows.slice(0, recentSlice)) combinedMap.set(r.id, r);
+      for (const r of sampledRows) combinedMap.set(r.id, r);
+      for (const r of rows) {
+        if (combinedMap.size >= targetLimit) break;
+        combinedMap.set(r.id, r);
+      }
+      return Array.from(combinedMap.values()).map((r) => formatWishRow(r)).filter(Boolean);
+    }
+  } catch {
+    // If sampling request fails, safely return the 40 recent wishes
+  }
+
+  return rows.map((r) => formatWishRow(r)).filter(Boolean);
+}
+
+/**
+ * Fetches a single approved wish by its ID.
+ * Returns:
+ * - { status: 'found', wish: Wish }
+ * - { status: 'not_found', wish: null }
+ * - { status: 'error', error: Error, wish: null }
+ */
+export async function fetchWishById(id) {
+  if (!id) return { status: 'not_found', wish: null };
+  if (!isSupabaseConfigured) {
+    const mock = SAMPLE_WISHES.find((w) => w.id === id);
+    return mock
+      ? { status: 'found', wish: mock }
+      : { status: 'not_found', wish: null };
+  }
+  try {
+    const { data, error } = await supabase
+      .from('wishes')
+      .select('*')
+      .eq('id', id)
+      .eq('status', 'approved')
+      .maybeSingle();
+
+    if (error) {
+      return { status: 'error', error: createSupabaseError('select', error), wish: null };
+    }
+    if (!data) {
+      return { status: 'not_found', wish: null };
+    }
+    return { status: 'found', wish: formatWishRow(data) };
+  } catch (err) {
+    return { status: 'error', error: err, wish: null };
+  }
+}
+
+/**
+ * Fetches a small window (~10-15) of approved wishes not currently in the Garden
+ * for gentle rotation. Uses random offset window sampling without downloading full table.
+ */
+export async function fetchRotationSample(excludeIds = new Set(), limit = 12) {
+  if (!isSupabaseConfigured) return [];
+
+  let totalCount = cachedApprovedCount;
+  if (!totalCount || totalCount <= 40) {
+    const { count, error } = await supabase
+      .from('wishes')
+      .select('*', { count: 'exact', head: true });
+    if (!error && typeof count === 'number') {
+      cachedApprovedCount = count;
+      totalCount = count;
+    }
+  }
+
+  // If table has <= 40 wishes, all approved wishes are already in the garden
+  if (!totalCount || totalCount <= 40) {
+    return [];
+  }
+
+  // Sample a window using random offset without full-table scan or client-side ORDER BY random()
+  const windowSize = Math.min(24, Math.max(limit * 2, 20));
+  const maxOffset = Math.max(0, totalCount - windowSize);
+  const randomOffset = Math.floor(Math.random() * (maxOffset + 1));
+
+  try {
+    const { data, count, error } = await supabase
+      .from('wishes')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(randomOffset, randomOffset + windowSize - 1);
+
+    if (error || !Array.isArray(data)) return [];
+    if (typeof count === 'number') cachedApprovedCount = count;
+
+    // Filter out residents that are currently displayed
+    const candidates = data
+      .filter((row) => row?.id && !excludeIds.has(row.id))
+      .map((row) => formatWishRow(row))
+      .filter(Boolean);
+
+    // Shuffle candidates client-side
+    for (let i = candidates.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+
+    return candidates.slice(0, limit);
+  } catch {
+    return [];
+  }
 }
 
 export function subscribeToWishInserts(onInsert, onStatusChange) {

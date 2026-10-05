@@ -2,6 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Heart, Send } from '../ui/Icons';
 import { ANIMALS } from '../../data/mockData';
 import { submitWish } from '../../services/wishService';
+import {
+  navigateToChoose,
+  navigateToRescueStation,
+  navigateToWriteWish,
+  normalizeLegacyPathname,
+  parseJourneyLocation
+} from '../../utils/journeyLocation';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=900&auto=format&fit=crop&q=82';
@@ -28,13 +35,27 @@ function PetImage({ animal, className, loading = 'eager' }) {
 }
 
 export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId = null }) {
-  const [mode, setMode] = useState('choose');
   const [selectedAnimal, setSelectedAnimal] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const parsed = parseJourneyLocation(window.location, ANIMALS);
+      if (parsed.type === 'write' && parsed.animal) {
+        return parsed.animal;
+      }
+    }
     if (initialAnimalId) {
       const found = ANIMALS.find((a) => a.id === initialAnimalId);
       if (found) return found;
     }
     return ANIMALS[0];
+  });
+  const [mode, setMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const parsed = parseJourneyLocation(window.location, ANIMALS);
+      if (parsed.type === 'write' && parsed.animal) {
+        return 'write';
+      }
+    }
+    return 'choose';
   });
   const [wishText, setWishText] = useState(
     'Mong em sớm tìm được một mái nhà ngập tràn tình yêu thương và luôn được chở che.'
@@ -44,20 +65,15 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
   const [submitStatusText, setSubmitStatusText] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Synchronize with direct routing: /write-wish/:animalId and /rescue-station
+  // Synchronize with direct hash routing: #/write-wish/:animalId and #/rescue-station
   useEffect(() => {
-    const handleLocationChange = () => {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
+    normalizeLegacyPathname();
 
-      // Match /write-wish/:animalId or #/write-wish/:animalId
-      const writeWishMatch = path.match(/\/write-wish\/([^/?#]+)/) || hash.match(/#\/write-wish\/([^/?#]+)/);
-      if (writeWishMatch) {
-        const id = writeWishMatch[1];
-        const animal = ANIMALS.find((a) => a.id === id);
-        if (animal) {
-          setSelectedAnimal(animal);
-        }
+    const handleLocationChange = () => {
+      const loc = parseJourneyLocation(window.location, ANIMALS);
+
+      if (loc.type === 'write') {
+        setSelectedAnimal(loc.animal);
         setMode('write');
         requestAnimationFrame(() => {
           document.getElementById('choose-friend')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -65,17 +81,28 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
         return;
       }
 
-      // Match /rescue-station or #/rescue-station or #station
-      if (path === '/rescue-station' || hash === '#/rescue-station' || hash === '#station') {
+      if (loc.type === 'invalid_animal') {
+        // Fall back safely to choose mode and canonical URL
+        setMode('choose');
+        navigateToChoose({ replace: true });
+        return;
+      }
+
+      if (loc.type === 'station') {
+        setMode('choose');
         requestAnimationFrame(() => {
           document.getElementById('station')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         return;
       }
 
-      // Default home/choose route
-      if (path === '/' && (hash === '' || hash === '#choose' || hash === '#choose-friend')) {
+      if (loc.type === 'choose') {
         setMode('choose');
+        if (window.location.hash === '#choose' || window.location.hash === '#choose-friend') {
+          requestAnimationFrame(() => {
+            document.getElementById('choose-friend')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
       }
     };
 
@@ -104,9 +131,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
     setErrorMessage('');
     setSubmitStatusText('');
 
-    if (window.history.pushState) {
-      window.history.pushState(null, '', `/write-wish/${animal.id}`);
-    }
+    navigateToWriteWish(animal.id);
 
     requestAnimationFrame(() => {
       document.getElementById('choose-friend')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -118,9 +143,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
     setErrorMessage('');
     setSubmitStatusText('');
 
-    if (window.history.pushState) {
-      window.history.pushState(null, '', '/');
-    }
+    navigateToChoose();
 
     requestAnimationFrame(() => {
       document.getElementById('choose-friend')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -156,9 +179,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
       setWishText('');
       setSenderName('');
 
-      if (window.history.pushState) {
-        window.history.pushState(null, '', '/rescue-station');
-      }
+      navigateToRescueStation();
 
       // Smooth direct navigation to Wish Garden
       setTimeout(() => {

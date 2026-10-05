@@ -70,3 +70,21 @@ export function getPublicSenderName(wish?: Partial<Wish> | null): string {
   }
   return 'Một người bạn ẩn danh';
 }
+
+/**
+ * Helper to resolve the always-visible Garden resident label.
+ * If senderDisplayName exists -> "Bé của {senderDisplayName}"
+ * Otherwise fallback to animalName (e.g. "Bé Bơ")
+ */
+export function getGardenResidentLabel(resident?: Partial<Wish> | null, maxSenderLength = 16): string {
+  if (!resident) return '';
+  const rawSender = resident.senderDisplayName ?? resident.sender_display_name;
+  if (typeof rawSender === 'string' && rawSender.trim().length > 0) {
+    const cleanSender = rawSender.trim();
+    const truncatedSender = cleanSender.length > maxSenderLength
+      ? `${cleanSender.slice(0, maxSenderLength - 1).trimEnd()}…`
+      : cleanSender;
+    return `Bé của ${truncatedSender}`;
+  }
+  return resident.animalName || 'Bé ngoan';
+}

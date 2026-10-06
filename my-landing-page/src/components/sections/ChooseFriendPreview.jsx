@@ -223,10 +223,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
           {/* LEFT: Pet Photo */}
           <div className="pet-choice-photo-card">
             <PetImage animal={selectedAnimal} className="pet-choice-photo" />
-            <div className="pet-choice-photo-caption">
-              <span>{selectedAnimal.type === 'dog' ? 'Bé cún' : 'Bé mèo'}</span>
-              <strong>{selectedAnimal.name}</strong>
-            </div>
+
           </div>
 
           {/* RIGHT: Content View (Choose vs Write Wish) */}

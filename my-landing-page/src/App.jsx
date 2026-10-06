@@ -24,16 +24,10 @@ import './styles/mobile.css';
 export default function App() {
   const { theme, toggleTheme } = useLandingTheme();
   const [newWish, setNewWish] = useState(null);
+  const [scenarioRunKey, setScenarioRunKey] = useState(0);
 
   const handleNavigateToChoose = () => {
     const el = document.getElementById('choose-friend') || document.getElementById('choose');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleNavigateToGarden = () => {
-    const el = document.getElementById('garden') || document.getElementById('station');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
@@ -44,10 +38,10 @@ export default function App() {
   };
 
   const handleGoToScenarios = () => {
-    const el = document.getElementById('learn');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    setScenarioRunKey((currentKey) => currentKey + 1);
+    window.requestAnimationFrame(() => {
+      document.getElementById('learn')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   };
 
   return (
@@ -60,7 +54,7 @@ export default function App() {
         theme={theme}
         themeControl={<ThemeToggle theme={theme} onToggle={toggleTheme} />}
         onOpenJourney={handleNavigateToChoose}
-        onExploreGarden={handleNavigateToGarden}
+        onExploreGarden={handleGoToScenarios}
       />
       {/*VietDH: đã sửa lại vị trị của section 4 và 5 xuống dưới 2 và 3*/}
       {/* 2. Section B: Chọn một người bạn bốn chân & Viết thư trao gửi yêu thương */}
@@ -85,7 +79,7 @@ export default function App() {
       <ProtectionLayersSection />
 
       {/* 7. Section E: Cẩm nang DỪNG - NHÌN - GIÚP - GỌI */}
-      <LearnToHelpSection theme={theme} />
+      <LearnToHelpSection key={scenarioRunKey} theme={theme} />
 
       {/* 8. Section F: Mạng lưới hỗ trợ theo khu vực (NO MAP, directory style) */}
       <FindSupportSection />

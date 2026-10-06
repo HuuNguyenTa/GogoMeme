@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckCircle2, ExternalLink, Sparkles } from '../ui/Icons';
+import { CheckCircle2, ExternalLink } from '../ui/Icons';
 import peekingCat from '../../assets/decor/peeking-cat.png';
 import peekingDog from '../../assets/decor/peeking-dog.png';
 import { exportKeepsakeCard } from './keepsakeExport';
@@ -7,12 +7,15 @@ import './gogo-sharing.css';
 
 const MAX_PHOTO_SIZE = 10 * 1024 * 1024;
 const SUPPORTED_PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const SESSION_KEY = 'gogomeme-sharing-v1';
+const SESSION_KEY = 'gogomeme-sharing-v2';
+const LIVE_SITE_URL = 'https://gogomeme.vercel.app';
 
 const CAPTION_STYLES = {
   short: `🐾 Mình vừa hoàn thành một hành trình nhỏ cùng GogoMeme để học cách đồng hành an toàn với những người bạn bốn chân.
 
 Mỗi hành động nhỏ đều có thể lan tỏa thêm một chút yêu thương. 🧡
+
+🌐 Khám phá GogoMeme: ${LIVE_SITE_URL}
 
 #GogoMeme #BaoVeDongVat #ViCongDong`,
   warm: `🐾 CÙNG GOGOMEME LAN TỎA YÊU THƯƠNG
@@ -23,6 +26,11 @@ Bạn cũng có thể ghé thăm GogoMeme, gửi một lời chúc và thử s�
 
 ✨ Một hành động nhỏ cũng có thể bắt đầu một thay đổi lớn.
 
+Fanpage: Chạm Bốn Chân GogoMeme
+Email: chambonchan.gogomeme@gmail.com
+
+🌐 Khám phá GogoMeme: ${LIVE_SITE_URL}
+
 #GogoMeme #BaoVeDongVat #CuuTroChoMeo #AdoptDontShop`,
   full: `🐾 CÙNG GOGOMEME LAN TỎA YÊU THƯƠNG
 ĐẾN NHỮNG NGƯỜI BẠN BỐN CHÂN
@@ -31,9 +39,9 @@ Mình vừa có một hành trình nhỏ cùng GogoMeme — nơi mỗi lời ch�
 
 Bạn cũng có thể đồng hành cùng GogoMeme:
 
-1️⃣ Ghé thăm website và khám phá những câu chuyện về các bé chó mèo.
+1️⃣ Ghé thăm website GogoMeme: ${LIVE_SITE_URL}
 
-2️⃣ Gửi một lời chúc vào Khu Vườn Yêu Thương.
+2️⃣ Khám phá những câu chuyện về các bé chó mèo và gửi một lời chúc vào Khu Vườn Yêu Thương.
 
 3️⃣ Thử sức với 4 tình huống để biết cách phản ứng phù hợp khi gặp một bé cần giúp đỡ.
 
@@ -92,6 +100,10 @@ function ProgressIndicator({ activeStep, completedSteps }) {
 }
 
 function KeepsakeCard({ photoUrl, displayName, position, zoom, onPointerDown, onPointerMove, onPointerUp }) {
+  const trimmedName = displayName.trim();
+  const nameLength = Array.from(trimmedName).length;
+  const nameLengthClass = nameLength > 30 ? 'is-very-long' : nameLength > 20 ? 'is-long' : '';
+
   return (
     <div className="gogo-keepsake-card" aria-label="Xem trước ảnh kỷ niệm GogoMeme">
       <span className="gogo-card-leaf gogo-card-leaf--one" aria-hidden="true" />
@@ -131,7 +143,7 @@ function KeepsakeCard({ photoUrl, displayName, position, zoom, onPointerDown, on
         <img className="gogo-card-peek gogo-card-peek--cat" src={peekingCat} alt="" aria-hidden="true" />
         <img className="gogo-card-peek gogo-card-peek--dog" src={peekingDog} alt="" aria-hidden="true" />
       </div>
-      {displayName.trim() ? <p className="gogo-card-name">{displayName.trim()}</p> : null}
+      {trimmedName ? <p className={`gogo-card-name ${nameLengthClass}`}>{trimmedName}</p> : null}
       <p className="gogo-card-thanks">Cảm ơn bạn đã ghé thăm GogoMeme, gửi một lời chúc và đồng hành cùng những người bạn bốn chân.</p>
       <p className="gogo-card-emotion">Mỗi hành động nhỏ đều có thể lan tỏa thêm một chút yêu thương.</p>
       <span className="gogo-card-bottom-decor" aria-hidden="true">♡&nbsp;&nbsp;✦&nbsp;&nbsp;♡</span>
@@ -291,7 +303,7 @@ export default function GogoMemeSharingExperience({ onRestart }) {
     <div className="gogo-sharing-experience">
       <header className="gogo-sharing-header">
         <div>
-          <span className="gogo-sharing-kicker"><Sparkles size={16} /> 4/4 tình huống đã hoàn thành</span>
+          <span className="gogo-sharing-kicker"> 4/4 tình huống đã hoàn thành</span>
           <h2>Lưu lại khoảnh khắc cùng GogoMeme</h2>
           <p>Một tấm ảnh nhỏ để cảm ơn bạn đã ghé thăm, gửi lời chúc và đồng hành cùng những người bạn bốn chân.</p>
         </div>
@@ -306,7 +318,7 @@ export default function GogoMemeSharingExperience({ onRestart }) {
         <section className="gogo-share-step gogo-share-step--photo" aria-labelledby="gogo-step-one-title">
           <div className="gogo-card-preview-wrap">
             <KeepsakeCard photoUrl={photoUrl} displayName={displayName} position={photoPosition} zoom={zoom} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
-            <p className="gogo-preview-note">Ảnh xuất luôn giữ thiết kế sáng 4:5, kể cả khi bạn dùng chế độ ban đêm.</p>
+
           </div>
           <div className="gogo-photo-controls">
             <span className="gogo-step-label">Bước 1</span>
@@ -322,7 +334,7 @@ export default function GogoMemeSharingExperience({ onRestart }) {
             <input id="gogo-display-name" className="gogo-text-input" value={displayName} onChange={handleNameChange} maxLength={40} placeholder="Tên của bạn" />
             {photoUrl ? (
               <div className="gogo-crop-controls">
-                <p>Kéo để canh ảnh. Khung luôn giữ nguyên, chỉ ảnh bên trong thay đổi.</p>
+
                 <label htmlFor="gogo-photo-zoom">Thu phóng ảnh <output>{Math.round(zoom * 100)}%</output></label>
                 <input id="gogo-photo-zoom" type="range" min="1" max="1.6" step="0.05" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} />
               </div>
@@ -366,16 +378,22 @@ export default function GogoMemeSharingExperience({ onRestart }) {
 
       {completedSteps.includes(1) && completedSteps.includes(2) ? (
         <section className="gogo-share-step gogo-share-step--facebook" aria-labelledby="gogo-step-three-title">
-          <div className="gogo-step-copy">
-            <span className="gogo-step-label">Bước 3</span>
-            <h3 id="gogo-step-three-title">Sẵn sàng lan tỏa</h3>
-            <div className="gogo-ready-list"><span>✓ Ảnh của bạn đã sẵn sàng</span><span>✓ Caption đã sẵn sàng</span></div>
+          <div className="gogo-facebook-celebration">
+            <span className="gogo-ready-seal" aria-hidden="true">✓</span>
+            <div>
+              <span className="gogo-step-label">Bước 3 · Hoàn tất</span>
+              <h3 id="gogo-step-three-title">Mang yêu thương đi xa hơn</h3>
+              <p>Ảnh và lời chia sẻ đã ở trên thiết bị của bạn. Chỉ còn một bước nhỏ để đăng bài.</p>
+            </div>
           </div>
-          <div className="gogo-facebook-action">
-            <p className="gogo-mini-flow"><span>Tải ảnh</span><b aria-hidden="true">→</b><span>Sao chép caption</span><b aria-hidden="true">→</b><span>Mở Facebook</span></p>
-            <p>Ảnh đã tải về và caption đã sao chép. Mở Facebook, thêm ảnh và dán nội dung để chia sẻ nhé.</p>
-            <a className="gogo-facebook-button" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">f</span> Chia sẻ lên Facebook <ExternalLink size={17} /></a>
-            <small>Việc chia sẻ là tùy chọn. GogoMeme không tự đăng bài hoặc truy cập tài khoản của bạn.</small>
+          <div className="gogo-share-handoff">
+            <ol className="gogo-share-runway" aria-label="Ba bước đăng bài lên Facebook">
+              <li className="is-ready"><span aria-hidden="true">✓</span><div><strong>Ảnh</strong><small>Đã tải về</small></div></li>
+              <li className="is-ready"><span aria-hidden="true">✓</span><div><strong>Caption</strong><small>Đã sao chép</small></div></li>
+              <li className="is-next"><span aria-hidden="true">3</span><div><strong>Facebook</strong><small>Thêm ảnh và dán caption</small></div></li>
+            </ol>
+            <a className="gogo-facebook-button" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">f</span> Mở Facebook để đăng bài <ExternalLink size={17} /></a>
+            <small>Chia sẻ hoàn toàn tùy chọn. GogoMeme không đăng bài hoặc truy cập tài khoản của bạn.</small>
           </div>
         </section>
       ) : null}

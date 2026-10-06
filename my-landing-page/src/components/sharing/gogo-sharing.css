@@ -1,0 +1,900 @@
+.gogo-sharing-experience {
+  --gogo-green: #2f7658;
+  --gogo-green-dark: #205a43;
+  --gogo-coral: #e7775f;
+  --gogo-gold: #e8b84f;
+  --gogo-ink: #2f3e35;
+  margin-top: 34px;
+  color: var(--text-primary);
+  animation: gogo-share-enter 200ms ease-out both;
+}
+
+html:has(.gogo-sharing-experience) .pixel-pets-overlay {
+  z-index: 5;
+}
+
+.gogo-sharing-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 28px;
+}
+
+.gogo-sharing-header > div {
+  max-width: 680px;
+}
+
+.gogo-sharing-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  color: var(--gogo-green);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.gogo-sharing-header h2 {
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  font-family: 'Lexend', sans-serif;
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.gogo-sharing-header p,
+.gogo-step-copy p,
+.gogo-photo-controls > p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.gogo-skip-button {
+  min-height: 44px;
+  flex: 0 0 auto;
+  padding: 9px 15px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background: var(--card-surface);
+  font: 700 13px 'Nunito', sans-serif;
+  cursor: pointer;
+}
+
+.gogo-share-progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 700px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.gogo-share-progress li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.gogo-share-progress li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 14px;
+  width: calc(100% - 122px);
+  min-width: 20px;
+  height: 1px;
+  background: var(--border-soft);
+}
+
+.gogo-share-progress li.is-active,
+.gogo-share-progress li.is-done {
+  color: var(--gogo-green-dark);
+}
+
+.gogo-share-progress-dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 1px solid var(--border-soft);
+  border-radius: 50%;
+  background: var(--card-surface);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.gogo-share-progress .is-active .gogo-share-progress-dot {
+  border-color: #d6b04c;
+  color: #4a3a12;
+  background: #f2ce6c;
+}
+
+.gogo-share-progress .is-done .gogo-share-progress-dot {
+  border-color: var(--gogo-green);
+  color: #fff;
+  background: var(--gogo-green);
+}
+
+.gogo-share-step {
+  border: 1px solid var(--border-soft);
+  border-radius: 24px;
+  background: var(--card-surface);
+  box-shadow: 0 12px 32px rgba(56, 43, 31, 0.07);
+}
+
+.gogo-share-step--photo {
+  display: grid;
+  grid-template-columns: minmax(330px, 0.94fr) minmax(300px, 0.82fr);
+  gap: clamp(28px, 5vw, 62px);
+  align-items: center;
+  padding: clamp(20px, 3vw, 36px);
+}
+
+.gogo-card-preview-wrap {
+  width: min(100%, 520px);
+  margin-inline: auto;
+}
+
+.gogo-keepsake-card {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid #eadab4;
+  border-radius: 24px;
+  color: #3d4c40;
+  background: #fff9e9;
+  box-shadow: 0 18px 42px rgba(77, 61, 37, 0.15);
+}
+
+.gogo-keepsake-card::before,
+.gogo-keepsake-card::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.gogo-keepsake-card::before {
+  top: -7%;
+  left: -13%;
+  width: 42%;
+  aspect-ratio: 1;
+  background: #e0f0df;
+}
+
+.gogo-keepsake-card::after {
+  top: 4%;
+  right: -15%;
+  width: 43%;
+  aspect-ratio: 1;
+  background: #e6f3f8;
+}
+
+.gogo-card-logo {
+  position: absolute;
+  top: 2.2%;
+  left: 50%;
+  z-index: 2;
+  width: 27%;
+  height: auto;
+  transform: translateX(-50%);
+}
+
+.gogo-card-title {
+  position: absolute;
+  top: 15.2%;
+  left: 15%;
+  right: 15%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2%;
+  height: 7.4%;
+  padding: 0 4%;
+  border: 1px solid #efd68f;
+  border-radius: 999px;
+  background: #fff3c9;
+  box-shadow: 0 5px 14px rgba(123, 89, 38, 0.08);
+}
+
+.gogo-card-title h3 {
+  margin: 0;
+  color: #235f47;
+  font: 800 clamp(11px, 2vw, 19px) 'Lexend', sans-serif;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.gogo-card-title > span {
+  flex: 0 0 auto;
+  color: #e7775f;
+  font-size: clamp(10px, 2vw, 18px);
+  line-height: 1;
+}
+
+.gogo-card-photo {
+  position: absolute;
+  top: 25.5%;
+  left: 11.5%;
+  z-index: 3;
+  width: 77%;
+  height: 44.7%;
+  border: 3px solid #fffdf7;
+  border-radius: 18px;
+  background: #f4efe4;
+  box-shadow: 0 0 0 2px #ed8c73, 0 0 0 6px rgba(255, 253, 247, 0.92), 0 10px 22px rgba(66, 56, 38, 0.13);
+  touch-action: none;
+}
+
+.gogo-card-photo::before,
+.gogo-card-photo::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  z-index: 6;
+  width: 12%;
+  height: 16px;
+  border: 1px solid rgba(190, 126, 87, 0.16);
+  background: #f8c9a8;
+  box-shadow: 0 2px 5px rgba(91, 61, 37, 0.08);
+  pointer-events: none;
+}
+
+.gogo-card-photo::before {
+  left: 7%;
+  transform: rotate(-7deg);
+}
+
+.gogo-card-photo::after {
+  right: 7%;
+  transform: rotate(7deg);
+}
+
+.gogo-card-photo-viewport {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #f4efe4;
+}
+
+.gogo-card-photo.has-photo {
+  cursor: grab;
+}
+
+.gogo-card-photo.has-photo:active {
+  cursor: grabbing;
+}
+
+.gogo-card-photo-viewport > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform-origin: center;
+  user-select: none;
+  transition: opacity 180ms ease-out;
+}
+
+.gogo-card-photo-placeholder {
+  display: grid;
+  place-content: center;
+  height: 100%;
+  color: #a89a88;
+  text-align: center;
+}
+
+.gogo-card-photo-placeholder span {
+  font-size: clamp(30px, 7vw, 58px);
+  line-height: 1;
+}
+
+.gogo-card-photo-placeholder strong {
+  margin-top: 6px;
+  font-size: clamp(13px, 2.8vw, 23px);
+}
+
+.gogo-card-photo-placeholder small {
+  font-size: clamp(10px, 2vw, 16px);
+}
+
+.gogo-card-peek {
+  position: absolute;
+  z-index: 4;
+  width: 24%;
+  height: auto;
+  pointer-events: none;
+}
+
+.gogo-card-peek--cat {
+  left: -11%;
+  bottom: -3%;
+}
+
+.gogo-card-peek--dog {
+  right: -11%;
+  bottom: -3%;
+}
+
+.gogo-card-name {
+  position: absolute;
+  top: 72.3%;
+  left: 25%;
+  right: 25%;
+  margin: 0;
+  padding: 1.25% 3%;
+  border: 1px solid #b9d7c2;
+  border-radius: 999px;
+  color: #205a43;
+  background: #edf7ec;
+  box-shadow: 0 4px 10px rgba(46, 97, 66, 0.08);
+  font: 800 clamp(12px, 2.5vw, 23px) 'Lexend', sans-serif;
+  line-height: 1.15;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.gogo-card-thanks {
+  position: absolute;
+  top: 79.7%;
+  left: 14%;
+  right: 14%;
+  margin: 0;
+  color: #5f493c;
+  font-size: clamp(9px, 1.82vw, 15px);
+  font-weight: 700;
+  line-height: 1.34;
+  text-align: center;
+}
+
+.gogo-card-photo + .gogo-card-thanks {
+  top: 75.4%;
+}
+
+.gogo-card-name + .gogo-card-thanks {
+  top: 79.7%;
+}
+
+.gogo-card-emotion {
+  position: absolute;
+  top: 88.2%;
+  left: 14%;
+  right: 14%;
+  margin: 0;
+  padding: 1.8% 4%;
+  border: 1px solid #f3c3b8;
+  border-radius: 14px;
+  color: #a04f3d;
+  background: #fde4de;
+  font-size: clamp(9px, 1.7vw, 14px);
+  font-weight: 800;
+  line-height: 1.28;
+  text-align: center;
+}
+
+.gogo-card-bottom-decor {
+  position: absolute;
+  bottom: 1.2%;
+  left: 50%;
+  color: #e99172;
+  font-size: clamp(8px, 1.5vw, 13px);
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
+.gogo-card-leaf,
+.gogo-card-flower,
+.gogo-card-paw {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.gogo-card-leaf {
+  width: 4%;
+  height: 9%;
+  border-radius: 100% 0 100% 0;
+  background: #75a86b;
+}
+
+.gogo-card-leaf--one { top: 3%; left: 7%; transform: rotate(-28deg); }
+.gogo-card-leaf--two { right: 7%; bottom: 8%; transform: rotate(28deg); }
+.gogo-card-flower { color: #fff; font-size: clamp(18px, 4vw, 36px); text-shadow: 0 1px #d2b263; }
+.gogo-card-flower--one { top: 12%; left: 7%; }
+.gogo-card-flower--two { right: 6%; bottom: 25%; }
+.gogo-card-paw {
+  top: 8%;
+  right: 8%;
+  width: 4.8%;
+  aspect-ratio: 1;
+  transform: rotate(15deg);
+}
+
+.gogo-card-paw i,
+.gogo-card-paw b {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: #e99b55;
+}
+
+.gogo-card-paw i { width: 22%; height: 29%; top: 4%; }
+.gogo-card-paw i:nth-child(1) { left: 2%; transform: rotate(-18deg); }
+.gogo-card-paw i:nth-child(2) { left: 27%; top: -2%; }
+.gogo-card-paw i:nth-child(3) { right: 27%; top: -2%; }
+.gogo-card-paw i:nth-child(4) { right: 2%; transform: rotate(18deg); }
+.gogo-card-paw b { left: 22%; bottom: 4%; width: 56%; height: 52%; }
+
+.gogo-preview-note {
+  margin: 13px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.gogo-photo-controls h3,
+.gogo-step-copy h3 {
+  margin: 5px 0 8px;
+  color: var(--text-primary);
+  font: 800 clamp(22px, 3vw, 31px) 'Lexend', sans-serif;
+  text-wrap: balance;
+}
+
+.gogo-step-label {
+  color: var(--gogo-green);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.gogo-file-picker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+  margin: 24px 0 18px;
+  padding: 13px 15px;
+  border: 1px dashed #99ad9b;
+  border-radius: 16px;
+  background: var(--bg-soft);
+  cursor: pointer;
+}
+
+.gogo-file-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.gogo-file-picker-plus {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 50%;
+  color: var(--gogo-green-dark);
+  background: #e0eee5;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.gogo-file-picker > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.gogo-file-picker strong {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.gogo-file-picker small {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.gogo-field-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.gogo-field-label small {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.gogo-text-input,
+.gogo-caption-editor textarea {
+  width: 100%;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  color: var(--text-primary);
+  background: var(--card-surface);
+  font: 600 14px/1.5 'Nunito', sans-serif;
+}
+
+.gogo-text-input {
+  min-height: 46px;
+  padding: 10px 13px;
+}
+
+.gogo-crop-controls {
+  margin: 15px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg-soft);
+}
+
+.gogo-crop-controls p,
+.gogo-crop-controls label {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.gogo-crop-controls label {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 9px;
+  font-weight: 700;
+}
+
+.gogo-crop-controls input {
+  width: 100%;
+  accent-color: var(--gogo-green);
+}
+
+.gogo-primary-button,
+.gogo-secondary-button,
+.gogo-facebook-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  border-radius: 13px;
+  font: 800 14px 'Nunito', sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.gogo-primary-button {
+  width: 100%;
+  margin-top: 18px;
+  border: 0;
+  color: #fff;
+  background: var(--gogo-green);
+  box-shadow: 0 8px 20px rgba(47, 118, 88, 0.2);
+}
+
+.gogo-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  box-shadow: none;
+}
+
+.gogo-inline-message {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.gogo-inline-message.is-error { color: #b14438; }
+
+.gogo-collapsed-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 12px;
+  padding: 12px 56px 12px 16px;
+  overflow: hidden;
+  border: 1px solid #bfd8c7;
+  border-radius: 16px;
+  color: var(--gogo-green-dark);
+  background: #f1f8f2;
+  font: 800 14px 'Nunito', sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gogo-collapsed-step small {
+  color: #557363;
+  font-size: 12px;
+}
+
+.gogo-collapsed-step-number {
+  position: absolute;
+  right: 14px;
+  color: #cde0d1;
+  font: 800 34px 'Lexend', sans-serif;
+}
+
+.gogo-share-step--caption,
+.gogo-share-step--facebook {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(360px, 1.25fr);
+  gap: clamp(24px, 5vw, 56px);
+  align-items: start;
+  margin-top: 12px;
+  padding: clamp(22px, 3vw, 32px);
+}
+
+.gogo-caption-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 13px;
+}
+
+.gogo-caption-options button {
+  min-height: 38px;
+  padding: 7px 13px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  background: var(--bg-soft);
+  font: 700 12px 'Nunito', sans-serif;
+  cursor: pointer;
+}
+
+.gogo-caption-options button.is-active {
+  border-color: var(--gogo-green);
+  color: #fff;
+  background: var(--gogo-green);
+}
+
+.gogo-caption-editor textarea {
+  min-height: 190px;
+  max-height: 250px;
+  padding: 14px;
+  resize: vertical;
+}
+
+.gogo-secondary-button {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid #d9ac48;
+  color: #463712;
+  background: #edc765;
+}
+
+.gogo-ready-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+  color: var(--gogo-green);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.gogo-facebook-action > p:not(.gogo-mini-flow) {
+  margin: 13px 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.gogo-mini-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.gogo-mini-flow b { color: var(--gogo-coral); }
+
+.gogo-facebook-button {
+  width: 100%;
+  color: #fff;
+  background: #236c4c;
+}
+
+.gogo-facebook-button > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  color: #236c4c;
+  background: #fff;
+  font: 900 17px Arial, sans-serif;
+}
+
+.gogo-facebook-action > small {
+  display: block;
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.gogo-completion-moment {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 280px;
+  margin-top: 34px;
+  overflow: hidden;
+  border: 1px solid #cfe2d3;
+  border-radius: 26px;
+  color: #255d44;
+  background: #f4faf4;
+  text-align: left;
+  animation: gogo-share-enter 200ms ease-out both;
+}
+
+.gogo-completion-paw {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  flex: 0 0 62px;
+  border-radius: 22px;
+  background: #d8eedf;
+  font-size: 30px;
+}
+
+.gogo-completion-moment strong {
+  display: block;
+  font: 800 clamp(22px, 4vw, 34px) 'Lexend', sans-serif;
+}
+
+.gogo-completion-moment p {
+  max-width: 550px;
+  margin: 7px 0 0;
+  color: #567362;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.gogo-completion-spark {
+  position: absolute;
+  color: #e6b64f;
+  animation: gogo-spark 900ms ease-out both;
+}
+
+.gogo-completion-spark--one { top: 26%; left: 24%; }
+.gogo-completion-spark--two { right: 23%; bottom: 24%; animation-delay: 90ms; }
+
+.gogo-skip-button:hover,
+.gogo-file-picker:hover,
+.gogo-caption-options button:hover,
+.gogo-collapsed-step:hover {
+  border-color: var(--gogo-green);
+}
+
+.gogo-primary-button:hover:not(:disabled),
+.gogo-facebook-button:hover {
+  transform: translateY(-1px);
+}
+
+.gogo-sharing-experience :is(button, a, input, textarea):focus-visible,
+.gogo-file-picker:has(input:focus-visible) {
+  outline: 3px solid rgba(47, 118, 88, 0.35);
+  outline-offset: 3px;
+}
+
+html[data-theme='night'] .gogo-share-step {
+  border-color: rgba(190, 204, 235, 0.15);
+  background: #192238;
+  box-shadow: 0 16px 38px rgba(3, 7, 18, 0.28);
+}
+
+html[data-theme='night'] .gogo-file-picker,
+html[data-theme='night'] .gogo-crop-controls,
+html[data-theme='night'] .gogo-caption-options button {
+  background: #222d47;
+}
+
+html[data-theme='night'] .gogo-text-input,
+html[data-theme='night'] .gogo-caption-editor textarea {
+  border-color: rgba(190, 204, 235, 0.18);
+  background: #121a2c;
+}
+
+html[data-theme='night'] .gogo-collapsed-step {
+  border-color: rgba(110, 194, 148, 0.26);
+  color: #b7edcf;
+  background: #172d2a;
+}
+
+html[data-theme='night'] .gogo-collapsed-step small { color: #86b59a; }
+html[data-theme='night'] .gogo-collapsed-step-number { color: #28483e; }
+html[data-theme='night'] .gogo-completion-moment { border-color: rgba(110, 194, 148, 0.24); background: #172d2a; color: #c2f2d8; }
+html[data-theme='night'] .gogo-completion-paw { background: #244a3c; }
+html[data-theme='night'] .gogo-completion-moment p { color: #9ac9ae; }
+
+@keyframes gogo-share-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gogo-spark {
+  from { opacity: 0; transform: scale(0.6) rotate(-25deg); }
+  45% { opacity: 1; }
+  to { opacity: 0; transform: scale(1.2) rotate(20deg); }
+}
+
+@media (max-width: 860px) {
+  .gogo-sharing-header { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .gogo-share-progress { max-width: none; }
+  .gogo-share-progress li:not(:last-child)::after { width: calc(100% - 98px); }
+  .gogo-share-step--photo,
+  .gogo-share-step--caption,
+  .gogo-share-step--facebook { grid-template-columns: 1fr; }
+  .gogo-card-preview-wrap { max-width: 560px; }
+}
+
+@media (max-width: 600px) {
+  html:has(.gogo-sharing-experience) .pixel-pets-overlay {
+    bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+  .gogo-sharing-experience { margin-top: 24px; }
+  .gogo-sharing-header { margin-bottom: 20px; }
+  .gogo-sharing-header h2 { font-size: 28px; }
+  .gogo-skip-button { width: 100%; }
+  .gogo-share-progress { gap: 4px; }
+  .gogo-share-progress li { flex-direction: column; align-items: flex-start; gap: 5px; font-size: 10.5px; }
+  .gogo-share-progress li:not(:last-child)::after { top: 15px; left: 38px; right: auto; width: calc(100% - 42px); }
+  .gogo-share-progress-dot { width: 30px; height: 30px; }
+  .gogo-share-step { border-radius: 19px; }
+  .gogo-share-step--photo,
+  .gogo-share-step--caption,
+  .gogo-share-step--facebook { gap: 22px; padding: 16px; }
+  .gogo-keepsake-card { border-radius: 18px; }
+  .gogo-card-photo { border-radius: 13px; }
+  .gogo-card-photo-viewport { border-radius: 10px; }
+  .gogo-file-picker { margin-top: 18px; }
+  .gogo-caption-options { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .gogo-caption-options button { min-width: 0; padding-inline: 5px; }
+  .gogo-caption-editor textarea { min-height: 210px; }
+  .gogo-collapsed-step { grid-template-columns: 22px 1fr; padding-right: 46px; }
+  .gogo-collapsed-step small { display: none; }
+  .gogo-mini-flow { justify-content: center; }
+  .gogo-completion-moment { min-height: 250px; padding: 28px 20px; flex-direction: column; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gogo-sharing-experience,
+  .gogo-completion-moment,
+  .gogo-completion-spark,
+  .gogo-card-photo-viewport > img {
+    animation: none;
+    transition: none;
+  }
+}

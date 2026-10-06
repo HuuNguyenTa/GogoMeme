@@ -5,7 +5,6 @@
 import React, { useState } from 'react';
 import { ArrowRight, RotateCcw } from '../ui/Icons';
 import Scenario3DScene from '../scenarios/Scenario3DScene';
-import GogoMemeSharingExperience from '../sharing/GogoMemeSharingExperience';
 import { RESCUE_SCENARIOS } from '../../data/mockData';
 
 const SCENARIO_SUCCESS_MESSAGES = {
@@ -19,7 +18,6 @@ export default function LearnToHelpSection({ theme = 'day' }) {
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isJourneyComplete, setIsJourneyComplete] = useState(false);
 
   const currentScenario = RESCUE_SCENARIOS[scenarioIndex] || RESCUE_SCENARIOS[0];
   const isRecommended = selectedOpt === currentScenario.recommendedAnswer;
@@ -43,13 +41,12 @@ export default function LearnToHelpSection({ theme = 'day' }) {
       setSelectedOpt(null);
       setIsConfirmed(false);
     } else {
-      setIsJourneyComplete(true);
+      document.getElementById('support')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
   const handleRetry = () => {
     if (isLastScenario) setScenarioIndex(0);
-    setIsJourneyComplete(false);
     setSelectedOpt(null);
     setIsConfirmed(false);
   };
@@ -57,18 +54,13 @@ export default function LearnToHelpSection({ theme = 'day' }) {
   return (
     <section className="landing-section landing-section--cream scenario-teaser-section" id="learn">
       <div className="section-container">
-        {!isJourneyComplete ? (
-          <div className="section-header">
-            <h2 className="section-title">
-              Bạn Sẽ Làm Gì Khi Gặp Một Bé Cần Giúp Đỡ?
-            </h2>
-          </div>
-        ) : null}
+        <div className="section-header">
+          <h2 className="section-title">
+            Bạn Sẽ Làm Gì Khi Gặp Một Bé Cần Giúp Đỡ?
+          </h2>
+        </div>
 
-        {isJourneyComplete ? (
-          <GogoMemeSharingExperience onRestart={handleRetry} />
-        ) : (
-        /* 3D Diorama Stage: 58% 3D World + 42% Interaction Panel */
+        {/* 3D Diorama Stage: 58% 3D World + 42% Interaction Panel */}
         <div className="scenario-stage-3d-layout">
           {/* Left Column: Interactive 3D Rescue Diorama */}
           <div className="scenario-3d-column">
@@ -184,7 +176,7 @@ export default function LearnToHelpSection({ theme = 'day' }) {
                     <span>
                       {scenarioIndex < RESCUE_SCENARIOS.length - 1
                         ? 'Tình huống tiếp theo'
-                        : 'Hoàn tất hành trình'}
+                        : 'Tìm nơi hỗ trợ cứu hộ'}
                     </span>
                     <ArrowRight size={16} />
                   </button>
@@ -203,7 +195,6 @@ export default function LearnToHelpSection({ theme = 'day' }) {
             )}
           </div>
         </div>
-        )}
       </div>
     </section>
   );

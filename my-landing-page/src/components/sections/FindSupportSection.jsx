@@ -22,7 +22,7 @@ export default function FindSupportSection() {
             <Paw size={20} fill="#ff7e54" color="#ff7e54" />
           </div>
           <h2 className="section-title">
-            Tìm Nơi Hỗ Trợ Cứu Trợ
+            Nơi Hỗ Trợ Cứu Trợ
           </h2>
           <p className="section-subtitle">
             Danh bạ đầu mối hỗ trợ cứu hộ chó mèo tại Hà Nội, TP. Hồ Chí Minh và Cần Thơ.

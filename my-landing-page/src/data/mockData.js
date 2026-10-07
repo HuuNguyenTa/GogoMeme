@@ -3,10 +3,10 @@
 export const ANIMALS = [
   {
     id: 'dog-bo',
-    name: 'Bé Bơ',
+    name: 'Bé Su',
     type: 'dog',
     breed: 'Shiba Inu lai',
-    age: 'Khoảng 7 tháng tuổi',
+    age: '12 tuổi',
     personality: 'Hiền lành, quấn người, thích được xoa đầu',
     story: 'Được tìm thấy dưới gầm ghế đá công viên trong một đêm mưa lớn. Bé rất thích ăn chuối và luôn vẫy đuôi mừng mỗi khi có người đến gần.',
     avatar: '/images/pets/be_bo.jpg',
@@ -65,7 +65,7 @@ export const ANIMALS = [
     age: 'Khoảng 1.5 tuổi',
     personality: 'Trung thành, thông minh, luôn cảnh giác bảo vệ bạn bè',
     story: 'Bé từng bị bỏ đói và lang thang qua nhiều khu phố trước khi được tình nguyện viên đón về. Đốm rất hiểu chuyện và biết lắng nghe.',
-    avatar: '/images/pets/be_dom.jpg',
+    avatar: '/images/pets/be_coca.jpg',
     tags: ['Thông minh', 'Biết trông nhà', 'Kiên nhẫn'],
     status: 'Cần một người bạn kiên nhẫn',
     has3DModel: false,

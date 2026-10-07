@@ -117,7 +117,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
 
   const identityLine = useMemo(() => {
     const species = selectedAnimal.type === 'dog' ? 'Bé cún' : 'Bé mèo';
-    return `${species} · ${selectedAnimal.age} · ${selectedAnimal.status}`;
+    return [species, selectedAnimal.age, selectedAnimal.status].filter(Boolean).join(' · ');
   }, [selectedAnimal]);
 
   const handleSelectAnimal = (animal) => {
@@ -234,11 +234,13 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
                   <h3>{selectedAnimal.name}</h3>
                   <p className="pet-profile-identity">{identityLine}</p>
                   <p className="pet-profile-story">{selectedAnimal.story}</p>
-                  <div className="pet-profile-tags" aria-label="Tính cách nổi bật">
-                    {selectedAnimal.tags.slice(0, 3).map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
-                  </div>
+                  {selectedAnimal.tags.length > 0 && (
+                    <div className="pet-profile-tags" aria-label="Tính cách nổi bật">
+                      {selectedAnimal.tags.slice(0, 3).map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pet-selector">
@@ -257,7 +259,10 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
                           <PetImage animal={animal} className="pet-selector-image" loading="lazy" />
                           <span className="pet-selector-copy">
                             <strong>{animal.name}</strong>
-                            <small>{animal.type === 'dog' ? 'Cún' : 'Mèo'} · {animal.age.replace('Khoảng ', '')}</small>
+                            <small>
+                              {animal.type === 'dog' ? 'Cún' : 'Mèo'}
+                              {animal.age ? ` · ${animal.age.replace('Khoảng ', '')}` : ''}
+                            </small>
                           </span>
                           {isSelected ? (
                             <span className="pet-selector-check" aria-hidden="true"><Check size={12} /></span>
@@ -283,7 +288,9 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
                 <div className="wish-compose-heading">
                   <div>
                     <h3>Thân gửi {selectedAnimal.name},</h3>
-                    <p>{selectedAnimal.breed ? `${selectedAnimal.breed} · ` : ''}{selectedAnimal.age}</p>
+                    {(selectedAnimal.breed || selectedAnimal.age) && (
+                      <p>{selectedAnimal.breed ? `${selectedAnimal.breed} · ` : ''}{selectedAnimal.age}</p>
+                    )}
                   </div>
                   <PetImage animal={selectedAnimal} className="wish-compose-avatar" />
                 </div>

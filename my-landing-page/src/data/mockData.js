@@ -78,6 +78,39 @@ export const ANIMALS = [
     status: 'Đang chờ mái ấm',
     has3DModel: false,
     modelType: 'cat'
+  },
+  {
+    id: 'cat-xi-ke',
+    name: 'Xì Ke',
+    type: 'cat',
+    age: 'Khoảng 1 tuổi',
+    story: 'Bị chủ cũ bỏ rơi vì không còn khả năng nuôi dưỡng. Khi mới về trạm, Xì Ke trong tình trạng gầy gò ốm yếu, cơ thể mang bệnh và tinh thần vô cùng tủi thân.',
+    avatar: '/images/pets/be_xike.jpg',
+    tags: [],
+    has3DModel: false,
+    modelType: 'cat'
+  },
+  {
+    id: 'dog-hanh-phuc',
+    name: 'Hai mẹ con Hạnh & Phúc',
+    type: 'dog',
+    age: 'Mẹ khoảng 2 tuổi, con khoảng 3 tháng',
+    story: 'Được trạm phát hiện và đưa về từ một bãi rác. Cả hai mẹ con đều trong tình trạng ốm tông (gầy mòn), sức khỏe suy kiệt và mang tâm lý hoảng sợ, e dè trước con người.',
+    avatar: '/images/pets/2be_Hanh_Phuc.jpg',
+    tags: [],
+    has3DModel: false,
+    modelType: 'dog'
+  },
+  {
+    id: 'cat-dem',
+    name: 'Bé Đêm',
+    type: 'cat',
+    age: 'Khoảng 1 tuổi',
+    story: 'Bị bỏ rơi ngoài đường, được trạm đón về, trong tình trạng bị thương.',
+    avatar: '/images/pets/be_dem.png',
+    tags: [],
+    has3DModel: false,
+    modelType: 'cat'
   }
 ];
 

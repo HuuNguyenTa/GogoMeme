@@ -1201,10 +1201,6 @@
     margin-top: 88px;
   }
 
-  .pet-profile-tags span:nth-child(n + 3) {
-    display: none;
-  }
-
   .wish-garden-canvas-wrap {
     height: 550px;
   }

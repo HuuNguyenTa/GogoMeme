@@ -117,7 +117,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
 
   const identityLine = useMemo(() => {
     const species = selectedAnimal.type === 'dog' ? 'Bé cún' : 'Bé mèo';
-    return [species, selectedAnimal.age, selectedAnimal.status].filter(Boolean).join(' · ');
+    return [species, selectedAnimal.age].filter(Boolean).join(' · ');
   }, [selectedAnimal]);
 
   const handleSelectAnimal = (animal) => {
@@ -234,13 +234,6 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
                   <h3>{selectedAnimal.name}</h3>
                   <p className="pet-profile-identity">{identityLine}</p>
                   <p className="pet-profile-story">{selectedAnimal.story}</p>
-                  {selectedAnimal.tags.length > 0 && (
-                    <div className="pet-profile-tags" aria-label="Tính cách nổi bật">
-                      {selectedAnimal.tags.slice(0, 3).map((tag) => (
-                        <span key={tag}>{tag}</span>
-                      ))}
-                    </div>
-                  )}
                 </div>
 
                 <div className="pet-selector">

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Heart, Paw } from '../ui/Icons';
+import { Heart } from '../ui/Icons';
+
+const CURRENT_YEAR = new Date().getFullYear();
 
 export default function Footer() {
   const scrollTo = (id) => (e) => {
@@ -14,18 +16,11 @@ export default function Footer() {
         <div className="footer-main-grid">
           {/* Cột 1: Thương hiệu & Sứ mệnh */}
           <div className="footer-brand">
-            <div className="footer-brand-badge">
-              <Paw size={13} fill="#ff8a5c" color="#ff8a5c" />
-              <span>Dự án cộng đồng SSG105</span>
-            </div>
+
             <h3 className="footer-brand-title">GoGo & MeMe</h3>
             <p className="footer-brand-desc">
               Dự án nhận thức cộng đồng về bảo vệ chó mèo cơ nhỡ, được phát triển bởi nhóm sinh viên Trường Đại học FPT TP.HCM. Hướng tới một cộng đồng nhân văn, nơi mọi sinh mệnh bốn chân đều được tôn trọng và chở che.
             </p>
-            <div className="footer-meta-tags">
-              <span className="footer-meta-pill">Đại học FPT TP.HCM</span>
-              <span className="footer-meta-pill">Vì động vật cơ nhỡ</span>
-            </div>
           </div>
 
           {/* Cột 2: Trải Nghiệm */}
@@ -65,13 +60,19 @@ export default function Footer() {
           </div>
         </div>
 
+        <div className="footer-contact" aria-label="Thông tin liên hệ của nhóm">
+          <strong>Liên hệ:</strong>
+          <a href="mailto:chambonchan.gogomeme@gmail.com">chambonchan.gogomeme@gmail.com</a>
+          <span className="footer-contact-fanpage">Fanpage: Chạm Bốn Chân GogoMeme</span>
+        </div>
+
         {/* Đường kẻ ngăn cách thanh mảnh duy nhất */}
         <div className="footer-divider" />
 
         {/* Thanh chân trang (Copyright & Credit) */}
         <div className="footer-bottom">
           <div className="footer-copyright">
-            © {new Date().getFullYear()} GoGo & MeMe · Đại học FPT TP.HCM. Tất cả quyền được bảo lưu.
+            © {CURRENT_YEAR} GoGo & MeMe. Tất cả quyền được bảo lưu.
           </div>
           <div className="footer-heart-credit">
             <span>Được kiến tạo với</span>

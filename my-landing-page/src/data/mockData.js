@@ -75,12 +75,12 @@ export const ANIMALS = [
     id: 'cat-bong',
     name: 'Bé Bông',
     type: 'cat',
-    breed: 'Mèo trắng mắt hai màu',
+    breed: 'Mèo trắng mắt vàng hổ phách',
     age: 'Khoảng 6 tháng tuổi',
     personality: 'Nhẹ nhàng như mây, thích cuộn tròn trên chăn ấm',
-    story: 'Bé có một bên mắt xanh ngọc bích và một bên mắt vàng hổ phách. Bông là "thiên thần nhỏ" sưởi ấm lòng mọi tình nguyện viên tại trạm.',
+    story: 'Bé có đôi mắt vàng hổ phách rực rỡ. Bông là "thiên thần nhỏ" sưởi ấm lòng mọi tình nguyện viên tại trạm.',
     avatar: '/images/pets/be_bong.jpg',
-    tags: ['Mắt hai màu', 'Thích sưởi ấm', 'Hiền từ'],
+    tags: ['Mắt hổ phách', 'Thích sưởi ấm', 'Hiền từ'],
     status: 'Đang chờ mái ấm',
     has3DModel: false,
     modelType: 'cat'
@@ -472,6 +472,20 @@ export const RESCUE_CENTERS = [
     facebookUrl: 'https://www.facebook.com/lawsforpawsvietnam'
   },
   {
+    id: 'rc-nha-xanh',
+    name: 'Nhà Xanh',
+    city: 'TP. Hồ Chí Minh',
+    phone: '0768081990',
+    facebookUrl: 'https://www.facebook.com/my.tran.554058'
+  },
+  {
+    id: 'rc-team-16',
+    name: 'Team 16 Cứu Hộ Động Vật',
+    city: 'TP. Hồ Chí Minh',
+    phone: '0764025380',
+    facebookUrl: 'https://www.facebook.com/team16cuuhodongvat'
+  },
+  {
     id: 'rc-12',
     name: 'Can Tho Pet Shelter',
     city: 'Cần Thơ',
@@ -485,7 +499,7 @@ export const PROJECT_STATS = {
   fundRaised: 'Đang cập nhật',
   totalWishes: '2.400+',
   participants: '1.250+',
-  sheltersConnected: '12'
+  sheltersConnected: '14'
 };
 
 // Dữ liệu so sánh trực quan lấy cảm hứng từ phương pháp SavePet

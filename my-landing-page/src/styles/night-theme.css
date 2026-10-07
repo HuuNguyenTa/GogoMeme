@@ -428,6 +428,18 @@ html[data-theme='night'] .footer-quote-link {
   color: #a5b4fc;
 }
 
+html[data-theme='night'] .footer-contact strong {
+  color: #f8fafc;
+}
+
+html[data-theme='night'] .footer-contact {
+  color: #94a3b8;
+}
+
+html[data-theme='night'] .footer-contact a {
+  color: #a5b4fc;
+}
+
 html[data-theme='night'] .footer-divider {
   background: rgba(185, 200, 240, 0.08);
 }

@@ -85,7 +85,7 @@ export default function App() {
       <ProtectionLayersSection />
 
       {/* 7. Section E: Cẩm nang DỪNG - NHÌN - GIÚP - GỌI */}
-      <LearnToHelpSection />
+      <LearnToHelpSection theme={theme} />
 
       {/* 8. Section F: Mạng lưới hỗ trợ theo khu vực (NO MAP, directory style) */}
       <FindSupportSection />

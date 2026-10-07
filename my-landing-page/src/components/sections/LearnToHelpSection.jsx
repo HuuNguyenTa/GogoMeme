@@ -7,13 +7,21 @@ import { ArrowRight, RotateCcw } from '../ui/Icons';
 import Scenario3DScene from '../scenarios/Scenario3DScene';
 import { RESCUE_SCENARIOS } from '../../data/mockData';
 
-export default function LearnToHelpSection() {
+const SCENARIO_SUCCESS_MESSAGES = {
+  'sc-1': 'Bạn đã tạo khoảng cách an toàn cho bé!',
+  'sc-2': 'Bé đã được giữ ấm đúng cách!',
+  'sc-3': 'Nước sạch đã được đặt ở cự ly an toàn!',
+  'sc-4': 'Đội cứu hộ đang được gọi đến!'
+};
+
+export default function LearnToHelpSection({ theme = 'day' }) {
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   const currentScenario = RESCUE_SCENARIOS[scenarioIndex] || RESCUE_SCENARIOS[0];
   const isRecommended = selectedOpt === currentScenario.recommendedAnswer;
+  const isLastScenario = scenarioIndex === RESCUE_SCENARIOS.length - 1;
   // Clean scenario title without redundant "Tình huống X:" prefix
   const cleanTitle = currentScenario.title ? currentScenario.title.replace(/^Tình huống \d+:\s*/i, '') : '';
 
@@ -39,6 +47,7 @@ export default function LearnToHelpSection() {
   };
 
   const handleRetry = () => {
+    if (isLastScenario) setScenarioIndex(0);
     setSelectedOpt(null);
     setIsConfirmed(false);
   };
@@ -59,10 +68,29 @@ export default function LearnToHelpSection() {
           <div className="scenario-3d-column">
             <Scenario3DScene
               currentScenario={currentScenario}
+              theme={theme}
               isConfirmed={isConfirmed}
               isRecommendedSelected={isRecommended}
               selectedOption={selectedOpt}
             />
+            {isConfirmed && isRecommended ? (
+              <div
+                key={`success-${currentScenario.id}`}
+                className="scenario-success-pop"
+                role="status"
+                aria-live="polite"
+              >
+                <span className="scenario-success-particle particle-one" aria-hidden="true">✦</span>
+                <span className="scenario-success-particle particle-two" aria-hidden="true">♥</span>
+                <span className="scenario-success-particle particle-three" aria-hidden="true">✦</span>
+                <span className="scenario-success-particle particle-four" aria-hidden="true">•</span>
+                <span className="scenario-success-paw" aria-hidden="true">🐾</span>
+                <span className="scenario-success-message">
+                  <strong>Tuyệt lắm!</strong>
+                  <small>{SCENARIO_SUCCESS_MESSAGES[currentScenario.id]}</small>
+                </span>
+              </div>
+            ) : null}
           </div>
 
           {/* Right Column: Clean Scenario Interaction Panel */}
@@ -159,10 +187,10 @@ export default function LearnToHelpSection() {
                     type="button"
                     className="btn-scenario-replay"
                     onClick={handleRetry}
-                    title="Thử lại tình huống này"
+                    title={isLastScenario ? 'Làm lại từ tình huống 1' : 'Thử lại tình huống này'}
                   >
                     <RotateCcw size={15} />
-                    <span>Thử lại</span>
+                    <span>{isLastScenario ? 'Làm lại từ đầu' : 'Thử lại'}</span>
                   </button>
                 </div>
               </div>

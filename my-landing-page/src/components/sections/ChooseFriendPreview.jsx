@@ -24,7 +24,7 @@ function PetImage({ animal, className, loading = 'eager' }) {
     <img
       className={className}
       src={animal.avatar}
-      alt={`${animal.name}, ${animal.breed}`}
+      alt={animal.breed ? `${animal.name}, ${animal.breed}` : animal.name}
       loading={loading}
       onError={(event) => {
         event.currentTarget.onerror = null;
@@ -283,7 +283,7 @@ export default function ChooseFriendPreview({ onWishSubmitted, initialAnimalId =
                 <div className="wish-compose-heading">
                   <div>
                     <h3>Thân gửi {selectedAnimal.name},</h3>
-                    <p>{selectedAnimal.breed} · {selectedAnimal.age}</p>
+                    <p>{selectedAnimal.breed ? `${selectedAnimal.breed} · ` : ''}{selectedAnimal.age}</p>
                   </div>
                   <PetImage animal={selectedAnimal} className="wish-compose-avatar" />
                 </div>

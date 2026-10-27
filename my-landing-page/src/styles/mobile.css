@@ -1124,6 +1124,13 @@
     border-radius: 14px;
   }
 
+  .footer-contact {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 28px;
+  }
+
   .footer-divider {
     margin: 32px 0 20px 0;
   }
@@ -1192,10 +1199,6 @@
 
   .hero .headline {
     margin-top: 88px;
-  }
-
-  .pet-profile-tags span:nth-child(n + 3) {
-    display: none;
   }
 
   .wish-garden-canvas-wrap {

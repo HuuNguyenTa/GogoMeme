@@ -41,8 +41,7 @@ export default function LearnToHelpSection({ theme = 'day' }) {
       setSelectedOpt(null);
       setIsConfirmed(false);
     } else {
-      const el = document.getElementById('support');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('support')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -55,7 +54,6 @@ export default function LearnToHelpSection({ theme = 'day' }) {
   return (
     <section className="landing-section landing-section--cream scenario-teaser-section" id="learn">
       <div className="section-container">
-        {/* Section Header: 1 clear headline + short support copy */}
         <div className="section-header">
           <h2 className="section-title">
             Bạn Sẽ Làm Gì Khi Gặp Một Bé Cần Giúp Đỡ?
@@ -178,7 +176,7 @@ export default function LearnToHelpSection({ theme = 'day' }) {
                     <span>
                       {scenarioIndex < RESCUE_SCENARIOS.length - 1
                         ? 'Tình huống tiếp theo'
-                        : 'Xem danh bạ trạm cứu trợ'}
+                        : 'Tìm nơi hỗ trợ cứu hộ'}
                     </span>
                     <ArrowRight size={16} />
                   </button>

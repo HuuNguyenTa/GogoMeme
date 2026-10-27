@@ -285,8 +285,8 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
           <button
             type="button"
             className="secondary-garden-cta"
-            onClick={onExploreGarden || scrollTo('station')}
-            aria-label="Khám phá khu vườn yêu thương"
+            onClick={onExploreGarden || scrollTo('learn')}
+            aria-label="Bắt đầu trả lời 4 tình huống"
           >
             <span className="garden-cta-icon-disc" aria-hidden="true">
               <svg className="garden-cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -294,7 +294,7 @@ export default function HeroSection({ onOpenJourney, onExploreGarden, theme, the
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             </span>
-            <span className="garden-cta-label">Khám phá khu vườn</span>
+            <span className="garden-cta-label">Câu hỏi tình huống</span>
           </button>
         </div>
 

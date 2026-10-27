@@ -3,87 +3,103 @@
 export const ANIMALS = [
   {
     id: 'dog-bo',
-    name: 'Bé Bơ',
+    name: 'Su',
     type: 'dog',
-    breed: 'Shiba Inu lai',
-    age: 'Khoảng 7 tháng tuổi',
-    personality: 'Hiền lành, quấn người, thích được xoa đầu',
-    story: 'Được tìm thấy dưới gầm ghế đá công viên trong một đêm mưa lớn. Bé rất thích ăn chuối và luôn vẫy đuôi mừng mỗi khi có người đến gần.',
+    age: '12 tuổi (Đã lớn tuổi)',
+    story: 'Su đã bước vào độ tuổi xế chiều, nhưng thay vì được quây quần bên chủ nhân trong những năm tháng cuối đời, bé lại bị bỏ rơi vì lý do tuổi tác và sức khỏe suy giảm.',
     avatar: '/images/pets/be_bo.jpg',
-    tags: ['Ngoan ngoãn', 'Thích ôm', 'Đã tiêm phòng'],
-    status: 'Đang chờ mái ấm',
     has3DModel: true,
     modelType: 'dog'
   },
   {
     id: 'cat-may',
-    name: 'Bé Mây',
+    name: 'Bánh Cam',
     type: 'cat',
-    breed: 'Mèo mướp Tabby',
     age: 'Khoảng 1 tuổi',
-    personality: 'Rụt rè lúc đầu, thích sưởi nắng và nghe tiếng thì thầm',
-    story: 'Bị bỏ lại trong một chiếc thùng xốp bên vệ đường. Ban đầu bé rất sợ người, nhưng nay đã biết cọ má nũng nịu đòi vuốt ve.',
+    story: 'Mang một đôi mắt xanh thẳm vô cùng đặc biệt nhưng bé lại chịu thiệt thòi khi bị sưng to bẩm sinh từ nhỏ, cần sự quan tâm và chăm sóc đặc biệt.',
     avatar: '/images/pets/be_may.jpg',
-    tags: ['Trầm tính', 'Thích ngủ nướng', 'Đã triệt sản'],
-    status: 'Đang ở trạm tạm thời',
     has3DModel: true,
     modelType: 'cat'
   },
   {
     id: 'dog-hatde',
-    name: 'Bé Hạt Dẻ',
+    name: 'Maika',
     type: 'dog',
-    breed: 'Corgi lai cỏ',
-    age: 'Khoảng 5 tháng tuổi',
-    personality: 'Năng động, tò mò, thích chạy vòng quanh nhặt lá',
-    story: 'Lạc mẹ khi chỉ mới 2 tháng tuổi ở một khu chợ cũ. Đôi chân ngắn cũn và đôi tai to vểnh luôn khiến mọi người bật cười vì sự đáng yêu.',
+    age: '2 tuổi',
+    story: 'Maika từng bị bỏ rơi ngay trong thùng rác. Tuy bị bỏ rơi nhưng Maika không hề sợ người, tính tình rất vui vẻ, dạn người.',
     avatar: '/images/pets/be_hat_de.jpg',
-    tags: ['Vui vẻ', 'Chân ngắn đáng yêu', 'Đã tẩy giun'],
-    status: 'Đang chờ nhận nuôi',
     has3DModel: false,
     modelType: 'dog'
   },
   {
     id: 'cat-miumiu',
-    name: 'Bé Miu Miu',
+    name: 'Mèo Ú',
     type: 'cat',
-    breed: 'Mèo tam thể',
     age: 'Khoảng 8 tháng tuổi',
-    personality: 'Tinh nghịch, mắt to tròn, rất thích bắt bóng len',
-    story: 'Được các bạn sinh viên cứu khi mắc kẹt trên mái tôn cũ. Miu Miu có bộ lông ba màu may mắn và tiếng kêu "meo" nhỏ xíu rất ngọt ngào.',
+    story: 'Bị chủ bỏ rơi ở chung cư. Được mang về trạm trong tình trạng nhút nhát, sợ người.',
     avatar: '/images/pets/be_miu_miu.jpg',
-    tags: ['May mắn', 'Thích chơi đùa', 'Ăn ngoan'],
-    status: 'Đang chờ nhận nuôi',
     has3DModel: false,
     modelType: 'cat'
   },
   {
     id: 'dog-dom',
-    name: 'Bé Đốm',
+    name: 'Coca',
     type: 'dog',
-    breed: 'Chó ta chân trắng',
     age: 'Khoảng 1.5 tuổi',
-    personality: 'Trung thành, thông minh, luôn cảnh giác bảo vệ bạn bè',
-    story: 'Bé từng bị bỏ đói và lang thang qua nhiều khu phố trước khi được tình nguyện viên đón về. Đốm rất hiểu chuyện và biết lắng nghe.',
-    avatar: '/images/pets/be_dom.jpg',
-    tags: ['Thông minh', 'Biết trông nhà', 'Kiên nhẫn'],
-    status: 'Cần một người bạn kiên nhẫn',
+    story: 'Bị bệnh Care thần kinh, thường bị co giật mặt, miệng, sùi mép. Cần được hỗ trợ về y tế.',
+    avatar: '/images/pets/be_coca.jpg',
     has3DModel: false,
     modelType: 'dog'
   },
   {
     id: 'cat-bong',
-    name: 'Bé Bông',
+    name: 'Quýt',
     type: 'cat',
-    breed: 'Mèo trắng mắt hai màu',
     age: 'Khoảng 6 tháng tuổi',
-    personality: 'Nhẹ nhàng như mây, thích cuộn tròn trên chăn ấm',
-    story: 'Bé có một bên mắt xanh ngọc bích và một bên mắt vàng hổ phách. Bông là "thiên thần nhỏ" sưởi ấm lòng mọi tình nguyện viên tại trạm.',
+    story: 'Được tìm thấy bên đường trong tình trạng thoi thóp: hô hấp khó khăn, lông ướt nhem, suy nhược nặng và liệt toàn thân không thể di chuyển. Nhờ gần một tháng điều trị, Quýt đã kiên cường hồi phục thể chất, nhưng sâu thẳm vẫn còn ám ảnh tâm lý và sợ hãi khi tiếp xúc với con người.',
     avatar: '/images/pets/be_bong.jpg',
-    tags: ['Mắt hai màu', 'Thích sưởi ấm', 'Hiền từ'],
-    status: 'Đang chờ mái ấm',
     has3DModel: false,
     modelType: 'cat'
+  },
+  {
+    id: 'cat-xi-ke',
+    name: 'Xì Ke',
+    type: 'cat',
+    age: 'Khoảng 1 tuổi',
+    story: 'Bị chủ cũ bỏ rơi vì không còn khả năng nuôi dưỡng. Khi mới về trạm, Xì Ke trong tình trạng gầy gò ốm yếu, cơ thể mang bệnh và tinh thần vô cùng tủi thân.',
+    avatar: '/images/pets/be_xike.jpg',
+    has3DModel: false,
+    modelType: 'cat'
+  },
+  {
+    id: 'dog-hanh-phuc',
+    name: 'Hai mẹ con Hạnh & Phúc',
+    type: 'dog',
+    age: 'Mẹ khoảng 2 tuổi, con khoảng 3 tháng',
+    story: 'Được trạm phát hiện và đưa về từ một bãi rác. Cả hai mẹ con đều trong tình trạng ốm tông (gầy mòn), sức khỏe suy kiệt và mang tâm lý hoảng sợ, e dè trước con người.',
+    avatar: '/images/pets/2be_Hanh_Phuc.jpg',
+    has3DModel: false,
+    modelType: 'dog'
+  },
+  {
+    id: 'cat-dem',
+    name: 'Bé Đêm',
+    type: 'cat',
+    age: 'Khoảng 1 tuổi',
+    story: 'Bị bỏ rơi ngoài đường, được trạm đón về, trong tình trạng bị thương.',
+    avatar: '/images/pets/be_dem.png',
+    has3DModel: false,
+    modelType: 'cat'
+  },
+  {
+    id: 'dog-mop',
+    name: 'Móp',
+    type: 'dog',
+    age: 'Khoảng 2 tuổi',
+    story: 'Bị bỏ ngoài đường trong tình trạng viêm da nặng. Được điều trị tận tình sau khi về, hiện tại đã hồi phục sức khỏe nhưng da vẫn không thể điều trị triệt để.',
+    avatar: '/images/pets/be_mop.jpg',
+    has3DModel: false,
+    modelType: 'dog'
   }
 ];
 
@@ -472,6 +488,20 @@ export const RESCUE_CENTERS = [
     facebookUrl: 'https://www.facebook.com/lawsforpawsvietnam'
   },
   {
+    id: 'rc-nha-xanh',
+    name: 'Nhà Xanh',
+    city: 'TP. Hồ Chí Minh',
+    phone: '0768081990',
+    facebookUrl: 'https://www.facebook.com/my.tran.554058'
+  },
+  {
+    id: 'rc-team-16',
+    name: 'Team 16 Cứu Hộ Động Vật',
+    city: 'TP. Hồ Chí Minh',
+    phone: '0786 866 463',
+    facebookUrl: 'https://www.facebook.com/team16cuuhodongvat'
+  },
+  {
     id: 'rc-12',
     name: 'Can Tho Pet Shelter',
     city: 'Cần Thơ',
@@ -485,7 +515,7 @@ export const PROJECT_STATS = {
   fundRaised: 'Đang cập nhật',
   totalWishes: '2.400+',
   participants: '1.250+',
-  sheltersConnected: '12'
+  sheltersConnected: '14'
 };
 
 // Dữ liệu so sánh trực quan lấy cảm hứng từ phương pháp SavePet

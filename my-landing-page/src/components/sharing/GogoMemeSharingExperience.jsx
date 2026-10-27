@@ -23,7 +23,6 @@ Mỗi hành động nhỏ đều có thể lan tỏa thêm một chút yêu thư
 Mình vừa có một hành trình nhỏ cùng GogoMeme — nơi mỗi lời chúc, mỗi điều được học và mỗi lượt chia sẻ đều có thể giúp câu chuyện về những bé chó mèo cần được yêu thương đi xa hơn. 🧡
 
 Bạn cũng có thể ghé thăm GogoMeme, gửi một lời chúc và thử sức với 4 tình huống để biết cách phản ứng phù hợp khi gặp một bé cần giúp đỡ.
-
 ✨ Một hành động nhỏ cũng có thể bắt đầu một thay đổi lớn.
 
 Fanpage: Chạm Bốn Chân GogoMeme

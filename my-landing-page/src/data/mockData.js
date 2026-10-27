@@ -497,8 +497,8 @@ export const RESCUE_CENTERS = [
 export const PROJECT_STATS = {
   productsSold: 'Đang cập nhật',
   fundRaised: 'Đang cập nhật',
-  totalWishes: '2.400+',
-  participants: '1.250+',
+  totalWishes: '1.000+',
+  participants: '1.200+',
   sheltersConnected: '14'
 };
 

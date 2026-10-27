@@ -6,11 +6,8 @@ export const ANIMALS = [
     name: 'Su',
     type: 'dog',
     age: '12 tuổi (Đã lớn tuổi)',
-    personality: 'Hiền lành, quấn người, thích được xoa đầu',
     story: 'Su đã bước vào độ tuổi xế chiều, nhưng thay vì được quây quần bên chủ nhân trong những năm tháng cuối đời, bé lại bị bỏ rơi vì lý do tuổi tác và sức khỏe suy giảm.',
     avatar: '/images/pets/be_bo.jpg',
-    tags: ['Ngoan ngoãn', 'Thích ôm', 'Đã tiêm phòng'],
-    status: 'Đang chờ mái ấm',
     has3DModel: true,
     modelType: 'dog'
   },
@@ -19,11 +16,8 @@ export const ANIMALS = [
     name: 'Bánh Cam',
     type: 'cat',
     age: 'Khoảng 1 tuổi',
-    personality: 'Rụt rè lúc đầu, thích sưởi nắng và nghe tiếng thì thầm',
     story: 'Mang một đôi mắt xanh thẳm vô cùng đặc biệt nhưng bé lại chịu thiệt thòi khi bị sưng to bẩm sinh từ nhỏ, cần sự quan tâm và chăm sóc đặc biệt.',
     avatar: '/images/pets/be_may.jpg',
-    tags: ['Trầm tính', 'Thích ngủ nướng', 'Đã triệt sản'],
-    status: 'Đang ở trạm tạm thời',
     has3DModel: true,
     modelType: 'cat'
   },
@@ -32,11 +26,8 @@ export const ANIMALS = [
     name: 'Maika',
     type: 'dog',
     age: '2 tuổi',
-    personality: 'Năng động, tò mò, thích chạy vòng quanh nhặt lá',
     story: 'Maika từng bị bỏ rơi ngay trong thùng rác. Tuy bị bỏ rơi nhưng Maika không hề sợ người, tính tình rất vui vẻ, dạn người.',
     avatar: '/images/pets/be_hat_de.jpg',
-    tags: ['Vui vẻ', 'Chân ngắn đáng yêu', 'Đã tẩy giun'],
-    status: 'Đang chờ nhận nuôi',
     has3DModel: false,
     modelType: 'dog'
   },
@@ -45,11 +36,8 @@ export const ANIMALS = [
     name: 'Mèo Ú',
     type: 'cat',
     age: 'Khoảng 8 tháng tuổi',
-    personality: 'Tinh nghịch, mắt to tròn, rất thích bắt bóng len',
     story: 'Bị chủ bỏ rơi ở chung cư. Được mang về trạm trong tình trạng nhút nhát, sợ người.',
     avatar: '/images/pets/be_miu_miu.jpg',
-    tags: ['May mắn', 'Thích chơi đùa', 'Ăn ngoan'],
-    status: 'Đang chờ nhận nuôi',
     has3DModel: false,
     modelType: 'cat'
   },
@@ -58,11 +46,8 @@ export const ANIMALS = [
     name: 'Coca',
     type: 'dog',
     age: 'Khoảng 1.5 tuổi',
-    personality: 'Trung thành, thông minh, luôn cảnh giác bảo vệ bạn bè',
     story: 'Bị bệnh Care thần kinh, thường bị co giật mặt, miệng, sùi mép. Cần được hỗ trợ về y tế.',
     avatar: '/images/pets/be_coca.jpg',
-    tags: ['Thông minh', 'Biết trông nhà', 'Kiên nhẫn'],
-    status: 'Cần một người bạn kiên nhẫn',
     has3DModel: false,
     modelType: 'dog'
   },
@@ -71,13 +56,50 @@ export const ANIMALS = [
     name: 'Quýt',
     type: 'cat',
     age: 'Khoảng 6 tháng tuổi',
-    personality: 'Nhẹ nhàng như mây, thích cuộn tròn trên chăn ấm',
     story: 'Được tìm thấy bên đường trong tình trạng thoi thóp: hô hấp khó khăn, lông ướt nhem, suy nhược nặng và liệt toàn thân không thể di chuyển. Nhờ gần một tháng điều trị, Quýt đã kiên cường hồi phục thể chất, nhưng sâu thẳm vẫn còn ám ảnh tâm lý và sợ hãi khi tiếp xúc với con người.',
     avatar: '/images/pets/be_bong.jpg',
-    tags: ['Mắt hổ phách', 'Thích sưởi ấm', 'Hiền từ'],
-    status: 'Đang chờ mái ấm',
     has3DModel: false,
     modelType: 'cat'
+  },
+  {
+    id: 'cat-xi-ke',
+    name: 'Xì Ke',
+    type: 'cat',
+    age: 'Khoảng 1 tuổi',
+    story: 'Bị chủ cũ bỏ rơi vì không còn khả năng nuôi dưỡng. Khi mới về trạm, Xì Ke trong tình trạng gầy gò ốm yếu, cơ thể mang bệnh và tinh thần vô cùng tủi thân.',
+    avatar: '/images/pets/be_xike.jpg',
+    has3DModel: false,
+    modelType: 'cat'
+  },
+  {
+    id: 'dog-hanh-phuc',
+    name: 'Hai mẹ con Hạnh & Phúc',
+    type: 'dog',
+    age: 'Mẹ khoảng 2 tuổi, con khoảng 3 tháng',
+    story: 'Được trạm phát hiện và đưa về từ một bãi rác. Cả hai mẹ con đều trong tình trạng ốm tông (gầy mòn), sức khỏe suy kiệt và mang tâm lý hoảng sợ, e dè trước con người.',
+    avatar: '/images/pets/2be_Hanh_Phuc.jpg',
+    has3DModel: false,
+    modelType: 'dog'
+  },
+  {
+    id: 'cat-dem',
+    name: 'Bé Đêm',
+    type: 'cat',
+    age: 'Khoảng 1 tuổi',
+    story: 'Bị bỏ rơi ngoài đường, được trạm đón về, trong tình trạng bị thương.',
+    avatar: '/images/pets/be_dem.png',
+    has3DModel: false,
+    modelType: 'cat'
+  },
+  {
+    id: 'dog-mop',
+    name: 'Móp',
+    type: 'dog',
+    age: 'Khoảng 2 tuổi',
+    story: 'Bị bỏ ngoài đường trong tình trạng viêm da nặng. Được điều trị tận tình sau khi về, hiện tại đã hồi phục sức khỏe nhưng da vẫn không thể điều trị triệt để.',
+    avatar: '/images/pets/be_mop.jpg',
+    has3DModel: false,
+    modelType: 'dog'
   }
 ];
 
